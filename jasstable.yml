@@ -1,0 +1,149 @@
+networks:
+  jassnet:
+    attachable: true
+    driver: bridge
+    name: jassnet
+
+x-env: &dflt-env
+  # TZ format: https://pubs.opengroup.org/onlinepubs/007904975/basedefs/xbd_chap08.html
+  TZ: CET-1CEST,M3.5.0,M10.5.0/3
+
+services:
+# tag::mongobatch[]
+  mongobatch:
+    command:
+    - mongo
+    - dummydb
+    - --host
+    - mongod1
+    environment:
+      <<: *dflt-env
+      PORT: '27017'
+    hostname: mongobatch
+    image: mongo:3
+    networks:
+      jassnet: null
+    volumes:
+    - .:/src:rw
+# end::mongobatch[]
+# tag::mongod1[]
+  mongod1:
+    command:
+    - bash
+    - -c
+    - mongod --smallfiles --nojournal --oplogSize 5 --bind_ip_all --port $$PORT
+    environment:
+      <<: *dflt-env
+      PORT: '27017'
+    hostname: mongod1
+    image: mongo:3
+    networks:
+      jassnet: null
+    ports:
+    - published: 27017
+      target: 27017
+    volumes:
+    - mongod1-data:/data/db:rw
+# end::mongod1[]
+# tag::mongoexpress[]
+  mongoexpress:
+    environment:
+      <<: *dflt-env
+      ME_CONFIG_OPTIONS_EDITORTHEME: ambiance
+      ME_CONFIG_MONGODB_SERVER: mongod1
+      ME_CONFIG_BASICAUTH_USERNAME: dateng
+      ME_CONFIG_BASICAUTH_PASSWORD: dateng
+    hostname: mongoexpress
+    image: mongo-express
+    networks:
+      jassnet: null
+    ports:
+    - published: 58080
+      target: 8081
+# end::mongoexpress[]
+# tag::mongoterm[]
+  mongoterm:
+    command:
+    - mongo
+    - dummydb
+    environment:
+      <<: *dflt-env
+      PORT: '27017'
+    hostname: mongoterm
+    image: mongo:3
+    networks:
+      jassnet: null
+    stdin_open: true
+    tty: true
+    volumes:
+    - .:/src:rw
+# end::mongoterm[]
+# tag::traefik1[]
+  traefik:
+    hostname: traefik
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:9080"
+      - "--entrypoints.websecure.address=:9443"
+      - "--accesslog=true"
+      - "--accesslog.format=json"
+      - "--accesslog.filePath=/var/log/traefikAccesslog.log"
+      - "--log.filePath=/var/log/traefik.log"
+    image: traefik:latest
+    networks:
+      jassnet: null
+    ports:
+      - 8080:8080
+      - 9080:9080
+      - 9443:9443
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+# end::traefik1[]
+# tag::tomcat1[]
+  tomcat1:
+      hostname: tomcat1.docker.localhost
+      image: tomcat:9.0
+      networks:
+        jassnet: null
+      ports:
+      - 8888:8080
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.tomcat1.rule=Host(`jasstable.docker.localhost`)"
+        - "traefik.http.routers.tomcat1.entrypoints=websecure"
+        - "traefik.docker.network=jassnet"
+# end::tomcat1[]
+# tag::tomcat2[]
+  tomcat2:
+    hostname: tomcat2.docker.localhost
+    image: tomcat:9.0
+    networks:
+      jassnet: null
+    ports:
+    - 8889:8080
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tomcat2.rule=Host(`jasstable.docker.localhost`)"
+      - "traefik.http.routers.tomcat2.entrypoints=websecure"
+      - "traefik.docker.network=jassnet"
+# end::tomcat2[]
+# tag::whoami1[]
+  whoami1:
+    hostname: whoami1
+    image: "containous/whoami"
+    container_name: "simple-service"
+    networks:
+      jassnet: null
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`jasstable2.docker.localhost`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
+# end::whoami1[]
+
+version: '3.6'
+volumes:
+    mongod1-data: {}

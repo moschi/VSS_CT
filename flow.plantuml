@@ -1,0 +1,30 @@
+@startuml Punktezähler
+
+start
+:Configure Session;
+
+repeat
+    :Players write "Wiis";
+
+    :Team 1 writes points;
+    partition WritePoints {
+        :Select "Trumpf";
+        :Enter points;
+        :Apply multiplicator;
+    }
+    :Team 2's points are\nautomatically deducted and written;
+    partition CheckDelimiters {
+        :Team has "Bergpriis"?;
+    }
+repeat while (points < 2500?) -> New Round
+
+:Declare Winner;
+partition CheckDelimiters {
+    :Has loosing team surpassed "Schniider"?;
+}
+:Game ends;
+
+stop
+
+
+@enduml
