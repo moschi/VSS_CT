@@ -11,6 +11,7 @@ import User from './User';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
+import GameBoard from './GameBoard';
 
 
 function App() {
@@ -35,9 +36,12 @@ function App() {
                     <Route path="/users">
                         <User/>
                     </Route>
+                    <Route path="/game/:id" render={(props) => <GameBoard {...props}/>}
+                    />
                     <Route path="/">
                         <Dashboard/>
                     </Route>
+
                 </Switch>
             </div>
         </Router>
