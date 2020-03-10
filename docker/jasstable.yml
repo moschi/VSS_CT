@@ -1,0 +1,76 @@
+networks:
+  jassnet:
+    attachable: true
+    driver: bridge
+    name: jassnet
+
+x-env: &dflt-env
+  # TZ format: https://pubs.opengroup.org/onlinepubs/007904975/basedefs/xbd_chap08.html
+  TZ: CET-1CEST,M3.5.0,M10.5.0/3
+
+services:
+# tag::mongodb[]
+# end::mongodb[]
+# tag::traefik1[]
+  traefik:
+    hostname: traefik
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:9080"
+      - "--entrypoints.websecure.address=:9443"
+      - "--accesslog=true"
+      - "--accesslog.format=json"
+      - "--accesslog.filePath=/var/log/traefikAccesslog.log"
+      - "--log.filePath=/var/log/traefik.log"
+    image: traefik:latest
+    networks:
+      jassnet: null
+    ports:
+      - 8080:8080
+      - 9080:9080
+      - 9443:9443
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+# end::traefik1[]
+# tag::jasserver1[]
+  jasserver1:
+    hostname: jasserver1.docker.localhost
+    build:
+      context: ./
+      dockerfile: jasserver/Dockerfile
+    image: jasserver/jasserver:latest
+    networks:
+      jassnet: null
+    ports:
+      - 8888:8080
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jasserver1.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.jasserver1.entrypoints=websecure"
+      - "traefik.docker.network=jassnet"
+# end::jasserver1[]
+# tag::jasserver2[]
+  jasserver2:
+    hostname: jasserver2.docker.localhost
+    build:
+      context: ./
+      dockerfile: jasserver/Dockerfile
+    image: jasserver/jasserver:latest
+    networks:
+      jassnet: null
+    ports:
+    - 8889:8080
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jasserver2.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.jasserver2.entrypoints=websecure"
+      - "traefik.docker.network=jassnet"
+# end::jasserver2[]
+
+version: '3.6'
+volumes:
+    mongod1-data: {}
+    golang-data: {}
