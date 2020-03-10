@@ -10,10 +10,6 @@ object Game {
 
 object Team {
     Name
-    Hundreds
-    Fifties
-    Twenties
-    Rest
 }
 
 object Round {
@@ -30,10 +26,10 @@ object Trumpf {
     Multiplier
 }
 
-User "1" -- "m" Game : creates >
-Game "1" -- "m" Round : has >
-Round "1" -- "1" Trumpf : has >
-Round "1" -- "1" PointsPerTeamPerRound
-Team "1" -- "1" PointsPerTeamPerRound
+User "1" -- "*" Game : creates >
+Game "1" -- "*" Round : has >
+Round "*" -- "1" Trumpf : has >
+Round "1" -- "*" PointsPerTeamPerRound
+Team "1" -- "*" PointsPerTeamPerRound
 
 @enduml
