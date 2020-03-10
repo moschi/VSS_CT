@@ -12,7 +12,7 @@ services:
 # tag::mongodb[]
   mongo:
     image: mongo:latest
-    hostname: mongo
+    hostname: mongo.docker.localhost
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
@@ -28,6 +28,11 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: root
     networks:
       jassnet: null
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mongodb.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.mobgodb.entrypoints=web"
+      - "traefik.docker.network=jassnet"
 # end::mongodb[]
 # tag::traefik1[]
   traefik:
