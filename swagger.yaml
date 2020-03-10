@@ -136,15 +136,16 @@ paths:
         schema:
           type: "object"
           properties:
-            game:
+            PointsPerTeamPerRound:
               type: "array"
               items:
                 type: "object"
                 properties:
-                  teamId:
-                    type: "integer"
-                    format: "int64"
+                  team: 
+                    $ref: '#/definitions/Team'
                   points: 
+                    type: "integer"
+                  wiisPoints: 
                     type: "integer"
             trumpf: 
               $ref: '#/definitions/Trumpf'
@@ -243,14 +244,6 @@ definitions:
         format: "int64"
       name:
         type: "string"
-      hundreds: 
-        type: "integer"
-      fifties: 
-        type: "integer"
-      twenties: 
-        type: "integer"
-      rest: 
-        type: "integer"
   Trumpf:
     type: "object"
     properties:
