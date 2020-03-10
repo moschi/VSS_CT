@@ -1,5 +1,6 @@
 FROM golang:latest
 WORKDIR /go/src/path/app
-COPY . .
-RUN go build ./jasserver/app/server.go
-CMD go run ./jasserver/app/server.go
+COPY ./jasserver/app/ .
+RUN go get github.com/graphql-go/graphql
+RUN go build ./server.go
+CMD go run ./server.go
