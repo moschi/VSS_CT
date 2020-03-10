@@ -12,14 +12,10 @@ function Dashboard(props:any) {
 
     const games = gameArray.map((game: Game) => {
         const results = calculatePointsPerTeam(game);
-
         return (
             <Grid item xs={12} md={4} lg={2}>
-
                     <div className="gameWrapper" onClick={() => {
-
                         const route = "/game/" + game.id;
-
                         props.history.push(route);
 
                     }}>
