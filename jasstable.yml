@@ -9,75 +9,19 @@ x-env: &dflt-env
   TZ: CET-1CEST,M3.5.0,M10.5.0/3
 
 services:
-# tag::mongobatch[]
-  mongobatch:
-    command:
-    - mongo
-    - dummydb
-    - --host
-    - mongod1
-    environment:
-      <<: *dflt-env
-      PORT: '27017'
-    hostname: mongobatch
-    image: mongo:3
-    networks:
-      jassnet: null
-    volumes:
-    - .:/src:rw
-# end::mongobatch[]
-# tag::mongod1[]
-  mongod1:
-    command:
-    - bash
-    - -c
-    - mongod --smallfiles --nojournal --oplogSize 5 --bind_ip_all --port $$PORT
-    environment:
-      <<: *dflt-env
-      PORT: '27017'
-    hostname: mongod1
-    image: mongo:3
+# tag::mssql1[]
+  mssql:
+    hostname: mssql
+    image: mcr.microsoft.com/mssql/server:2019-latest
     networks:
       jassnet: null
     ports:
-    - published: 27017
-      target: 27017
-    volumes:
-    - mongod1-data:/data/db:rw
-# end::mongod1[]
-# tag::mongoexpress[]
-  mongoexpress:
+      - 5434:1433
     environment:
-      <<: *dflt-env
-      ME_CONFIG_OPTIONS_EDITORTHEME: ambiance
-      ME_CONFIG_MONGODB_SERVER: mongod1
-      ME_CONFIG_BASICAUTH_USERNAME: dateng
-      ME_CONFIG_BASICAUTH_PASSWORD: dateng
-    hostname: mongoexpress
-    image: mongo-express
-    networks:
-      jassnet: null
-    ports:
-    - published: 58080
-      target: 8081
-# end::mongoexpress[]
-# tag::mongoterm[]
-  mongoterm:
-    command:
-    - mongo
-    - dummydb
-    environment:
-      <<: *dflt-env
-      PORT: '27017'
-    hostname: mongoterm
-    image: mongo:3
-    networks:
-      jassnet: null
-    stdin_open: true
-    tty: true
-    volumes:
-    - .:/src:rw
-# end::mongoterm[]
+      - SA_PASSWORD=Pass@word
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Express
+# end::mssql1[]
 # tag::traefik1[]
   traefik:
     hostname: traefik
@@ -113,7 +57,7 @@ services:
       - 8888:8080
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.tomcat1.rule=Host(`jasstable.docker.localhost`)"
+        - "traefik.http.routers.tomcat1.rule=PathPrefix(`/`)"
         - "traefik.http.routers.tomcat1.entrypoints=websecure"
         - "traefik.docker.network=jassnet"
 # end::tomcat1[]
@@ -127,7 +71,7 @@ services:
     - 8889:8080
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.tomcat2.rule=Host(`jasstable.docker.localhost`)"
+      - "traefik.http.routers.tomcat2.rule=PathPrefix(`/`)"
       - "traefik.http.routers.tomcat2.entrypoints=websecure"
       - "traefik.docker.network=jassnet"
 # end::tomcat2[]
