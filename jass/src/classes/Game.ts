@@ -1,26 +1,31 @@
-export interface Game{
-    id:string;
-    rounds:Round[];
+export interface Game {
+  __typename?: string,
+  id: string;
+  rounds: Round[];
 }
 
-export interface Team{
-    name:string;
+export interface Team {
+  __typename?: string,
+  name: string;
 }
 
-export interface Trump{
-    name:string;
-    multiplier:number;
+export interface Trump {
+  __typename?: string,
+  name: string;
+  multiplier: number;
 }
 
 
-export interface Round{
-    trump:Trump;
-    pointsPerTeamPerRound:PointsPerTeamPerRound[];
+export interface Round {
+  __typename?: string,
+  trump: Trump;
+  pointsPerTeamPerRound: PointsPerTeamPerRound[];
 
 }
 
-export interface PointsPerTeamPerRound{
-    wiisPoints:number;
-    points:number;
-    team:Team;
+export interface PointsPerTeamPerRound {
+  __typename?: string,
+  wiisPoints: number;
+  points: number;
+  team: Team;
 }
