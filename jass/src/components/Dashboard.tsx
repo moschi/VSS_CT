@@ -5,6 +5,7 @@ import calculatePointsPerTeam from "../classes/GameUtils";
 import {withRouter} from "react-router";
 import {gql} from "apollo-boost";
 import {useQuery} from "@apollo/react-hooks";
+import Button from "@material-ui/core/Button";
 
 const GET_GAMES = gql`{
   games {
@@ -38,6 +39,11 @@ function Dashboard(props: any) {
   if (error) return <p>Error!</p>;
 
   const gameArray: Game[] = data.games;
+
+  const createGame = () => {
+    const route = "/game/create";
+    props.history.push(route);
+  }
 
   const games = gameArray.map((game: Game) => {
     const results = calculatePointsPerTeam(game);
@@ -95,7 +101,7 @@ function Dashboard(props: any) {
             justify="center"
             align-items="center">
         <Grid item xs={12} md={4} lg={2}>
-          <div className="gameWrapper"><h1>+ add Game</h1></div>
+          <Button onClick={createGame}>+ Game</Button>
         </Grid>
         {games}
       </Grid>

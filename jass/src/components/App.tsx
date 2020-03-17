@@ -14,6 +14,7 @@ import Button from '@material-ui/core/Button';
 import { ApolloProvider } from '@apollo/react-hooks';
 import GameBoard from './GameBoard';
 import ApolloClient from "apollo-boost";
+import CreateGame from "./CreateGame";
 
 function App() {
   const client = new ApolloClient();
@@ -37,6 +38,9 @@ function App() {
           <Switch>
             <Route path="/users">
               <User/>
+            </Route>
+            <Route path="/game/create">
+              <CreateGame/>
             </Route>
             <Route path="/game/:id" render={(props) => <GameBoard {...props}/>}
             />
