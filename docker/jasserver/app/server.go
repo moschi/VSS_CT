@@ -2,10 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"strings"
 
 	graphql "github.com/graph-gophers/graphql-go"
 	"github.com/graph-gophers/graphql-go/relay"
@@ -17,19 +16,9 @@ import (
 	//"gopkg.in/mgo.v2/bson"
 )
 
-func sayHello(w http.ResponseWriter, r *http.Request) {
-	message := r.URL.Path
-	message = strings.TrimPrefix(message, "/")
-	name, err := os.Hostname()
-	if err != nil {
-		panic(err)
-	}
-	message = "Hello from " + name
-	w.Write([]byte(message))
-}
-
 // MONGODB //
-const host string = "mongo"
+// user host = mongo when running in docker, localhost for debugging outside of docker (but using mongo in docker)
+const host string = "localhost"
 const db string = "jassDb"
 
 // GetMongo returns the session an reference to the post collecion
@@ -52,11 +41,8 @@ func GetMongo(col string) (context.Context, *mongo.Collection) {
 var graphqlSchema *graphql.Schema
 
 /*
-
-	game(ID: ID!): Game
-	trumpf(ID: ID!): Trumpf
-	round(ID: ID!): Round
-
+	trumpf(game: Game!): Trumpf
+	round(game: Game!): Round
 */
 
 // Schema describes the data that we ask for
@@ -67,31 +53,33 @@ var Schema = `
     # The Query type represents all of the entry points.
     type Query {
 		user(name: String!): User
+		game(userName: String!): Game
 	}
     type User {
-        ID: ID!
-        name: String!
+		id: ID!
+		name: String!
+		other: String!
 	}
 	type Game {
-		ID: ID!
+		id: ID!
 		user: User!
 	}
 	type Trumpf {
-		ID: ID!
+		id: ID!
 		name: String!
 		multiplier: Int!
 	}
 	type Round {
-		ID: ID!
+		id: ID!
 		trumpf: Trumpf!
 		game: Game!
 	}
 	type Team {
-		ID: ID!
+		id: ID!
 		name: String!
 	}
 	type Points {
-		ID: ID!
+		id: ID!
 		round: Round!
 		team: Team!
 	}
@@ -118,29 +106,37 @@ func init() {
 	// Call GetMongo, session and reference to the post collection
 	ctx, collection := GetMongo("user")
 	// Close the session so its resources may be put back in the pool or collected, depending on the case.
-
-	// Cleanup finds all documents matching the provided selector document
-	// and removes them from the database. So we make sure the db is empty before inserting mock data.
 	Cleanup("user")
-
-	// The mock data that we insert.
+	gameUser := bson.D{
+		bson.E{Key: "name", Value: "Olaf"},
+		bson.E{Key: "other", Value: "a"},
+	}
 	_, err := collection.InsertMany(
 		ctx,
 		[]interface{}{
+			gameUser,
 			bson.D{
-				bson.E{"ID", 1},
-				bson.E{"name", "Benny Joe"},
+				bson.E{Key: "name", Value: "David--K"},
+				bson.E{Key: "other", Value: "b"},
 			},
 			bson.D{
-				bson.E{"ID", 2},
-				bson.E{"name", "David--K"},
+				bson.E{Key: "name", Value: "Moschi"},
+				bson.E{Key: "other", Value: "c"},
 			},
 			bson.D{
-				bson.E{"ID", 3},
-				bson.E{"name", "Moschi"},
+				bson.E{Key: "name", Value: "Hans"},
+				bson.E{Key: "other", Value: "d"},
 			},
 		},
 	)
+
+	Cleanup("game")
+
+	game := bson.D{
+		bson.E{Key: "user", Value: gameUser},
+	}
+	ctx, collection = GetMongo("game")
+	_, err = collection.InsertMany(ctx, []interface{}{game})
 
 	if err != nil {
 		log.Fatal(err)
@@ -155,67 +151,69 @@ type Resolver struct{}
 
 // data types //
 
-type user struct {
+// user
+type User struct {
+	ID    graphql.ID
+	Name  string
+	Other string
+}
+
+type Game struct {
+	ID   graphql.ID
+	User User
+}
+
+type Trumpf struct {
+	ID         graphql.ID
+	Name       string
+	Multiplier int
+}
+
+type Round struct {
+	ID     graphql.ID
+	Trumpf Trumpf
+}
+
+type Team struct {
 	ID   graphql.ID
 	Name string
 }
 
-// type game struct {
-// 	ID   graphql.ID
-// 	user user
-// }
-
-// type trumpf struct {
-// 	ID         graphql.ID
-// 	Name       string
-// 	Multiplier int
-// }
-
-// type round struct {
-// 	ID     graphql.ID
-// 	trumpf trumpf
-// }
-
-// type team struct {
-// 	ID   graphql.ID
-// 	Name string
-// }
-
-// type points struct {
-// 	ID         graphql.ID
-// 	team       team
-// 	round      round
-// 	wiispoints int
-// 	points     int
-// }
+type Points struct {
+	ID         graphql.ID
+	Team       Team
+	Round      Round
+	Wiispoints int
+	Points     int
+}
 
 // end data types //
 
 // resolvers //
 
 type userResolver struct {
-	s *user
+	s *User
 }
 
-// type gameResolver struct {
-// 	s *game
-// }
+type gameResolver struct {
+	s *Game
+}
 
-// type trumpfResolver struct {
-// 	s *trumpf
-// }
+type trumpfResolver struct {
+	s *Trumpf
+}
 
-// type roundResolver struct {
-// 	s *round
-// }
+type roundResolver struct {
+	s *Round
+}
 
-// type teamResolver struct {
-// 	s *team
-// }
+type teamResolver struct {
+	s *Team
+}
 
-// type pointsResolver struct {
-// 	s *points
-// }
+type pointsResolver struct {
+	s *Points
+}
 
 // end resolvers //
 
@@ -224,66 +222,66 @@ type searchResultResolver struct {
 }
 
 // Slices can be created with the built-in make function; this is how we create dynamically-sized arrays.
-var userData = make(map[string]*user)
-
-// var gameData = make(map[string]*game)
-// var trumpfData = make(map[string]*trumpf)
-// var teamData = make(map[string]*team)
-// var pointsData = make(map[string]*points)
+var userData = make(map[string]*User)
+var gameData = make(map[string]*Game)
+var trumpfData = make(map[string]*Trumpf)
+var teamData = make(map[string]*Team)
+var pointsData = make(map[string]*Points)
 
 // resolver User queries
 func (r *Resolver) User(args struct{ Name string }) *userResolver {
-	oneResult := &user{}
+	var oneResult User
 
 	ctx, collection := GetMongo("user")
-	single := collection.FindOne(
+	cur, err := collection.Find(
 		ctx,
-		bson.M{
-			"name": args.Name,
-		})
+		bson.M{"name": args.Name},
+	)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer cur.Close(ctx)
+	for cur.Next(ctx) {
+		cur.Decode(&oneResult)
+		//log.Println(oneResult)
+	}
 
-	single.Decode(oneResult)
-
-	if s := oneResult; s != nil {
-		return &userResolver{oneResult}
+	if s := &oneResult; s != nil {
+		return &userResolver{&oneResult}
 	}
 
 	return nil
 }
 
-// // resolver Game queries
-// func (r *Resolver) Game(args struct{ ID graphql.ID }) *gameResolver {
-// 	oneResult := &game{}
+// resolver Game queries
+func (r *Resolver) Game(args struct{ UserName string }) *gameResolver {
+	var oneResult Game
+	ctx, collection := GetMongo("game")
+	cur, err := collection.Find(
+		ctx,
+		bson.D{},
+	)
 
-// 	ctx, collection := GetMongo("game")
-// 	cur, err := collection.Find(
-// 		ctx,
-// 		bson.D{
-// 			bson.E{"ID", args.ID},
-// 		},
-// 	)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	defer cur.Close(ctx)
-// 	for cur.Next(ctx) {
-// 		cur.Decode(oneResult)
-// 	}
+	// filter currently not working
+	//bson.M{"user": bson.M{"name": args.UserName}},
+	if err != nil {
+		log.Println(err)
+	}
 
-// 	if s := oneResult; s != nil {
-// 		return &gameResolver{oneResult}
-// 	}
+	defer cur.Close(ctx)
+	for cur.Next(ctx) {
+		cur.Decode(&oneResult)
+		log.Println(oneResult)
+	}
 
-// 	return nil
-// }
+	if s := &oneResult; s != nil {
+		return &gameResolver{&oneResult}
+	}
 
-// func (r *gameResolver) ID() graphql.ID {
-// 	return r.s.ID
-// }
+	return nil
+}
 
-// func (r *gameResolver) User() user {
-// 	return r.s.user
-// }
+// field resolving //
 
 func (r *userResolver) ID() graphql.ID {
 	return r.s.ID
@@ -293,6 +291,69 @@ func (r *userResolver) Name() string {
 	return r.s.Name
 }
 
+func (r *userResolver) Other() string {
+	return r.s.Other
+}
+
+func (r *gameResolver) ID() graphql.ID {
+	return r.s.ID
+}
+
+func (r *gameResolver) User() *userResolver {
+	return &userResolver{&r.s.User}
+}
+
+func (r *trumpfResolver) ID() graphql.ID {
+	return r.s.ID
+}
+
+func (r *trumpfResolver) Name() string {
+	return r.s.Name
+}
+
+func (r *trumpfResolver) Multiplier() int {
+	return r.s.Multiplier
+}
+
+func (r *roundResolver) ID() graphql.ID {
+	return r.s.ID
+}
+
+func (r *roundResolver) Trumpf() Trumpf {
+	return r.s.Trumpf
+}
+
+func (r *teamResolver) ID() graphql.ID {
+	return r.s.ID
+}
+
+func (r *teamResolver) Name() string {
+	return r.s.Name
+}
+
+func (r *pointsResolver) ID() graphql.ID {
+	return r.s.ID
+}
+
+func (r *pointsResolver) Team() Team {
+	return r.s.Team
+}
+
+func (r *pointsResolver) Round() Round {
+	return r.s.Round
+}
+
+func (r *pointsResolver) Wiispoints() int {
+	return r.s.Wiispoints
+}
+
+func (r *pointsResolver) Points() int {
+	return r.s.Points
+}
+
+// end field resolving //
+
+// used for sexy interface ;)
 //////// GRAPHiQL ////////
 var page = []byte(`
     <!DOCTYPE html>
@@ -332,8 +393,6 @@ var page = []byte(`
     `)
 
 func main() {
-	//http.HandleFunc("/", sayHello)
-
 	// Write a GraphiQL page to /
 	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Write(page)
@@ -342,7 +401,8 @@ func main() {
 	// Create a handler for /graphql which passes cors for remote requests
 	http.Handle("/graphql", cors.Default().Handler(&relay.Handler{Schema: graphqlSchema}))
 
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	// use port 9090 for local debugging (since its hopefully free) and 8080 for using in docker
+	if err := http.ListenAndServe(":9090", nil); err != nil {
 		panic(err)
 	}
 }
