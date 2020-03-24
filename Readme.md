@@ -11,7 +11,7 @@ WebApp welches es ermöglicht den aktuellen Punktestand beider beteiligten Teams
 - "Schniider"
 - Match
 
-###jass
+### jass
 
 install: 
 ```
