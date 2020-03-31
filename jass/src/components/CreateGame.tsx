@@ -80,8 +80,10 @@ function CreateGame() {
     }
 
     const submit = () => {
-        if (validateName1(game.name1) && validateName2(game.name2)) {
-            console.log('submited this funking game: ' + JSON.stringify(game));
+        const validName1 = validateName1(game.name1);
+        const validName2 = validateName2(game.name2)
+        if (validName1 && validName2) {
+            console.log('submit this funking game: ' + JSON.stringify(game));
             reset();
         } else {
             console.log('no valid input');
