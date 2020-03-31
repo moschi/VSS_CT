@@ -23,6 +23,7 @@ const DEBUG bool = true // Switch between DEBUG and PRODUCTION: if true, host an
 
 var host string = "mongo"
 var port string = ":8080"
+
 const db string = "jassDb"
 
 // GetMongo returns the session an reference to the post collecion
@@ -102,6 +103,12 @@ func Cleanup(col string) {
 }
 
 func init() {
+
+	if DEBUG {
+		host = "localhost"
+		port = ":9090"
+	}
+
 	// MustParseSchema parses a GraphQL schema and attaches the given root resolver.
 	// It returns an error if the Go type signature of the resolvers does not match the schema.
 	graphqlSchema = graphql.MustParseSchema(Schema, &Resolver{})
@@ -397,11 +404,8 @@ var page = []byte(`
     `)
 
 func main() {
-
-	if DEBUG{
-		host = "localhost"
-		port = ":9090"
-	}
+	log.Println(host)
+	log.Println(port)
 
 	// Write a GraphiQL page to /
 	http.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
