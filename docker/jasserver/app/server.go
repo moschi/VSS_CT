@@ -270,7 +270,7 @@ func (r *Resolver) Game(args struct{ UserName string }) *gameResolver {
 	ctx, collection := GetMongo("game")
 	cur, err := collection.Find(
 		ctx,
-		bson.D{},
+		bson.M{"user.name": args.UserName},
 	)
 
 	// filter currently not working
@@ -282,7 +282,6 @@ func (r *Resolver) Game(args struct{ UserName string }) *gameResolver {
 	defer cur.Close(ctx)
 	for cur.Next(ctx) {
 		cur.Decode(&oneResult)
-		log.Println(oneResult)
 	}
 
 	if s := &oneResult; s != nil {
