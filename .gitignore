@@ -29,3 +29,4 @@ yarn-error.log*
 
 # go debugging
 docker/jasserver/app/__debug_bin
+docker/jasserver/app/server.exe
