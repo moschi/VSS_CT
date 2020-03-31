@@ -19,16 +19,10 @@ interface CreateGame {
     name2: string;
 }
 
-interface Message {
-    showError: boolean;
-    message: string;
-}
-
 function CreateGame() {
 
     const teamValidationMessage = "A team name must consist of numbers or letters";
     const teamNameRegex = RegExp('^[\\w\\d]+$');
-
 
     const classes = useStyles();
 
@@ -95,16 +89,16 @@ function CreateGame() {
     };
 
     /**
-     *  returns true if no validation error occured
-     * @param string
+     * Returns true if no validation error occurred
+     * @param value
      * @param regex
      * @param setMessage
      * @param noValidationError
      * @param validationError
      */
-    const validate = (string: string, regex: RegExp, setMessage: (message: Message) => void, noValidationError: () => Message, validationError: () => Message): boolean => {
+    const validate = (value: string, regex: RegExp, setMessage: (message: Message) => void, noValidationError: () => Message, validationError: () => Message): boolean => {
         let hasError = false;
-        if (regex.test(string)) {
+        if (regex.test(value)) {
             setMessage(noValidationError());
         } else {
             setMessage(validationError());
