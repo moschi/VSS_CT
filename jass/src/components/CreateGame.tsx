@@ -1,6 +1,6 @@
 import React, {ChangeEvent, useState} from 'react';
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -21,12 +21,12 @@ interface CreateGame {
 
 function CreateGame() {
 
-    const teamValidationMessage = "A team name must consist of numbers or letters";
+    const teamValidationMessage = 'A team name must consist of numbers or letters';
     const teamNameRegex = RegExp('^[\\w\\d]+$');
 
     const classes = useStyles();
 
-    const initialGame : CreateGame = {name1: "", name2: ""};
+    const initialGame : CreateGame = {name1: '', name2: ''};
     const [game, setGame] = useState(initialGame);
     const [name1Message, setName1Messages] = useState({showError: false} as Message);
     const [name2Message, setName2Messages] = useState({showError: false} as Message);
@@ -47,7 +47,7 @@ function CreateGame() {
             setName1Messages,
             () => {
                 return {
-                    ...name1Message,
+                    message: '',
                     showError: false
                 };
             },
@@ -81,10 +81,10 @@ function CreateGame() {
 
     const submit = () => {
         if (validateName1(game.name1) && validateName2(game.name2)) {
-            console.log("submited this funking game: " + JSON.stringify(game));
+            console.log('submited this funking game: ' + JSON.stringify(game));
             reset();
         } else {
-            console.log("no valid input");
+            console.log('no valid input');
         }
     };
 
