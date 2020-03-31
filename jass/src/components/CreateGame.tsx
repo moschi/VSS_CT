@@ -26,10 +26,11 @@ function CreateGame() {
 
     const classes = useStyles();
 
-    const initialGame : CreateGame = {name1: '', name2: ''};
+    const initialGame: CreateGame = {name1: '', name2: ''};
+    const initialMessage: Message = {showError: false, message: ''};
     const [game, setGame] = useState(initialGame);
-    const [name1Message, setName1Messages] = useState({showError: false} as Message);
-    const [name2Message, setName2Messages] = useState({showError: false} as Message);
+    const [name1Message, setName1Messages] = useState(initialMessage);
+    const [name2Message, setName2Messages] = useState(initialMessage);
 
     const changeName1 = (e: React.ChangeEvent<HTMLInputElement>) => {
         setGame({...game, name1: e.currentTarget.value})
@@ -111,6 +112,8 @@ function CreateGame() {
 
     const reset = () => {
         setGame(initialGame);
+        setName1Messages(initialMessage);
+        setName2Messages(initialMessage);
     };
 
     return (
