@@ -19,7 +19,7 @@ import (
 // MONGODB //
 // user host = mongo when running in docker, localhost for debugging outside of docker (but using mongo in docker)
 
-const DEBUG bool = true // Switch between DEBUG and PRODUCTION: if true, host and port will be overwritten!
+const DEBUG bool = false // Switch between DEBUG and PRODUCTION: if true, host and port will be overwritten!
 
 var host string = "mongo"
 var port string = ":8080"
