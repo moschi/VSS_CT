@@ -15,6 +15,7 @@ yarn-lock.json
 
 # production
 /build
+/jass/build
 
 # misc
 .DS_Store
@@ -29,3 +30,4 @@ yarn-error.log*
 
 # go debugging
 docker/jasserver/app/__debug_bin
+docker/jasserver/app/server.exe
