@@ -58,7 +58,7 @@ var Schema = `
     # The Query type represents all of the entry points.
     type Query {
 		user(name: String!): User
-		game(userName: String!): Game
+		game(id: ID!): Game
 	}
     type User {
 		id: ID!
@@ -265,16 +265,13 @@ func (r *Resolver) User(args struct{ Name string }) *userResolver {
 }
 
 // resolver Game queries
-func (r *Resolver) Game(args struct{ UserName string }) *gameResolver {
+func (r *Resolver) Game(args struct{ ID graphql.ID }) *gameResolver {
 	var oneResult Game
 	ctx, collection := GetMongo("game")
 	cur, err := collection.Find(
 		ctx,
-		bson.M{"user.name": args.UserName},
+		bson.M{"ID": args.ID},
 	)
-
-	// filter currently not working
-	//bson.M{"user": bson.M{"name": args.UserName}},
 	if err != nil {
 		log.Println(err)
 	}
