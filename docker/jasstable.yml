@@ -33,7 +33,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mongodb.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.mobgodb.entrypoints=web"
+      - "traefik.http.routers.mongodb.entrypoints=web"
       - "traefik.docker.network=jassnet"
 # end::mongodb[]
 # tag::traefik1[]
