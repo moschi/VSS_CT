@@ -33,7 +33,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.mongodb.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.mobgodb.entrypoints=web"
+      - "traefik.http.routers.mongodb.entrypoints=web"
       - "traefik.docker.network=jassnet"
 # end::mongodb[]
 # tag::traefik1[]
@@ -76,6 +76,9 @@ services:
       - "traefik.http.routers.jasserver1.rule=PathPrefix(`/`)"
       - "traefik.http.routers.jasserver1.entrypoints=websecure"
       - "traefik.docker.network=jassnet"
+      - "traefik.http.routers.jasserver1.middlewares=jass-auth"
+      - "traefik.http.middlewares.jass-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/,test2:$$apr1$$d9hr9HBB$$4HxwgUir3HP4EsggP/QNo0"
+      - "traefik.http.middlewares.jass-auth.basicauth.realm=jassRealm"
 # end::jasserver1[]
 # tag::jasserver2[]
   jasserver2:
@@ -87,12 +90,15 @@ services:
     networks:
       jassnet: null
     ports:
-    - 8889:8080
+      - 8889:8080
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.jasserver2.rule=PathPrefix(`/`)"
       - "traefik.http.routers.jasserver2.entrypoints=websecure"
       - "traefik.docker.network=jassnet"
+      - "traefik.http.routers.jasserver2.middlewares=jass-auth"
+      - "traefik.http.middlewares.jass-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/,test2:$$apr1$$d9hr9HBB$$4HxwgUir3HP4EsggP/QNo0"
+      - "traefik.http.middlewares.jass-auth.basicauth.realm=jassRealm"
 # end::jasserver2[]
 
 version: '3.6'

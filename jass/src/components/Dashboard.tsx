@@ -33,83 +33,83 @@ const GET_GAMES = gql`{
 
 function Dashboard(props: any) {
 
-  const {loading, error, data} = useQuery(GET_GAMES);
+    const {loading, error, data} = useQuery(GET_GAMES);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error!</p>;
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error!</p>;
 
-  const gameArray: Game[] = data.games;
+    const gameArray: Game[] = data.games;
 
-  const createGame = () => {
-    const route = "/game/create";
-    props.history.push(route);
-  }
+    const createGame = () => {
+        const route = "/game/create";
+        props.history.push(route);
+    };
 
-  const games = gameArray.map((game: Game) => {
-    const results = calculatePointsPerTeam(game);
+    const games = gameArray.map((game: Game) => {
+        const results = calculatePointsPerTeam(game);
+        return (
+            <Grid item xs={12} md={4} lg={2} key={game.id}>
+                <div className="gameWrapper" onClick={() => {
+                    const route = "/game/" + game.id;
+                    props.history.push(route);
+
+                }}>
+                    <table>
+                        <thead>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th>Game</th>
+                            <th>{game.id}</th>
+                        </tr>
+                        <tr>
+                            <td>{results.team1.team.name}</td>
+                            <td>{results.team1.points}</td>
+                        </tr>
+                        <tr>
+                            <td>{results.team2.team.name}</td>
+                            <td>{results.team2.points}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </Grid>
+        )
+    });
+
+
     return (
-      <Grid item xs={12} md={4} lg={2} key={game.id} >
-        <div className="gameWrapper" onClick={() => {
-          const route = "/game/" + game.id;
-          props.history.push(route);
+        <div>
+            <h1>Dashboard</h1>
+            <h2>Recent Activity</h2>
 
-        }}>
-          <table>
-            <thead>
-            </thead>
-            <tbody>
-            <tr>
-              <th>Game</th>
-              <th>{game.id}</th>
-            </tr>
-            <tr>
-              <td>{results.team1.team.name}</td>
-              <td>{results.team1.points}</td>
-            </tr>
-            <tr>
-              <td>{results.team2.team.name}</td>
-              <td>{results.team2.points}</td>
-            </tr>
-            </tbody>
-          </table>
+            <Grid container
+                  spacing={10}
+                  direction="row"
+                  justify="center"
+                  align-items="center">
+                {games}
+
+
+            </Grid>
+
+            <h2>Games</h2>
+
+            <Grid container
+                  spacing={10}
+                  direction="row"
+                  justify="center"
+                  align-items="center">
+                <Grid item xs={12} md={4} lg={2}>
+                    <Button onClick={createGame}>+ Game</Button>
+                </Grid>
+                {games}
+            </Grid>
+
+
+            {/*<Button variant="contained" color="primary">ASDF</Button>*/}
         </div>
-      </Grid>
-    )
-  });
-
-
-  return (
-    <div>
-      <h1>Dashboard</h1>
-      <h2>Recent Activity</h2>
-
-      <Grid container
-            spacing={10}
-            direction="row"
-            justify="center"
-            align-items="center">
-        {games}
-
-
-      </Grid>
-
-      <h2>Games</h2>
-
-      <Grid container
-            spacing={10}
-            direction="row"
-            justify="center"
-            align-items="center">
-        <Grid item xs={12} md={4} lg={2}>
-          <Button onClick={createGame}>+ Game</Button>
-        </Grid>
-        {games}
-      </Grid>
-
-
-      {/*<Button variant="contained" color="primary">ASDF</Button>*/}
-    </div>
-  );
+    );
 }
 
 export default withRouter(Dashboard)

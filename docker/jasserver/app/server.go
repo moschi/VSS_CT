@@ -13,13 +13,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 	//"gopkg.in/mgo.v2/bson"
 )
 
 // MONGODB //
 // user host = mongo when running in docker, localhost for debugging outside of docker (but using mongo in docker)
 
-const DEBUG bool = true // Switch between DEBUG and PRODUCTION: if true, host and port will be overwritten!
+const DEBUG bool = false // Switch between DEBUG and PRODUCTION: if true, host and port will be overwritten!
 
 var host string = "mongo"
 var port string = ":8080"
@@ -58,7 +59,7 @@ var Schema = `
     # The Query type represents all of the entry points.
     type Query {
 		user(name: String!): User
-		game(userName: String!): Game
+		game(id: ID!): Game
 	}
     type User {
 		id: ID!
@@ -265,16 +266,26 @@ func (r *Resolver) User(args struct{ Name string }) *userResolver {
 }
 
 // resolver Game queries
-func (r *Resolver) Game(args struct{ UserName string }) *gameResolver {
+
+func (r *Resolver) CreateGame(context context.Context, input Game) *gameResolver {
+    logger, _ := zap.NewProduction()
+    defer logger.Sync()
+    logger.Info("trying to create game with")
+    return nil
+}
+
+func (r *Resolver) Game(args struct{ ID graphql.ID }) *gameResolver {
+    logger, _ := zap.NewProduction()
+	defer logger.Sync()
+    logger.Info("trying to fetch game with",
+      zap.String("id", string(args.ID)),
+    )
 	var oneResult Game
 	ctx, collection := GetMongo("game")
 	cur, err := collection.Find(
 		ctx,
-		bson.D{},
+		bson.M{"ID": args.ID},
 	)
-
-	// filter currently not working
-	//bson.M{"user": bson.M{"name": args.UserName}},
 	if err != nil {
 		log.Println(err)
 	}
@@ -282,7 +293,6 @@ func (r *Resolver) Game(args struct{ UserName string }) *gameResolver {
 	defer cur.Close(ctx)
 	for cur.Next(ctx) {
 		cur.Decode(&oneResult)
-		log.Println(oneResult)
 	}
 
 	if s := &oneResult; s != nil {
