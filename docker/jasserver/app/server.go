@@ -14,7 +14,7 @@ import (
 const DEBUG bool = false // Switch between DEBUG and PRODUCTION: if true, host and port will be overwritten!
 
 var host string = "postgres"
-var port string = ":5432"
+var port string = ":8080"
 
 const db string = "jass"
 
