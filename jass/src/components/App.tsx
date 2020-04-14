@@ -11,15 +11,11 @@ import User from './User';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
-import { ApolloProvider } from '@apollo/react-hooks';
 import GameBoard from './GameBoard';
-import ApolloClient from "apollo-boost";
 import CreateGame from "./CreateGame";
 
 function App() {
-  const client = new ApolloClient();
   return (
-    <ApolloProvider client={client}>
       <Router>
         <div>
           <AppBar position="static">
@@ -51,7 +47,6 @@ function App() {
           </Switch>
         </div>
       </Router>
-    </ApolloProvider>
   );
 }
 

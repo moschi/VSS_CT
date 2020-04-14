@@ -6,6 +6,7 @@ export interface Game {
 
 export interface Team {
   __typename?: string,
+  id?: number
   name: string;
 }
 

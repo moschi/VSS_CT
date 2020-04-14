@@ -2,20 +2,46 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './styles/index.css';
 import App from './components/App';
-import { Server } from "miragejs";
+import { Server, Response } from "miragejs";
 import GameMocks from "./classes/GameMocks";
+
+const timeout = 2000;
 
 new Server({
   routes() {
-    this.namespace = 'graphql';
-    this.post("/", (schema: any, request:any) => {
-      console.log(JSON.parse(request.requestBody));
-      return {
-        data: {
-          games: GameMocks
+    this.namespace = 'api/v1';
+
+    this.get("/game", (schema: any, request: Request) => {
+      return new Response(200, {},  GameMocks);
+    }, { timing: timeout });
+
+    this.post("/game", (schema: any, request: Request) => {
+      return new Response(201, {}, {
+        id: 56
+      });
+    }, { timing: timeout })
+
+    this.get("/team", (schema: any, request: Request) => {
+      return new Response(200, {}, [
+        {
+          "id": 0,
+          "name": "babos"
+        },
+        {
+          "id": 1,
+          "name": "brattas"
+        },
+        {
+          "id": 2,
+          "name": "brudas"
+        },
+        {
+          "id": 3,
+          "name": "bestis"
         }
-      };
-    });
+      ]);
+    }, { timing: timeout })
+
   }
 });
 ReactDOM.render(<App />, document.getElementById('root'));

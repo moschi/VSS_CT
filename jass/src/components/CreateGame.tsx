@@ -1,7 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
+import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
+import {Team} from "../classes/Game";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -13,6 +15,13 @@ const useStyles = makeStyles((theme: Theme) =>
         },
     }),
 );
+
+const filter = createFilterOptions<TeamType>();
+
+interface TeamType {
+    inputValue?: string;
+    title: string;
+}
 
 interface CreateGame {
     name1: string;
@@ -31,6 +40,29 @@ function CreateGame() {
     const [game, setGame] = useState(initialGame);
     const [name1Message, setName1Messages] = useState(initialMessage);
     const [name2Message, setName2Messages] = useState(initialMessage);
+    const [teams, setTeams] = useState([]);
+    const [teamError, setTeamError] = useState();
+
+    useEffect(() => {
+        fetch('api/v1/team', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((data) => {
+                        setTeams(data);
+                    });
+                } else {
+                    throw new Error("Error during game loading, please try again!");
+                }
+            })
+            .catch((error) => {
+                setTeamError({message: error.message, error: error});
+            });
+    }, [setTeams, setTeamError]);
 
     const changeName1 = (e: React.ChangeEvent<HTMLInputElement>) => {
         setGame({...game, name1: e.currentTarget.value})
@@ -115,10 +147,54 @@ function CreateGame() {
         setName1Messages(initialMessage);
         setName2Messages(initialMessage);
     };
+    const [value, setValue] = useState();
 
     return (
         <form className={classes.root}>
             <h1>Create Game</h1>
+            <Autocomplete
+                value={value}
+                onChange={(event: any, newValue: TeamType | null) => {
+                    if (newValue && newValue.inputValue) {
+                        setValue({
+                            title: newValue.inputValue,
+                        });
+                        return;
+                    }
+
+                    setValue(newValue);
+                }}
+                filterOptions={(options, params) => {
+                    const filtered = filter(options, params);
+
+                    if (params.inputValue !== '') {
+                        filtered.push({
+                            inputValue: params.inputValue,
+                            title: `Add "${params.inputValue}"`,
+                        });
+                    }
+
+                    return filtered;
+                }}
+                id="free-solo-with-text-demo"
+                options={teams}
+                getOptionLabel={(option) => {
+                    // e.g value selected with enter, right from the input
+                    if (typeof option === 'string') {
+                        return option;
+                    }
+                    if (option.inputValue) {
+                        return option.inputValue;
+                    }
+                    return option.title;
+                }}
+                renderOption={(option) => option.title}
+                style={{ width: 300 }}
+                freeSolo
+                renderInput={(params) => (
+                    <TextField {...params} label="Free solo with text demo" variant="outlined" />
+                )}
+            />
             <TextField error={name1Message.showError} helperText={name1Message.message} id="name1" label="Name Team 1" value={game.name1} onChange={changeName1}/> <br/>
             <TextField error={name2Message.showError} helperText={name2Message.message} id="name2" label="Name Team 2" value={game.name2} onChange={changeName2}/> <br/>
             <Button onClick={submit}>Create</Button>
