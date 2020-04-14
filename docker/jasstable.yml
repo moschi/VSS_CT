@@ -9,33 +9,37 @@ x-env: &dflt-env
   TZ: CET-1CEST,M3.5.0,M10.5.0/3
 
 services:
-# tag::mongodb[]
-  mongo:
-    image: mongo:latest
-    hostname: mongo.docker.localhost
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
-    ports:
-      - 27017:27017
+# tag::pgadmin[]
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment: 
+      - PGADMIN_LISTEN_ADDRESS=0.0.0.0
+      - PGADMIN_LISTEN_PORT=8080
+      - PGADMIN_DEFAULT_EMAIL=jasser@jassischkrass.ch
+      - PGADMIN_DEFAULT_PASSWORD=jasser
     networks:
       jassnet: null
-  mongo-express:
-    image: mongo-express
-    restart: always
     ports:
-      - 9081:8081
+      - 48084:8080
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin:rw
+    tty: true
+# end::pgadmin[]
+# tag::postgres[]
+  postgres:
+    image: postgres:latest
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_DB=jass
     networks:
       jassnet: null
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.mongodb.rule=PathPrefix(`/`)"
-      - "traefik.http.routers.mongodb.entrypoints=web"
-      - "traefik.docker.network=jassnet"
-# end::mongodb[]
+    ports:
+      - 5432:5432
+    volumes:
+      - database-data:/var/lib/postgresql/data/ #persist data
+# end::postgres[]
 # tag::traefik1[]
   traefik:
     hostname: traefik
@@ -105,3 +109,5 @@ version: '3.6'
 volumes:
     mongod1-data: {}
     golang-data: {}
+    database-data: {}
+    pgadmin-data: {}
