@@ -8,5 +8,6 @@ RUN go get go.mongodb.org/mongo-driver/mongo
 RUN go get go.mongodb.org/mongo-driver/bson
 RUN go get github.com/rs/cors
 RUN go get gopkg.in/mgo.v2/bson
+RUN go get go.uber.org/zap
 RUN go build ./server.go
 CMD go run ./server.go

@@ -90,7 +90,7 @@ services:
     networks:
       jassnet: null
     ports:
-    - 8889:8080
+      - 8889:8080
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.jasserver2.rule=PathPrefix(`/`)"

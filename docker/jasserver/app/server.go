@@ -13,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 	//"gopkg.in/mgo.v2/bson"
 )
 
@@ -265,7 +266,20 @@ func (r *Resolver) User(args struct{ Name string }) *userResolver {
 }
 
 // resolver Game queries
+
+func (r *Resolver) CreateGame(context context.Context, input Game) *gameResolver {
+    logger, _ := zap.NewProduction()
+    defer logger.Sync()
+    logger.Info("trying to create game with")
+    return nil
+}
+
 func (r *Resolver) Game(args struct{ ID graphql.ID }) *gameResolver {
+    logger, _ := zap.NewProduction()
+	defer logger.Sync()
+    logger.Info("trying to fetch game with",
+      zap.String("id", string(args.ID)),
+    )
 	var oneResult Game
 	ctx, collection := GetMongo("game")
 	cur, err := collection.Find(
