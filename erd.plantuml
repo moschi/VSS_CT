@@ -6,8 +6,7 @@ object User {
 
 object Game {
     ID
-    Team1
-    Team2
+    isFinished
 }
 
 object Team {
@@ -30,7 +29,6 @@ object Trumpf {
 
 User "1" -- "*" Game : creates >
 Game "1" -- "*" Round : has >
-Game "1" -- "2" Team : has two >
 Round "*" -- "1" Trumpf : has >
 Round "1" -- "*" PointsPerTeamPerRound
 Team "1" -- "*" PointsPerTeamPerRound
