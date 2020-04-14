@@ -18,14 +18,15 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const filter = createFilterOptions<TeamType>();
 
-interface TeamType {
-    inputValue?: string;
-    title: string;
+interface TeamType extends Team {
+    title?: string;
 }
 
 interface CreateGame {
     name1: string;
+    team1?: Team;
     name2: string;
+    team2?: Team;
 }
 
 function CreateGame() {
@@ -38,17 +39,16 @@ function CreateGame() {
     const initialGame: CreateGame = {name1: '', name2: ''};
     const initialMessage: Message = {showError: false, message: ''};
     const [game, setGame] = useState(initialGame);
+    const [team1, setTeam1] = useState({} as Team);
+    const [team2, setTeam2] = useState({} as Team);
     const [name1Message, setName1Messages] = useState(initialMessage);
     const [name2Message, setName2Messages] = useState(initialMessage);
-    const [teams, setTeams] = useState([]);
-    const [teamError, setTeamError] = useState();
+    const [teams, setTeams] = useState([] as Team[]);
+    const [, setTeamError] = useState();
 
     useEffect(() => {
         fetch('api/v1/team', {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
         })
             .then((response) => {
                 if (response.ok) {
@@ -56,11 +56,21 @@ function CreateGame() {
                         setTeams(data);
                     });
                 } else {
+                    console.log("Error during game loading, please try again!")
                     throw new Error("Error during game loading, please try again!");
                 }
             })
             .catch((error) => {
+                console.log("error: " + error);
                 setTeamError({message: error.message, error: error});
+                setTeams([{
+                        id: 2,
+                        name: 'brudas'
+                    } as Team, {
+                        id: 3,
+                        name: 'bestis'
+                    } as Team
+                ])
             });
     }, [setTeams, setTeamError]);
 
@@ -110,7 +120,7 @@ function CreateGame() {
                 };
             }
         );
-    }
+    };
 
     const submit = () => {
         const validName1 = validateName1(game.name1);
@@ -147,29 +157,27 @@ function CreateGame() {
         setName1Messages(initialMessage);
         setName2Messages(initialMessage);
     };
-    const [value, setValue] = useState();
+    const [value, setValue] = React.useState<TeamType | null>(null);
 
     return (
         <form className={classes.root}>
             <h1>Create Game</h1>
             <Autocomplete
-                value={value}
+                value={team1}
                 onChange={(event: any, newValue: TeamType | null) => {
-                    if (newValue && newValue.inputValue) {
-                        setValue({
-                            title: newValue.inputValue,
-                        });
+                    if (newValue && newValue.name) {
+                        // TODO create team and put the correct id in
+                        setTeam1(newValue)
                         return;
                     }
-
-                    setValue(newValue);
+                    // TODO handle null
                 }}
                 filterOptions={(options, params) => {
                     const filtered = filter(options, params);
 
                     if (params.inputValue !== '') {
                         filtered.push({
-                            inputValue: params.inputValue,
+                            name: params.inputValue,
                             title: `Add "${params.inputValue}"`,
                         });
                     }
@@ -183,12 +191,11 @@ function CreateGame() {
                     if (typeof option === 'string') {
                         return option;
                     }
-                    if (option.inputValue) {
-                        return option.inputValue;
-                    }
-                    return option.title;
+                    return option.name;
                 }}
-                renderOption={(option) => option.title}
+                renderOption={(option) => {
+                    return option.title ? option.title : option.name;
+                }}
                 style={{ width: 300 }}
                 freeSolo
                 renderInput={(params) => (
@@ -199,6 +206,7 @@ function CreateGame() {
             <TextField error={name2Message.showError} helperText={name2Message.message} id="name2" label="Name Team 2" value={game.name2} onChange={changeName2}/> <br/>
             <Button onClick={submit}>Create</Button>
             <Button onClick={reset}>Reset</Button>
+            <p>{team1.name}, {team1.id}</p>
         </form>
     );
 }
