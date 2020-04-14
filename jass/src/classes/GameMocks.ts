@@ -28,7 +28,7 @@ const GameMocks: Game[] = [
         ],
         trump: {
           __typename: "Trump",
-          multiplier: 3,
+          multiplier: 301,
           name: "Trumpf"
         }
       },
@@ -37,8 +37,62 @@ const GameMocks: Game[] = [
             pointsPerTeamPerRound: [
                 {
                     __typename: "PointsPerTeamPerRound",
+                    points: 190,
+                    wiisPoints: 30,
+                    team: {
+                        __typename: "Team",
+                        name: "team1"
+                    }
+                }, {
+                    __typename: "PointsPerTeamPerRound",
+                    points: 57,
+                    wiisPoints: 0,
+                    team: {
+                        __typename: "Team",
+                        name: "team2"
+                    }
+                }
+            ],
+            trump: {
+                __typename: "Trump",
+                multiplier: 3,
+                name: "Trumpf"
+            }
+        },
+        {
+            __typename: "Round",
+            pointsPerTeamPerRound: [
+                {
+                    __typename: "PointsPerTeamPerRound",
+                    points: 190,
+                    wiisPoints: 35,
+                    team: {
+                        __typename: "Team",
+                        name: "team1"
+                    }
+                }, {
+                    __typename: "PointsPerTeamPerRound",
+                    points: 57,
+                    wiisPoints: 5,
+                    team: {
+                        __typename: "Team",
+                        name: "team2"
+                    }
+                }
+            ],
+            trump: {
+                __typename: "Trump",
+                multiplier: 3,
+                name: "Trumpf"
+            }
+        },
+        {
+            __typename: "Round",
+            pointsPerTeamPerRound: [
+                {
+                    __typename: "PointsPerTeamPerRound",
                     points: 221,
-                    wiisPoints: 250,
+                    wiisPoints: 259,
                     team: {
                         __typename: "Team",
                         name: "team1"

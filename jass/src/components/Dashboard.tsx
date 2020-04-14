@@ -78,6 +78,7 @@ function Dashboard(props: any) {
     return (
         <div>
             <h1>Dashboard</h1>
+
             <h2>Games</h2>
             {isLoading ?
                 <CircularProgress />
