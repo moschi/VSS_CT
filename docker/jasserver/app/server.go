@@ -9,6 +9,9 @@ import (
 	//"github.com/lib/pq"
 	//"database/sql"
 	//"gopkg.in/mgo.v2/bson"
+
+	//jassmodels "./models"
+	jassmodels "jasserver/app/models"
 )
 
 const DEBUG bool = false // Switch between DEBUG and PRODUCTION: if true, host and port will be overwritten!
@@ -31,12 +34,12 @@ func testDb() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	result := db.QueryRow("SELECT COUNT(*) FROM user")
+	result := db.QueryRow("SELECT COUNT(*) FROM jassuser")
 	var count int
 	result.Scan(&count)
 	log.Println(count)
 
-	res, err := db.Exec("INSERT INTO user VALUES('moe')")
+	res, err := db.Exec("INSERT INTO jassuser(name) VALUES('moe')")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -47,8 +50,10 @@ func testDb() {
 func main() {
 	log.Println(host)
 	log.Println(port)
-	testDb()
+	log.Printf("Server started")
+	router := jassmodels.NewRouter()
 	// use port 9090 for local debugging (since its hopefully free) and 8080 for using in docker
+	log.Fatal(http.ListenAndServe(port, router))
 	if err := http.ListenAndServe(port, nil); err != nil {
 		panic(err)
 	}

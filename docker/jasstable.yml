@@ -21,8 +21,9 @@ services:
       jassnet: null
     ports:
       - 5433:5432
-    volumes:
-      - database-data:/var/lib/postgresql/data/ #persist data
+    volumes: 
+      - jassdb-data:/var/lib/postgresql/data/ #persist data
+      - ./jassdb.pgsql:/docker-entrypoint-initdb.d/init.sql
 # end::postgres[]
 # tag::traefik1[]
   traefik:
@@ -93,5 +94,4 @@ version: '3.6'
 volumes:
     mongod1-data: {}
     golang-data: {}
-    database-data: {}
-    pgadmin-data: {}
+    jassdb-data: {}
