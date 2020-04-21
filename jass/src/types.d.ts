@@ -1,6 +1,7 @@
 declare module 'miragejs';
 
 interface Message {
-    showError: boolean;
+    show: boolean;
     message: string;
+    error?: ErrorEvent;
 }

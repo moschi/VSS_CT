@@ -3,10 +3,13 @@ export interface Game {
   id: string;
   rounds: Round[];
 }
+export interface GameCreation {
+  teams: Team[]
+}
 
 export interface Team {
   __typename?: string,
-  id?: number
+  id: number
   name: string;
 }
 
