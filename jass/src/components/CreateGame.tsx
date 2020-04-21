@@ -27,6 +27,8 @@ const GAME_NOT_CREATED = 'Spiel wurde nicht erstellt, bitte versuchen sie es ern
 const NOT_AVAILABLE = 'Momentant können keine Spiele erstellt werden, bitte versuchen sie es später erneut.';
 const BAD_TEAM_NAME = 'Ein Teamname muss aus Buchstaben und Zahlen bestehen.';
 
+const TEAM_FAILURE = 'Team wurde nicht erstellt, bitte versuchen sie es erneut!';
+
 function CreateGame() {
 
     const teamNameRegex = RegExp('^[\\w\\d]+$');
@@ -209,8 +211,7 @@ function CreateGame() {
             const data =  await response.json();
             return Promise.resolve(data.id);
         } else {
-            console.log('Team wurde nicht erstellt, bitte versuchen sie es erneut!');
-            throw new Error('Team wurde nicht erstellt, bitte versuchen sie es erneut');
+            throw new Error(TEAM_FAILURE);
         }
     };
 
@@ -277,7 +278,6 @@ function CreateGame() {
         } else {
             setTeam2ready(false);
         }
-        // TODO handle null
     };
 
     const filterInput = (options: any, params: any): TeamType[] => {
