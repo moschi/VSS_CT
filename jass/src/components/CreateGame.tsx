@@ -41,13 +41,16 @@ function CreateGame() {
     const [game, setGame] = useState(initialGame);
     const [team1, setTeam1] = useState({} as Team);
     const [team2, setTeam2] = useState({} as Team);
+    const [isLoading, setIsLoading] = useState(false);
+    const [message, setMessage] = useState('');
+
     const [name1Message, setName1Messages] = useState(initialMessage);
     const [name2Message, setName2Messages] = useState(initialMessage);
     const [teams, setTeams] = useState([] as Team[]);
     const [, setTeamError] = useState();
 
     useEffect(() => {
-        fetch('api/v1/team', {
+        fetch('/api/v1/team', {
             method: 'GET',
         })
             .then((response) => {
@@ -73,16 +76,6 @@ function CreateGame() {
                 ])
             });
     }, [setTeams, setTeamError]);
-
-    const changeName1 = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setGame({...game, name1: e.currentTarget.value})
-        validateName1(e.currentTarget.value);
-    };
-
-    const changeName2 = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setGame({...game, name2: e.currentTarget.value})
-        validateName2(e.currentTarget.value)
-    };
 
     const validateName1 = (value: string) => {
         return validate(value,
@@ -158,16 +151,54 @@ function CreateGame() {
         setName2Messages(initialMessage);
     };
     const [value, setValue] = React.useState<TeamType | null>(null);
+    const selectTeam1 = async (team: TeamType) => {
+        if (team.id) {
+            setTeam1(team);
+            return Promise.resolve();
+        } else {
+            fetch('/api/v1/team', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: team.name
+                }),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        response.json().then((data) => {
+                            team.id = data.id;
+                            setTeam1(team);
+                            return Promise.resolve();
+                        });
+                    } else {
+                        console.log("Error team creation, please try again!")
+                        throw new Error("Error team creation, please try again!");
+                    }
+                })
+                .catch((error: ErrorEvent) => {
+                    console.log("error: " + error);
+                    throw new Error(error.message);
+                });
+        }
+    };
 
     return (
         <form className={classes.root}>
             <h1>Create Game</h1>
             <Autocomplete
                 value={team1}
-                onChange={(event: any, newValue: TeamType | null) => {
-                    if (newValue && newValue.name) {
+                disabled={isLoading}
+                onChange={(event: any, team: TeamType | null) => {
+                    if (team && team.name) {
                         // TODO create team and put the correct id in
-                        setTeam1(newValue)
+                        setIsLoading(true);
+                        selectTeam1(team)
+                            .then(() => setIsLoading(false))
+                            .catch((error: ErrorEvent) => {
+                                setMessage(error.message);
+                            });
                         return;
                     }
                     // TODO handle null
@@ -199,14 +230,13 @@ function CreateGame() {
                 style={{ width: 300 }}
                 freeSolo
                 renderInput={(params) => (
-                    <TextField {...params} label="Free solo with text demo" variant="outlined" />
+                    <TextField {...params} label="Team 1" variant="outlined" />
                 )}
             />
-            <TextField error={name1Message.showError} helperText={name1Message.message} id="name1" label="Name Team 1" value={game.name1} onChange={changeName1}/> <br/>
-            <TextField error={name2Message.showError} helperText={name2Message.message} id="name2" label="Name Team 2" value={game.name2} onChange={changeName2}/> <br/>
             <Button onClick={submit}>Create</Button>
             <Button onClick={reset}>Reset</Button>
             <p>{team1.name}, {team1.id}</p>
+            <p>{message}</p>
         </form>
     );
 }

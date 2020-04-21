@@ -33,7 +33,7 @@ new Server({
     }, { timing: timeout });
 
     this.post('/team', () => {
-      return new Response(201);
+      return new Response(201, {}, {id:20});
     }, { timing: timeout });
 
     this.get('/game', (schema: any, request: Request) => {
