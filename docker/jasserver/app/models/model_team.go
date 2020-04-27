@@ -10,7 +10,7 @@ import (
 type Team struct {
 	ID        int64  `json:"id,omitempty"`
 	Name      string `json:"name,omitempty"`
-	CreatedBy int64
+	CreatedBy int64  `json:"-"`
 }
 
 func loadTeam(id int32, db *sqlx.DB) Team {

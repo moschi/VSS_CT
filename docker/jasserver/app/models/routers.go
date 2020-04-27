@@ -55,13 +55,6 @@ var routes = Routes{
 	},
 
 	Route{
-		"GetTrumpf",
-		strings.ToUpper("Get"),
-		"/v1/trumpf",
-		GetTrumpf,
-	},
-
-	Route{
 		"CreateGame",
 		strings.ToUpper("Post"),
 		"/v1/game",

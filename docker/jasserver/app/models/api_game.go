@@ -70,12 +70,20 @@ func GetgameById(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	gameID, _ := strconv.Atoi(vars["gameId"])
+
+	var fullGame FullGame
 	game := loadGame(gameID, database)
 
-	game.Teams = [2]Team{}
-	game.Teams[0] = loadTeam(game.Team1, database)
-	game.Teams[1] = loadTeam(game.Team2, database)
+	fullGame.ID = game.ID
+	fullGame.IsFinished = game.IsFinished
+	fullGame.Teams = []Team{
+		loadTeam(game.Team1, database),
+		loadTeam(game.Team2, database),
+	}
 
-	json.NewEncoder(w).Encode(game)
+	var rounds = loadRounds(gameID, database)
+	fullGame.Rounds = rounds
+
+	json.NewEncoder(w).Encode(fullGame)
 	w.WriteHeader(http.StatusOK)
 }
