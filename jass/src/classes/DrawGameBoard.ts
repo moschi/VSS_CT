@@ -1,5 +1,5 @@
 import {Game, Round} from "./Game";
-import {Context, RefObject} from "react";
+import {RefObject} from "react";
 import calculatePointsPerTeam from "../classes/GameUtils";
 import {PointsDrawn, Rest} from "./drawing";
 
@@ -132,7 +132,7 @@ class DrawGameBoard {
                     }
                 } else {
                     let numOfCross = Math.floor(drawnCount / 2);
-                    let ltr = drawnCount % 2 == 0;
+                    let ltr = drawnCount % 2 === 0;
                     drawLineCross(marginLeftCrosses + (numOfCross * (marginCrossLegs + (2 * strokeWidth + strokeMargin))),
                         margin - (numOfCross * (2 * strokeWidth + strokeMargin)),
                         ltr);
@@ -176,8 +176,8 @@ class DrawGameBoard {
                 const team1 = points.team1.team.name;
                 const team2 = points.team2.team.name;
 
-                let pointsTeam1 = points.team1.points;
-                let pointsTeam2 = points.team2.points;
+                // let pointsTeam1 = points.team1.points;
+                // let pointsTeam2 = points.team2.points;
 
                 let rest = {team1: 0, team2: 0};
                 let pointsDrawn = {oneT: 0, oneM: 0, oneB: 0, twoT: 0, twoM: 0, twoB: 0};
@@ -197,8 +197,8 @@ class DrawGameBoard {
                         }
                     }
                     rest = this.drawPoints(pointsPerRoundTeam1, pointsPerRoundTeam2, rest, context, pointsDrawn);
-                    pointsTeam1 -= pointsPerRoundTeam1;
-                    pointsTeam2 -= pointsPerRoundTeam2;
+                    // pointsTeam1 -= pointsPerRoundTeam1;
+                    // pointsTeam2 -= pointsPerRoundTeam2;
                 });
                 this.drawRest(rest, context);
             });
