@@ -18,7 +18,7 @@ type Trumpf struct {
 	Multiplier int32  `json:"multiplier,omitempty"`
 }
 
-func LoadTrumpf(id int, db *sqlx.DB) Trumpf {
+func loadTrumpf(id int, db *sqlx.DB) Trumpf {
 	sqlStatement := "SELECT * FROM trumpf WHERE id = $1"
 	var trumpf Trumpf
 
@@ -33,7 +33,7 @@ func LoadTrumpf(id int, db *sqlx.DB) Trumpf {
 func GetTrumpf(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	b, _ := json.Marshal(LoadTrumpf(2, database))
+	b, _ := json.Marshal(loadTrumpf(2, database))
 	log.Println(string(b))
 	w.Write([]byte(string(b)))
 	w.WriteHeader(http.StatusOK)
