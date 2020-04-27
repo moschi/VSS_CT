@@ -31,9 +31,6 @@ func CreateRound(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 	}
-
-	log.Println(roundID)
-
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -46,7 +43,7 @@ func DeleteRound(w http.ResponseWriter, r *http.Request) {
 	roundID, _ := strconv.Atoi(vars["roundId"])
 
 	database.Exec("DELETE FROM pointsPerTeamPerRound where round = $1;", roundID)
-	database.Exec("DELETE FROM round WHERE id = $1 AND game = $1;", roundID, gameID)
+	database.Exec("DELETE FROM round WHERE id = $1 AND game = $2;", roundID, gameID)
 
 	w.WriteHeader(http.StatusOK)
 }
