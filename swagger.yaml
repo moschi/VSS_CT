@@ -328,7 +328,7 @@ definitions:
       trumpfId: 
         type: "integer"
         format: "int64"
-      pointsPerTeam:
+      pointsPerTeamPerRound:
         type: "array"
         items: 
           $ref: "#/definitions/PointsPerTeamPerRound"
@@ -344,13 +344,8 @@ definitions:
       teamId: 
         type: "integer"
         format: "int64"
-      round: 
-        $ref: "#/definitions/Round"
   Game:
     type: "object"
-    required:
-    - "name"
-    - "photoUrls"
     properties:
       id:
         type: "integer"
@@ -364,9 +359,6 @@ definitions:
           $ref: "#/definitions/Team"
   FullGame:
     type: "object"
-    required:
-    - "name"
-    - "photoUrls"
     properties:
       id:
         type: "integer"

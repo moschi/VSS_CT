@@ -10,7 +10,7 @@ import (
 type Round struct {
 	ID            int64                   `json:"id,omitempty"`
 	TrumpfID      int64                   `json:"trumpfId,omitempty"`
-	PointsPerTeam []PointsPerTeamPerRound `json:"pointsPerTeam,omitempty"`
+	PointsPerTeam []PointsPerTeamPerRound `json:"pointsPerTeamPerRound,omitempty"`
 }
 
 func loadRound(id int, db *sqlx.DB) Round {

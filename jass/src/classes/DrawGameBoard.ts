@@ -1,4 +1,4 @@
-import {Game, Round} from "./Game";
+import {FullGame, Game, Round, Trumpf} from "./Game";
 import {RefObject} from "react";
 import calculatePointsPerTeam from "../classes/GameUtils";
 import {PointsDrawn, Rest} from "./drawing";
@@ -6,13 +6,21 @@ import {PointsDrawn, Rest} from "./drawing";
 class DrawGameBoard {
 
     canvas: RefObject<HTMLCanvasElement>;
-    game: Game;
+    game: FullGame;
     jasstafel: string;
+    trumpf:Trumpf[];
 
-    constructor(canvas: RefObject<HTMLCanvasElement>, game: Game, jasstafel: string) {
+    constructor(canvas: RefObject<HTMLCanvasElement>, game: FullGame, jasstafel: string) {
         this.canvas = canvas;
         this.game = game;
         this.jasstafel = jasstafel;
+        this.trumpf = [
+            {id: 0, name: "Eichel", multiplier: 1},
+            {id: 1, name: "Rose", multiplier: 1},
+            {id: 2, name: "Schellen", multiplier: 2},
+            {id: 3, name: "Schilten", multiplier: 2},
+            {id: 4, name: "ObenAben", multiplier: 3},
+            {id: 5, name: "UntenUfen", multiplier: 3}];
     }
 
     loadImage(): Promise<HTMLImageElement> {
@@ -173,8 +181,8 @@ class DrawGameBoard {
 
                 let points = calculatePointsPerTeam(this.game);
 
-                const team1 = points.team1.team.name;
-                const team2 = points.team2.team.name;
+                const team1 = this.game.teams[0];
+                const team2 = this.game.teams[1];
 
                 let rest = {team1: 0, team2: 0};
                 let pointsDrawn = {oneT: 0, oneM: 0, oneB: 0, twoT: 0, twoM: 0, twoB: 0};
@@ -183,13 +191,15 @@ class DrawGameBoard {
                     const pointPerRound = round.pointsPerTeamPerRound;
                     let pointsPerRoundTeam1 = 0;
                     let pointsPerRoundTeam2 = 0;
-
+                    let trump = this.trumpf[round.trumpfId];
                     for (let i = 0; i < 2; i++) {
-                        let team = pointPerRound[i].team.name;
+                        let team = pointPerRound[i].teamId;
                         let points = pointPerRound[i].points;
-                        if (team === team1) {
+                        points+= pointPerRound[i].wiisPoints;
+                        points *= trump.multiplier;
+                        if (team === team1.id) {
                             pointsPerRoundTeam1 = points;
-                        } else if (team === team2) {
+                        } else if (team === team2.id) {
                             pointsPerRoundTeam2 = points;
                         }
                     }
