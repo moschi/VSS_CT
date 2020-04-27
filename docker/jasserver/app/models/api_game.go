@@ -16,7 +16,7 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 
 	json.NewDecoder(r.Body).Decode(&game)
 
-	var gameID int
+	var gameID int32
 	err := database.QueryRow("INSERT INTO game (team1, team2, isfinished, createdby) VALUES($1, $2, false, $3) RETURNING id", &game.Teams[0].ID, &game.Teams[1].ID, 0).Scan(&gameID)
 	if err != nil {
 		log.Fatal(err)
@@ -24,6 +24,7 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(gameID)
 
+	json.NewEncoder(w).Encode(InlineResponse201{gameID})
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -67,6 +68,11 @@ func GetgameById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	gameID, _ := strconv.Atoi(vars["gameId"])
 	game := loadGame(gameID, database)
+
+	game.Teams = []Team{}
+
+	// todo: load teams
+
 	b, _ := json.Marshal(game)
 
 	w.Write([]byte(string(b)))
