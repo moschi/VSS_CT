@@ -11,7 +11,7 @@ type PointsPerTeamPerRound struct {
 	WiisPoints int64 `json:"wiisPoints,omitempty"`
 	Points     int64 `json:"points,omitempty"`
 	TeamID     int64 `json:"teamId,omitempty" db:"team"`
-	Round      int64 `json:"-""`
+	Round      int64 `json:"-"`
 	ID         int64 `json:"-"`
 }
 
