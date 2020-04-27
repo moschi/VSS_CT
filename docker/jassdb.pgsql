@@ -1,17 +1,17 @@
 CREATE TABLE jassuser(
     ID SERIAL PRIMARY KEY,
-    Name CHAR(100) NOT NULL UNIQUE
+    Name TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE team(
     ID SERIAL PRIMARY KEY,
-    Name CHAR(100) NOT NULL UNIQUE,
+    Name TEXT NOT NULL UNIQUE,
     CreatedBy INT NOT NULL references jassuser(ID)
 );
 
 CREATE TABLE trumpf(
     ID SERIAL PRIMARY KEY,
-    Name CHAR(20) NOT NULL UNIQUE,
+    Name TEXT NOT NULL UNIQUE,
     Multiplier INT NOT NULL
 );
 

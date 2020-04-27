@@ -8,9 +8,12 @@ import (
 
 // Game ...
 type Game struct {
-	ID         int64  `json:"id,omitempty"`
-	IsFinished bool   `json:"isFinished,omitempty"`
-	Teams      []Team `json:"teams,omitempty"`
+	ID         int64   `json:"id,omitempty"`
+	IsFinished bool    `json:"isFinished,omitempty"`
+	Team1      int32   `json:"-"`
+	Team2      int32   `json:"-"`
+	CreatedBy  int32   `json:"-"`
+	Teams      [2]Team `json:"teams,omitempty"`
 }
 
 func loadGame(id int, db *sqlx.DB) Game {
@@ -21,5 +24,8 @@ func loadGame(id int, db *sqlx.DB) Game {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	game.Teams = [2]Team{}
+
 	return game
 }

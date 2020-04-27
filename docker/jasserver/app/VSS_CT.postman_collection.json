@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "80f8b679-b398-4570-97a9-af8ef91c2103",
+		"_postman_id": "3ccb5bd9-0e11-4ad5-9884-69d201444cfd",
 		"name": "VSS_CT",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -9,6 +9,124 @@
 			"name": "CreateTeam",
 			"request": {
 				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/v1/team",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"v1",
+						"team"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/game/1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/v1/game/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"v1",
+						"game",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/v1/game",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id\": 0,\r\n  \"isFinished\": false,\r\n  \"teams\": [\r\n    {\r\n      \"id\": 1,\r\n      \"name\": \"test1\"\r\n    },\r\n    {\r\n      \"id\": 2,\r\n      \"name\": \"test2\"\r\n    }\r\n  ]\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9090/v1/game",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"v1",
+						"game"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:9090/v1/team",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": 0, \n\t\"name\": \"test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:9090/v1/team",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"v1",
+						"team"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:9090/v1/team",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"besties\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:9090/v1/team",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"v1",
+						"team"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:9090/v1/team",
+			"request": {
+				"method": "GET",
 				"header": [],
 				"url": {
 					"raw": "http://localhost:9090/v1/team",
