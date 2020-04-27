@@ -62,7 +62,7 @@ services:
       - 8888:8080
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.jasserver1.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.jasserver1.rule=PathPrefix(`/v1/`)"
       - "traefik.http.routers.jasserver1.entrypoints=websecure"
       - "traefik.docker.network=jassnet"
       - "traefik.http.routers.jasserver1.middlewares=jass-auth"
@@ -83,7 +83,7 @@ services:
       - 8889:8080
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.jasserver2.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.jasserver2.rule=PathPrefix(`/v1/`)"
       - "traefik.http.routers.jasserver2.entrypoints=websecure"
       - "traefik.docker.network=jassnet"
       - "traefik.http.routers.jasserver2.middlewares=jass-auth"
@@ -91,16 +91,50 @@ services:
       - "traefik.http.middlewares.jass-auth.basicauth.realm=jassRealm"
       - "traefik.http.middlewares.jass-auth.basicauth.headerField=X-WebAuth-User"
 # end::jasserver2[]
-  react-prod:
-    # service 1 container name
-    container_name: react-prod
+# tag::jasstatic1[]
+  jasstatic1:
+    container_name: jasstatic1.docker.localhost
     build:
       context: .
       # the dockerfile to be run
       dockerfile:
         ../jass/SPA_Dockerfile
     ports:
-      - "3000:80"
+      - 3000:80
+    networks:
+      jassnet: null
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jasstatic1.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.jasstatic1.entrypoints=websecure"
+      - "traefik.docker.network=jassnet"
+      - "traefik.http.routers.jasstatic1.middlewares=jass-auth"
+      - "traefik.http.middlewares.jass-auth.basicauth.users=moe:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/,test2:$$apr1$$d9hr9HBB$$4HxwgUir3HP4EsggP/QNo0"
+      - "traefik.http.middlewares.jass-auth.basicauth.realm=jassRealm"
+      - "traefik.http.middlewares.jass-auth.basicauth.headerField=X-WebAuth-User"
+# end::jasstatic1[]
+# tag::jasstatic2[]
+  jasstatic2:
+    container_name: jasstatic2.docker.localhost
+    build:
+      context: .
+      # the dockerfile to be run
+      dockerfile:
+        ../jass/SPA_Dockerfile
+    ports:
+      - 3001:80
+    networks:
+      jassnet: null
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jasstatic2.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.jasstatic2.entrypoints=websecure"
+      - "traefik.docker.network=jassnet"
+      - "traefik.http.routers.jasstatic2.middlewares=jass-auth"
+      - "traefik.http.middlewares.jass-auth.basicauth.users=moe:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/,test2:$$apr1$$d9hr9HBB$$4HxwgUir3HP4EsggP/QNo0"
+      - "traefik.http.middlewares.jass-auth.basicauth.realm=jassRealm"
+      - "traefik.http.middlewares.jass-auth.basicauth.headerField=X-WebAuth-User"
+# end::jasstatic2[]
 
 version: '3.6'
 volumes:
