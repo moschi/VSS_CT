@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
 )
 
 // Route ...
@@ -19,9 +20,12 @@ type Route struct {
 // Routes ...
 type Routes []Route
 
+var database *sqlx.DB
+
 // NewRouter ...
-func NewRouter() *mux.Router {
+func NewRouter(db *sqlx.DB) *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
+	database = db
 	for _, route := range routes {
 		var handler http.Handler
 		handler = route.HandlerFunc
@@ -48,6 +52,13 @@ var routes = Routes{
 		"GET",
 		"/v1/",
 		Index,
+	},
+
+	Route{
+		"GetTrumpf",
+		strings.ToUpper("Get"),
+		"/v1/trumpf",
+		GetTrumpf,
 	},
 
 	Route{
