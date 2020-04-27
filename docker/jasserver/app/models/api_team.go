@@ -2,16 +2,32 @@ package jassmodels
 
 import (
 	"net/http"
+	"encoding/json"
+	"log"
 )
 
 // CreateTeam ...
 func CreateTeam(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+    var team Team
+    err := json.NewDecoder(r.Body).Decode(&team)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+    	w.WriteHeader(http.StatusInternalServerError)
+    }
+    var id int32
+    databaseErr := database.QueryRow("INSERT INTO team (name, createdby) VALUES ($1, 0) RETURNING id", team.Name).Scan(&id)
+    if databaseErr != nil {
+    	log.Fatal(databaseErr)
+    	w.WriteHeader(http.StatusInternalServerError)
+    }
+	json.NewEncoder(w).Encode(InlineResponse201{id})
 	w.WriteHeader(http.StatusOK)
 }
 
 // DeleteTeam ...
 func DeleteTeam(w http.ResponseWriter, r *http.Request) {
+    
+
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 }

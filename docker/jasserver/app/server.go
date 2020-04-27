@@ -17,7 +17,7 @@ import (
 	jassmodels "./models"
 )
 
-const DEBUG bool = true // Switch between DEBUG and PRODUCTION: if true, host and port will be overwritten!
+const DEBUG bool = true; // Switch between DEBUG and PRODUCTION: if true, host and port will be overwritten!
 
 var host string = "postgres"
 var port string = ":8080"
