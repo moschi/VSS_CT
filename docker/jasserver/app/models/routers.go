@@ -2,6 +2,7 @@ package jassmodels
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -17,6 +18,54 @@ type Route struct {
 	HandlerFunc http.HandlerFunc
 }
 
+// authMiddleware
+type authenticationMiddleware struct {
+	tokenUsers map[string]string
+}
+
+// Middleware function, which will be called for each request
+func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token := r.Header.Get("X-WebAuth-User")
+
+		log.Println(token)
+
+		if userExists(token) {
+			// We found the token in our map
+			log.Printf("Authenticated user %s\n", token)
+			// Pass down the request to the next middleware (or final handler)
+			next.ServeHTTP(w, r)
+		} else {
+			// Write an error and stop the handler chain
+			http.Error(w, "Forbidden", http.StatusForbidden)
+		}
+	})
+}
+
+func userExists(username string) bool {
+	var count int
+	err := database.QueryRow("SELECT COUNT(*) FROM jassuser WHERE name = '" + username + "'").Scan(&count)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return count == 1
+}
+
+func getUserID(username string) int {
+	var userID int
+	res := database.QueryRow("SELECT id FROM jassuser WHERE name = '" + username + "'")
+	res.Scan(&userID)
+
+	return userID
+}
+
+func getUserIDFromRequest(r *http.Request) int {
+	token := r.Header.Get("X-WebAuth-User")
+	return getUserID(token)
+}
+
 // Routes ...
 type Routes []Route
 
@@ -25,6 +74,8 @@ var database *sqlx.DB
 // NewRouter ...
 func NewRouter(db *sqlx.DB) *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
+	amw := authenticationMiddleware{}
+	router.Use(amw.Middleware)
 	database = db
 	for _, route := range routes {
 		var handler http.Handler
