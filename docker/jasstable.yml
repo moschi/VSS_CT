@@ -91,6 +91,16 @@ services:
       - "traefik.http.middlewares.jass-auth.basicauth.realm=jassRealm"
       - "traefik.http.middlewares.jass-auth.basicauth.headerField=X-WebAuth-User"
 # end::jasserver2[]
+  react-prod:
+    # service 1 container name
+    container_name: react-prod
+    build:
+      context: .
+      # the dockerfile to be run
+      dockerfile:
+        ../jass/SPA_Dockerfile
+    ports:
+      - "3000:80"
 
 version: '3.6'
 volumes:
