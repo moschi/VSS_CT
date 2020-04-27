@@ -4,14 +4,12 @@ import (
 	"net/http"
 	"encoding/json"
 	"log"
-	"strconv"
-    "github.com/gorilla/mux"
 )
 
 // CreateTeam ...
 func CreateTeam(w http.ResponseWriter, r *http.Request) {
     var team Team
-    log.Println("Try to create: " + team)
+    log.Println(team)
     err := json.NewDecoder(r.Body).Decode(&team)
     if err != nil {
         http.Error(w, err.Error(), http.StatusBadRequest)
@@ -19,6 +17,7 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
     	return
     }
     var id int32
+    // TODO createdby should be the calling user
     databaseErr := database.QueryRow("INSERT INTO team (name, createdby) VALUES ($1, 0) RETURNING id", team.Name).Scan(&id)
     if databaseErr != nil {
     	log.Fatal(databaseErr)
@@ -31,7 +30,11 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 
 // GetTeam ...
 func GetTeam(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+    teams := []Team{}
+    database.Select(&teams, "SELECT * FROM team WHERE createdby = 0")
+
+    json.NewEncoder(w).Encode(teams)
 	w.WriteHeader(http.StatusOK)
 }
 
