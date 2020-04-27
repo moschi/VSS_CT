@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {Grid} from "@material-ui/core";
 import {Game} from "../classes/Game";
 import calculatePointsPerTeam from "../classes/GameUtils";
 import {withRouter} from "react-router";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import ViewWrapper from "./ViewWrapper";
+import Card from "@material-ui/core/Card";
+import DashboardCard from "./DashboardCard";
 
 function Dashboard(props: any) {
 
@@ -34,7 +37,7 @@ function Dashboard(props: any) {
                 setError({message: error.message, error: error});
                 setIsLoading(false);
             });
-    },[setIsLoading, setGames, setError]);
+    }, [setIsLoading, setGames, setError]);
 
     const createGame = () => {
         const route = "/game/create";
@@ -45,30 +48,37 @@ function Dashboard(props: any) {
         return games.map((game: Game) => {
             const results = calculatePointsPerTeam(game);
             return (
-                <Grid item xs={12} md={4} lg={2} key={game.id}>
-                    <div className="gameWrapper" onClick={() => {
-                        const route = "/game/" + game.id;
-                        props.history.push(route);
+                <Grid item xs={12} md={6} lg={3} key={game.id}>
+                    <Card onClick={() => {
+                        props.history.push("/game/" + game.id);
                     }}>
-                        <table>
-                            <thead>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <th>Game</th>
-                                <th>{game.id}</th>
-                            </tr>
-                            <tr>
-                                <td>{results.team1.team.name}</td>
-                                <td>{results.team1.points}</td>
-                            </tr>
-                            <tr>
-                                <td>{results.team2.team.name}</td>
-                                <td>{results.team2.points}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                        <DashboardCard gameTitle={game.id}
+                                   teamOne={results.team1.team.name}
+                                   pointsTeamOne={results.team1.points}
+                                   teamTwo={results.team2.team.name}
+                                   pointsTeamTwo={results.team2.points}
+                        />
+
+
+                        {/*<table>*/}
+                            {/*<thead>*/}
+                            {/*</thead>*/}
+                            {/*<tbody>*/}
+                            {/*<tr>*/}
+                                {/*<th>Game</th>*/}
+                                {/*<th>{game.id}</th>*/}
+                            {/*</tr>*/}
+                            {/*<tr>*/}
+                                {/*<td>{results.team1.team.name}</td>*/}
+                                {/*<td>{results.team1.points}</td>*/}
+                            {/*</tr>*/}
+                            {/*<tr>*/}
+                                {/*<td>{results.team2.team.name}</td>*/}
+                                {/*<td>{results.team2.points}</td>*/}
+                            {/*</tr>*/}
+                            {/*</tbody>*/}
+                        {/*</table>*/}
+                    </Card>
                 </Grid>
             )
         });
@@ -76,12 +86,12 @@ function Dashboard(props: any) {
 
 
     return (
-        <div>
+        <ViewWrapper>
             <h1>Dashboard</h1>
 
             <h2>Games</h2>
             {isLoading ?
-                <CircularProgress />
+                <CircularProgress/>
                 :
                 error ?
                     <p>error: {error.message}</p>
@@ -97,7 +107,7 @@ function Dashboard(props: any) {
                         </Grid>
                     </Grid>
             }
-        </div>
+        </ViewWrapper>
     );
 }
 

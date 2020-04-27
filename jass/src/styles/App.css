@@ -7,6 +7,16 @@
     pointer-events: none;
 }
 
+.viewWrapper {
+    margin: 0 20%;
+}
+.viewWrapper h1{
+    text-align:center;
+}
+.viewWrapper h2{
+    text-align:center;
+}
+
 @media (prefers-reduced-motion: no-preference) {
     .App-logo {
         animation: App-logo-spin infinite 20s linear;
@@ -37,9 +47,17 @@
     }
 }
 
-.gameWrapper {
-    background-color: rgba(0, 0, 0, 0.1);
-    border: solid rgba(0,0,0,0.25) 3px;
+.gameCard {
     box-shadow: 10px 10px 5px 0 rgba(0, 0, 0, 0.25);
     border-radius: 10px;
+}
+.dashboardCardWrapper{
+    margin:5px 15px;
+    display:flex;
+    flex-direction:column;
+}
+.dashboardCardInnerWrapper{
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
 }
