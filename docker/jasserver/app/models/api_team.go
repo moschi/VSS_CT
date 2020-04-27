@@ -9,13 +9,13 @@ import (
 // CreateTeam ...
 func CreateTeam(w http.ResponseWriter, r *http.Request) {
     var team Team
-    log.Println(team)
     err := json.NewDecoder(r.Body).Decode(&team)
     if err != nil {
         http.Error(w, err.Error(), http.StatusBadRequest)
     	w.WriteHeader(http.StatusInternalServerError)
     	return
     }
+    log.Println(team)
     var id int32
     // TODO createdby should be the calling user
     databaseErr := database.QueryRow("INSERT INTO team (name, createdby) VALUES ($1, 0) RETURNING id", team.Name).Scan(&id)
@@ -30,12 +30,11 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 
 // GetTeam ...
 func GetTeam(w http.ResponseWriter, r *http.Request) {
-
-    teams := []Team{}
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	teams := []Team{}
     database.Select(&teams, "SELECT * FROM team WHERE createdby = 0")
-
+    log.Println(teams)
     json.NewEncoder(w).Encode(teams)
-	w.WriteHeader(http.StatusOK)
 }
 
 // UpdateTeam ...
