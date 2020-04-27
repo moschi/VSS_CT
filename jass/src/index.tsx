@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './styles/index.css';
 import App from './components/App';
-import { Server, Response } from 'miragejs';
+/*import { Server, Response } from 'miragejs';
 import GameMocks from './classes/GameMocks';
 
 const timeout = 2000;
@@ -47,5 +47,5 @@ new Server({
     }, { timing: timeout });
 
   }
-});
+});*/
 ReactDOM.render(<App />, document.getElementById('root'));

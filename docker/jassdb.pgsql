@@ -36,3 +36,13 @@ CREATE TABLE pointsPerTeamPerRound(
     Round INT NOT NULL references round(ID),
     Team INT NOT NULL references team(ID)
 );
+
+INSERT INTO trumpf(name, Multiplier) VALUES('Eicheln', 1);
+INSERT INTO trumpf(name, Multiplier) VALUES('Rosen', 1);
+INSERT INTO trumpf(name, Multiplier) VALUES('Schellen', 2);
+INSERT INTO trumpf(name, Multiplier) VALUES('Schilten', 2);
+INSERT INTO trumpf(name, Multiplier) VALUES('Oben', 3);
+INSERT INTO trumpf(name, Multiplier) VALUES('Unten', 3);
+
+
+INSERT INTO jassuser(name) VALUES('moe');

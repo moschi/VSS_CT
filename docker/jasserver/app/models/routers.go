@@ -174,4 +174,11 @@ var routes = Routes{
 		"/v1/team",
 		UpdateTeam,
 	},
+
+	Route{
+		"GetTrumpfs",
+		strings.ToUpper("Get"),
+		"/v1/trumpf",
+		GetTrumpfs,
+	},
 }
