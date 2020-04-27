@@ -25,6 +25,39 @@ const HistoryWrapper = (props: any) => {
             <th>Trumpf</th>
         </tr>
         {props.children}
+        <tr>
+            <td><select>
+                <optgroup>
+                    <option>{props.teamNameOne}</option>
+                    <option>{props.teamNameTwo}</option>
+                </optgroup>
+            </select>
+            </td>
+            <td>
+                <input type={"number"}/>
+            </td>
+            <td>
+                <select>
+                    <optgroup>
+                        {
+                            trump.map((trumpf: Trumpf) => {
+                                return <option>
+                                    {trumpf.name}
+                                </option>
+                            })
+
+                        }
+                    </optgroup>
+                </select>
+            </td>
+            <td>
+                <input value={"Submit round"} type={"button"} onClick={() => {
+                    alert("TODO");
+                }
+                }/>
+            </td>
+        </tr>
+
         </tbody>
     </table>
 };
@@ -58,7 +91,7 @@ function GameBoard(props: any) {
 
     const random = Math.round(Math.random() * 2);
     console.log(random);
-    const mockedGame: FullGame = GameMocks[0];
+    const mockedGame: FullGame = GameMocks[random];
 
     useEffect(() => {
         const boardRenderer = new DrawGameBoard(canvasRef, mockedGame, jasstafel);
@@ -89,13 +122,8 @@ function GameBoard(props: any) {
                 });
 
                 console.log("size", pointsPerTeamPerRound.length);
-
-                if (pointsPerTeamPerRound.length === 0) {
-                    return <tr></tr>
-                } else {
-                    return <HistoryTableRow runde={numOfRounds + 1} teamOnePoints={teamOnePoints}
-                                            teamTwoPoints={teamTwoPoints} trump={trumpf.name}/>
-                }
+                return <HistoryTableRow runde={numOfRounds + 1} teamOnePoints={teamOnePoints}
+                                        teamTwoPoints={teamTwoPoints} trump={trumpf.name}/>
             })
             }
         </HistoryWrapper>
