@@ -99,6 +99,32 @@ const GameMocks: Game[] = [
         ]
     },
     {
+        id: "56",
+        rounds: [{
+            pointsPerTeamPerRound: [
+                {
+                    points: 0,
+                    wiisPoints: 0,
+                    team: {
+                        id: 0,
+                        name: "someteamname"
+                    }
+                }, {
+                    points: 0,
+                    wiisPoints: 0,
+                    team: {
+                        id: 1,
+                        name: "someotherteamname"
+                    }
+                }
+            ],
+            trump: {
+                multiplier: 3,
+                name: "Trumpf"
+            }
+        },]
+    },
+    {
         id: "game2",
         rounds: [
             {

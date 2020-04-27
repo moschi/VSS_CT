@@ -6,6 +6,7 @@ import Autocomplete, {createFilterOptions} from '@material-ui/lab/Autocomplete';
 import {GameCreation, Team} from "../classes/Game";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ViewWrapper from "./ViewWrapper";
+import { Redirect } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -32,7 +33,7 @@ const TEAM_FAILURE = 'Team wurde nicht erstellt, bitte versuchen sie es erneut!'
 
 function CreateGame() {
 
-    const teamNameRegex = RegExp('^[\\w\\d]+$');
+    const teamNameRegex = RegExp('^[\\w\\d]{1,20}$');
 
     const [isLoading, setIsLoading] = useState<Boolean>(true);
 
@@ -55,6 +56,7 @@ function CreateGame() {
         show: false,
         message: '',
     });
+    const [gameId, setGameId] = useState<number>();
 
     useEffect(() => {
         fetch('/api/v1/team', {
@@ -134,10 +136,7 @@ function CreateGame() {
             postGame(game)
                 .then(id => {
                     reset();
-                    setMessage({
-                        show: true,
-                        message: 'Spiel ' + id + ' wurde erstellt!',
-                    });
+                    setGameId(id);
                 })
                 .catch((error: ErrorEvent) => {
                     reset();
@@ -312,44 +311,47 @@ function CreateGame() {
                     isLoading ?
                         <CircularProgress/>
                         :
-                        <form className={classes.root}>
-                            <h1>Create Game</h1>
-                            <Autocomplete
-                                value={team1}
-                                loading={isLoadingTeam1}
-                                onChange={onChangeTeam1}
-                                filterOptions={filterInput}
-                                id="free-solo-with-text-demo"
-                                options={teams}
-                                getOptionLabel={getOptionLabel}
-                                renderOption={renderOption}
-                                style={{width: 300}}
-                                freeSolo
-                                renderInput={(params) => (
-                                    <TextField error={team1Message.show} helperText={team1Message.message} {...params}
-                                               label="Team 1" variant="outlined"/>
-                                )}
-                            />
-                            <Autocomplete
-                                value={team2}
-                                loading={isLoadingTeam2}
-                                onChange={onChangeTeam2}
-                                filterOptions={filterInput}
-                                id="free-solo-with-text-demo"
-                                options={teams}
-                                getOptionLabel={getOptionLabel}
-                                renderOption={renderOption}
-                                style={{width: 300}}
-                                freeSolo
-                                renderInput={(params) => (
-                                    <TextField error={team2Message.show} helperText={team2Message.message} {...params}
-                                               label="Team 2" variant="outlined"/>
-                                )}
-                            />
-                            <Button disabled={!team1ready || !team2ready} onClick={submit}>Create</Button>
-                            <Button onClick={reset}>Reset</Button>
-                            <p>{message.show && message.message}</p>
-                        </form>
+                        gameId ?
+                            <Redirect to={'/game/' + gameId}/>
+                            :
+                            <form className={classes.root}>
+                                <h1>Create Game</h1>
+                                <Autocomplete
+                                    value={team1}
+                                    loading={isLoadingTeam1}
+                                    onChange={onChangeTeam1}
+                                    filterOptions={filterInput}
+                                    id="free-solo-with-text-demo"
+                                    options={teams}
+                                    getOptionLabel={getOptionLabel}
+                                    renderOption={renderOption}
+                                    style={{width: 300}}
+                                    freeSolo
+                                    renderInput={(params) => (
+                                        <TextField error={team1Message.show} helperText={team1Message.message} {...params}
+                                                   label="Team 1" variant="outlined"/>
+                                    )}
+                                />
+                                <Autocomplete
+                                    value={team2}
+                                    loading={isLoadingTeam2}
+                                    onChange={onChangeTeam2}
+                                    filterOptions={filterInput}
+                                    id="free-solo-with-text-demo"
+                                    options={teams}
+                                    getOptionLabel={getOptionLabel}
+                                    renderOption={renderOption}
+                                    style={{width: 300}}
+                                    freeSolo
+                                    renderInput={(params) => (
+                                        <TextField error={team2Message.show} helperText={team2Message.message} {...params}
+                                                   label="Team 2" variant="outlined"/>
+                                    )}
+                                />
+                                <Button disabled={!team1ready || !team2ready} onClick={submit}>Create</Button>
+                                <Button onClick={reset}>Reset</Button>
+                                <p>{message.show && message.message}</p>
+                            </form>
                     :
                     <p>{NOT_AVAILABLE}</p>
                 }

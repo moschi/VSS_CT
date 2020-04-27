@@ -176,9 +176,6 @@ class DrawGameBoard {
                 const team1 = points.team1.team.name;
                 const team2 = points.team2.team.name;
 
-                // let pointsTeam1 = points.team1.points;
-                // let pointsTeam2 = points.team2.points;
-
                 let rest = {team1: 0, team2: 0};
                 let pointsDrawn = {oneT: 0, oneM: 0, oneB: 0, twoT: 0, twoM: 0, twoB: 0};
 
@@ -197,8 +194,6 @@ class DrawGameBoard {
                         }
                     }
                     rest = this.drawPoints(pointsPerRoundTeam1, pointsPerRoundTeam2, rest, context, pointsDrawn);
-                    // pointsTeam1 -= pointsPerRoundTeam1;
-                    // pointsTeam2 -= pointsPerRoundTeam2;
                 });
                 this.drawRest(rest, context);
             });
