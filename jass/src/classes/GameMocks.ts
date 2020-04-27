@@ -19,10 +19,10 @@ const GameMocks: FullGame[] = [
                         teamId: 1
                     }
                 ],
-                trumpfId:1
+                trumpfId:5
             },
             {
-                id:0,
+                id:1,
                 pointsPerTeamPerRound: [
                     {
                         points: 190,
@@ -37,7 +37,7 @@ const GameMocks: FullGame[] = [
                 trumpfId:1
             },
             {
-                id:0,
+                id:2,
                 pointsPerTeamPerRound: [
                     {
                         points: 190,
@@ -52,7 +52,7 @@ const GameMocks: FullGame[] = [
                 trumpfId:1
             },
             {
-                id:0,
+                id:3,
                 pointsPerTeamPerRound: [
                     {
                         points: 190,
@@ -64,9 +64,15 @@ const GameMocks: FullGame[] = [
                         teamId: 1
                     }
                 ],
-                trumpfId:1
+                trumpfId:3
             },
         ]
+    }, {
+        id: 1,
+        isFinished: false,
+        teams: [{id:0, name:"blah"}, {id:1, name:"blahblahe"}],
+        rounds: []
+
     }
 ];
 
