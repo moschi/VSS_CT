@@ -20,11 +20,11 @@ function App() {
         <div>
           <AppBar position="static">
             <Toolbar>
-              <Button aria-label="menu">
-                <Link to="/">Dashboard</Link>
+              <Button className={"headerButton"} aria-label="menu">
+                <Link className={"headerLink"} to="/">Dashboard</Link>
               </Button>
-              <Button aria-label="menu">
-                <Link to="/users">Users</Link>
+              <Button className={"headerButton"} aria-label="menu">
+                <Link className={"headerLink"} to="/users">Users</Link>
               </Button>
             </Toolbar>
           </AppBar>

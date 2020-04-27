@@ -1,13 +1,20 @@
-import {Game} from "./Game";
+import {FullGame, Game} from "./Game";
 import {Team} from "./Game";
 import {Round} from "./Game";
 
-function calculatePointsPerTeam(game: Game) {
+function calculatePointsPerTeam(game: FullGame) {
 
     const rounds: Round[] = game.rounds;
+    //
+    // const team1: Team = rounds[0].pointsPerTeamPerRound[0].team;
+    // const team2: Team = rounds[0].pointsPerTeamPerRound[1].team;
 
-    const team1: Team = rounds[0].pointsPerTeamPerRound[0].team;
-    const team2: Team = rounds[0].pointsPerTeamPerRound[1].team;
+
+
+    const team1: Team = game.teams[0];
+    const teamId1 :number = team1.id;
+    const team2: Team = game.teams[1];
+    const teamId2 :number = team2.id;
 
     let pointsTeam1: number = 0;
     let pointsTeam2: number = 0;
@@ -16,12 +23,12 @@ function calculatePointsPerTeam(game: Game) {
 
         for (let i = 0; i < 2; i++) {
 
-            const teamToAddPoints = round.pointsPerTeamPerRound[i].team.name;
+            const teamToAddPoints = round.pointsPerTeamPerRound[i].teamId;
 
-            if (team1.name === teamToAddPoints) {
+            if (team1.id === teamToAddPoints) {
                 pointsTeam1 += round.pointsPerTeamPerRound[i].points;
                 pointsTeam1 += round.pointsPerTeamPerRound[i].wiisPoints;
-            } else if (team2.name === teamToAddPoints) {
+            } else if (team2.id === teamToAddPoints) {
                 pointsTeam2 += round.pointsPerTeamPerRound[i].points;
                 pointsTeam2 += round.pointsPerTeamPerRound[i].wiisPoints;
             } else {

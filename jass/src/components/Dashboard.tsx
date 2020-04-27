@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Grid} from "@material-ui/core";
-import {Game} from "../classes/Game";
+import {FullGame, Game} from "../classes/Game";
 import calculatePointsPerTeam from "../classes/GameUtils";
 import {withRouter} from "react-router";
 import Button from "@material-ui/core/Button";
@@ -40,12 +40,11 @@ function Dashboard(props: any) {
     }, [setIsLoading, setGames, setError]);
 
     const createGame = () => {
-        const route = "/game/create";
-        props.history.push(route);
+        props.history.push("/game/create");
     };
 
     const renderGames = () => {
-        return games.map((game: Game) => {
+        return games.map((game: FullGame) => {
             const results = calculatePointsPerTeam(game);
             return (
                 <Grid item xs={12} md={6} lg={3} key={game.id}>
@@ -58,26 +57,6 @@ function Dashboard(props: any) {
                                    teamTwo={results.team2.team.name}
                                    pointsTeamTwo={results.team2.points}
                         />
-
-
-                        {/*<table>*/}
-                            {/*<thead>*/}
-                            {/*</thead>*/}
-                            {/*<tbody>*/}
-                            {/*<tr>*/}
-                                {/*<th>Game</th>*/}
-                                {/*<th>{game.id}</th>*/}
-                            {/*</tr>*/}
-                            {/*<tr>*/}
-                                {/*<td>{results.team1.team.name}</td>*/}
-                                {/*<td>{results.team1.points}</td>*/}
-                            {/*</tr>*/}
-                            {/*<tr>*/}
-                                {/*<td>{results.team2.team.name}</td>*/}
-                                {/*<td>{results.team2.points}</td>*/}
-                            {/*</tr>*/}
-                            {/*</tbody>*/}
-                        {/*</table>*/}
                     </Card>
                 </Grid>
             )
@@ -88,7 +67,6 @@ function Dashboard(props: any) {
     return (
         <ViewWrapper>
             <h1>Dashboard</h1>
-
             <h2>Games</h2>
             {isLoading ?
                 <CircularProgress/>
