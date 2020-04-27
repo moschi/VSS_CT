@@ -118,13 +118,6 @@ var routes = Routes{
 	},
 
 	Route{
-		"DeleteTeam",
-		strings.ToUpper("Delete"),
-		"/v1/team",
-		DeleteTeam,
-	},
-
-	Route{
 		"GetTeam",
 		strings.ToUpper("Get"),
 		"/v1/team",
