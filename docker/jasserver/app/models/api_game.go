@@ -16,9 +16,13 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 
 	json.NewDecoder(r.Body).Decode(&game)
 
-	tx := database.MustBegin()
-	tx.MustExec("INSERT INTO game (team1, team2, isfinished, createdby) VALUES($1, $2, false, $3)", &game.Teams[0].ID, &game.Teams[1].ID, 0)
-	tx.Commit()
+	var gameID int
+	err := database.QueryRow("INSERT INTO game (team1, team2, isfinished, createdby) VALUES($1, $2, false, $3) RETURNING id", &game.Teams[0].ID, &game.Teams[1].ID, 0).Scan(&gameID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println(gameID)
 
 	w.WriteHeader(http.StatusOK)
 }
@@ -26,6 +30,16 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 // DeleteGame ...
 func DeleteGame(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	vars := mux.Vars(r)
+	gameID, _ := strconv.Atoi(vars["gameId"])
+
+	_, err := database.Exec("DELETE FROM game WHERE id = $1;", gameID)
+
+	if err != nil {
+		panic(err)
+	}
+
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -50,9 +64,7 @@ func GetgameById(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	gameID, _ := strconv.Atoi(vars["gameId"])
-
 	game := loadGame(gameID, database)
-
 	b, _ := json.Marshal(game)
 
 	w.Write([]byte(string(b)))
