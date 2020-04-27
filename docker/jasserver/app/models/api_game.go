@@ -16,7 +16,7 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 
 	json.NewDecoder(r.Body).Decode(&game)
 
-	var gameID int
+	var gameID int32
 	err := database.QueryRow("INSERT INTO game (team1, team2, isfinished, createdby) VALUES($1, $2, false, $3) RETURNING id", &game.Teams[0].ID, &game.Teams[1].ID, 0).Scan(&gameID)
 	if err != nil {
 		log.Fatal(err)
@@ -24,6 +24,7 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(gameID)
 
+	json.NewEncoder(w).Encode(InlineResponse201{gameID})
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -52,11 +53,14 @@ func GetGame(w http.ResponseWriter, r *http.Request) {
 	games := []Game{}
 	database.Select(&games, "SELECT * FROM game WHERE createdby = 0")
 
-	b, _ := json.Marshal(games)
+	for i := range games {
+		games[i].Teams = [2]Team{
+			loadTeam(games[i].Team1, database),
+			loadTeam(games[i].Team2, database),
+		}
+	}
 
-	log.Println(string(b))
-
-	w.Write([]byte(string(b)))
+	json.NewEncoder(w).Encode(games)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -67,8 +71,11 @@ func GetgameById(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	gameID, _ := strconv.Atoi(vars["gameId"])
 	game := loadGame(gameID, database)
-	b, _ := json.Marshal(game)
 
-	w.Write([]byte(string(b)))
+	game.Teams = [2]Team{}
+	game.Teams[0] = loadTeam(game.Team1, database)
+	game.Teams[1] = loadTeam(game.Team2, database)
+
+	json.NewEncoder(w).Encode(game)
 	w.WriteHeader(http.StatusOK)
 }
