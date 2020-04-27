@@ -13,7 +13,7 @@ type Game struct {
 	Team1      int32
 	Team2      int32
 	CreatedBy  int32
-	Teams      []Team `json:"teams,omitempty"`
+	Teams      [2]Team `json:"teams,omitempty"`
 }
 
 func loadGame(id int, db *sqlx.DB) Game {
@@ -25,7 +25,7 @@ func loadGame(id int, db *sqlx.DB) Game {
 		fmt.Println(err)
 	}
 
-	game.Teams = []Team{}
+	game.Teams = [2]Team{}
 
 	return game
 }

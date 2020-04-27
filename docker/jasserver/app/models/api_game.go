@@ -53,11 +53,14 @@ func GetGame(w http.ResponseWriter, r *http.Request) {
 	games := []Game{}
 	database.Select(&games, "SELECT * FROM game WHERE createdby = 0")
 
-	b, _ := json.Marshal(games)
+	for i := range games {
+		games[i].Teams = [2]Team{
+			loadTeam(games[i].Team1, database),
+			loadTeam(games[i].Team2, database),
+		}
+	}
 
-	log.Println(string(b))
-
-	w.Write([]byte(string(b)))
+	json.NewEncoder(w).Encode(games)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -69,12 +72,10 @@ func GetgameById(w http.ResponseWriter, r *http.Request) {
 	gameID, _ := strconv.Atoi(vars["gameId"])
 	game := loadGame(gameID, database)
 
-	game.Teams = []Team{}
+	game.Teams = [2]Team{}
+	game.Teams[0] = loadTeam(game.Team1, database)
+	game.Teams[1] = loadTeam(game.Team2, database)
 
-	// todo: load teams
-
-	b, _ := json.Marshal(game)
-
-	w.Write([]byte(string(b)))
+	json.NewEncoder(w).Encode(game)
 	w.WriteHeader(http.StatusOK)
 }
