@@ -39,6 +39,18 @@ func GetTeam(w http.ResponseWriter, r *http.Request) {
 
 // UpdateTeam ...
 func UpdateTeam(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+	var team Team
+	err := json.NewDecoder(r.Body).Decode(&team)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if team.ID != 0 && team.Name != "" {
+		database.MustExec("UPDATE team SET name=$1 WHERE ID=$2", team.Name, team.ID)
+		w.WriteHeader(http.StatusOK)
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
 }
