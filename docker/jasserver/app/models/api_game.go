@@ -34,6 +34,8 @@ func DeleteGame(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	gameID, _ := strconv.Atoi(vars["gameId"])
 
+	database.Exec("DELETE FROM pointsperteamperround WHERE round IN(SELECT id FROM round WHERE game = $1)", gameID)
+	database.Exec("DELETE FROM round WHERE game = $1", gameID)
 	_, err := database.Exec("DELETE FROM game WHERE id = $1;", gameID)
 
 	if err != nil {
