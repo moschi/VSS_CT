@@ -95,7 +95,8 @@ function GameBoard(props: any) {
     console.log(random);
     const mockedGame: FullGame = GameMocks[random];
 
-    const[game, setGame] = useState(mockedGame);
+    const [game, setGame] = useState(mockedGame);
+    const [rerender, setRerender] = useState(false);
 
     useEffect(() => {
         const boardRenderer = new DrawGameBoard(canvasRef, game, jasstafel);
@@ -103,9 +104,6 @@ function GameBoard(props: any) {
     });
 
     const addRound = (trumpfId: number, points: number, teamId: number) => {
-        //TODO add wiispoints
-        alert("yeet");
-
         const rounds = game.rounds;
         console.log(rounds);
         const getNextId = () => {
@@ -133,8 +131,7 @@ function GameBoard(props: any) {
         const round: Round = {id: getNextId(), trumpfId: trumpfId, pointsPerTeamPerRound: pointsPerTeamPerRound};
         game.rounds.push(round);
         setGame(game);
-        console.log(game);
-        //test if does rerender
+        setRerender(!rerender);
     };
 
     const HistoryTable = (props:any) => {
@@ -142,7 +139,6 @@ function GameBoard(props: any) {
 
         const team1 = props.game.teams[0];
         const team2 = props.game.teams[1];
-
 
         return <HistoryWrapper teamNameOne={team1.name}
                                teamNameTwo={team2.name}
@@ -159,8 +155,6 @@ function GameBoard(props: any) {
                     let points = pointsTeam + wiisPoints;
                     teamId === team1.id ? teamOnePoints = points : teamTwoPoints = points;
                 });
-
-                console.log("size", pointsPerTeamPerRound.length);
                 return <HistoryTableRow runde={numOfRounds + 1} teamOnePoints={teamOnePoints}
                                         teamTwoPoints={teamTwoPoints} trump={trumpf.name}/>
             })
