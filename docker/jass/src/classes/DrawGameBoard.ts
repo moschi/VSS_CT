@@ -187,24 +187,24 @@ class DrawGameBoard {
                 let rest = {team1: 0, team2: 0};
                 let pointsDrawn = {oneT: 0, oneM: 0, oneB: 0, twoT: 0, twoM: 0, twoB: 0};
 
-                await rounds.forEach((round: Round) => {
-                    const pointPerRound = round.pointsPerTeamPerRound;
-                    let pointsPerRoundTeam1 = 0;
-                    let pointsPerRoundTeam2 = 0;
-                    let trump = this.trumpf[round.trumpfId];
-                    for (let i = 0; i < 2; i++) {
-                        let team = pointPerRound[i].teamId;
-                        let points = pointPerRound[i].points;
-                        points+= pointPerRound[i].wiisPoints;
-                        points *= trump.multiplier;
-                        if (team === team1.id) {
-                            pointsPerRoundTeam1 = points;
-                        } else if (team === team2.id) {
-                            pointsPerRoundTeam2 = points;
+                    await rounds.forEach((round: Round) => {
+                        const pointPerRound = round.pointsPerTeamPerRound;
+                        let pointsPerRoundTeam1 = 0;
+                        let pointsPerRoundTeam2 = 0;
+                        let trump = this.trumpf[round.trumpfId];
+                        for (let i = 0; i < 2; i++) {
+                            let team = pointPerRound[i].teamId;
+                            let points = pointPerRound[i].points;
+                            points+= pointPerRound[i].wiisPoints;
+                            points *= trump.multiplier;
+                            if (team === team1.id) {
+                                pointsPerRoundTeam1 = points;
+                            } else if (team === team2.id) {
+                                pointsPerRoundTeam2 = points;
+                            }
                         }
-                    }
-                    rest = this.drawPoints(pointsPerRoundTeam1, pointsPerRoundTeam2, rest, context, pointsDrawn);
-                });
+                        rest = this.drawPoints(pointsPerRoundTeam1, pointsPerRoundTeam2, rest, context, pointsDrawn);
+                    });
                 this.drawRest(rest, context);
             });
     }

@@ -19,7 +19,8 @@ const HistoryWrapper = (props: any) => {
     const [team, setTeam] = useState(props.teamNameOne);
     const [points, setPoints] = useState(0);
     const [trumpf, setTrumpf] = useState(trump[0].name);
-    const [wiisPoints, setWiisPoints] = useState(0);
+    const [wiisPoints1, setWiisPoints1] = useState(0);
+    const [wiisPoints2, setWiisPoints2] = useState(0);
 
 
     return <table>
@@ -35,6 +36,7 @@ const HistoryWrapper = (props: any) => {
             <td>{props.round}</td>
         </tr>
         <tr>
+            <td>Team</td>
             <td><select onChange={(value) => {
                 setTeam(value);
             }
@@ -48,16 +50,22 @@ const HistoryWrapper = (props: any) => {
             </td>
         </tr>
         <tr>
+            <td>Points</td>
             <td>
                 <input value={points} type={"number"} onChange={e => setPoints(Number(e.currentTarget.value))}/>
             </td>
         </tr>
         <tr>
+            <td>WiisPoints</td>
             <td>
-                <input value={wiisPoints} type={"number"} onChange={e => setWiisPoints(Number(e.currentTarget.value))}/>
+                <input value={wiisPoints1} type={"number"} onChange={e => setWiisPoints1(Number(e.currentTarget.value))}/>
+            </td>
+            <td>
+                <input value={wiisPoints2} type={"number"} onChange={e => setWiisPoints2(Number(e.currentTarget.value))}/>
             </td>
         </tr>
         <tr>
+            <td>Trumpf</td>
             <td>
                 <select defaultValue={trumpf} onChange={e => setTrumpf(e.currentTarget.value)}>
                     <optgroup>
@@ -74,12 +82,13 @@ const HistoryWrapper = (props: any) => {
             </td>
         </tr>
         <tr>
+            <td/>
             <td>
                 <input value={"Submit round"} type={"button"} onClick={() => {
                     {
                         trump.forEach(trump => {
                             if (trump.name === trumpf) {
-                                props.addRound(trump.id, points, team, wiisPoints);
+                                props.addRound(trump.id, points, team, wiisPoints1, wiisPoints2);
                             }
                         });
                     }
@@ -137,7 +146,7 @@ function GameBoard(props: any) {
         }
     };
 
-    const addRound = (trumpfId: number, points: number, teamName: string, wiisPoints: number) => {
+    const addRound = (trumpfId: number, points: number, teamName: string, wiisPoints1: number, wiisPoints2:number) => {
         let teamId = game.teams[0].name === teamName ? game.teams[0].id : game.teams[1].id;
         const rounds = game.rounds;
 
@@ -155,8 +164,8 @@ function GameBoard(props: any) {
             pointsOtherTeam = 157 - points;
         }
         const pointsPerTeamPerRound: PointsPerTeamPerRound[] = [
-            {points: points, wiisPoints: wiisPoints, teamId: teamId},
-            {points: pointsOtherTeam, wiisPoints: wiisPoints, teamId: getTeamIdOtherTeam()}];
+            {points: points, wiisPoints: wiisPoints1, teamId: teamId},
+            {points: pointsOtherTeam, wiisPoints: wiisPoints2, teamId: getTeamIdOtherTeam()}];
 
         const round: Round = {
             id: getNextRoundId(rounds),

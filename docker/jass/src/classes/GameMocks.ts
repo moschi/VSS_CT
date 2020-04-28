@@ -73,6 +73,13 @@ const GameMocks: FullGame[] = [
         teams: [{id:0, name:"blah"}, {id:1, name:"blahblahe"}],
         rounds: []
 
+    },
+    {
+        id: 2,
+        isFinished: false,
+        teams: [{id:0, name:"Oberbabos"}, {id:1, name:"Überbabos"}],
+        rounds: []
+
     }
 ];
 
