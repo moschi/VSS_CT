@@ -5,7 +5,7 @@ import App from './components/App';
 import { Server, Response } from 'miragejs';
 import GameMocks from './classes/GameMocks';
 
-if (process.env.MOCK='true') {
+if (process.env.NODE_ENV !== 'production') {
     const timeout = 2000;
 
     new Server({
