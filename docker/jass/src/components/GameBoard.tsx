@@ -1,7 +1,7 @@
 import * as React from "react";
-import {useEffect, useRef} from "react";
+import {Component, useEffect, useRef, useState} from "react";
 import DrawGameBoard from "../classes/DrawGameBoard";
-import {FullGame, Round, Trumpf} from "../classes/Game";
+import {FullGame, PointsPerTeamPerRound, Round, Trumpf} from "../classes/Game";
 import GameMocks from "../classes/GameMocks";
 import jasstafel from "../images/jasstafel.jpg";
 import ViewWrapper from "./ViewWrapper";
@@ -13,7 +13,6 @@ const trump: Trumpf[] = [
     {id: 3, name: "Schilten", multiplier: 2},
     {id: 4, name: "ObenAben", multiplier: 3},
     {id: 5, name: "UntenUfen", multiplier: 3}];
-
 
 const HistoryWrapper = (props: any) => {
     return <table>
@@ -27,6 +26,7 @@ const HistoryWrapper = (props: any) => {
         {props.children}
         <tr>
             <td><select>
+                //todo
                 <optgroup>
                     <option>{props.teamNameOne}</option>
                     <option>{props.teamNameTwo}</option>
@@ -34,10 +34,12 @@ const HistoryWrapper = (props: any) => {
             </select>
             </td>
             <td>
+                //todo
                 <input type={"number"}/>
             </td>
             <td>
                 <select>
+                    //todo
                     <optgroup>
                         {
                             trump.map((trumpf: Trumpf) => {
@@ -52,7 +54,8 @@ const HistoryWrapper = (props: any) => {
             </td>
             <td>
                 <input value={"Submit round"} type={"button"} onClick={() => {
-                    alert("TODO");
+
+                    {props.addRound(0,0,0);}
                 }
                 }/>
             </td>
@@ -86,18 +89,53 @@ const HistoryTableRow = (props: any) => {
 };
 
 function GameBoard(props: any) {
-
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     const random = Math.round(Math.random() * 2);
     console.log(random);
     const mockedGame: FullGame = GameMocks[random];
 
+    const[game, setGame] = useState(mockedGame);
+
     useEffect(() => {
         const boardRenderer = new DrawGameBoard(canvasRef, mockedGame, jasstafel);
         boardRenderer.render();
     });
 
+    const addRound = (trumpfId: number, points: number, teamId: number) => {
+        //TODO add wiispoints
+        alert("yeet");
+
+        const currentGame = game;
+
+        const rounds = currentGame.rounds;
+        const getNextId = () => {
+            if(rounds.length>0){
+                return rounds[rounds.length].id + 1 ;
+            }else{
+                return 0;
+            }
+        };
+
+        const getTeamIdOtherTeam = () =>{
+            return currentGame.teams[0].id === teamId ? currentGame.teams[1].id : currentGame.teams[0].id;
+        };
+
+        let pointsOtherTeam = 0;
+        if(points === 157){
+            points = 257;
+        }else{
+            pointsOtherTeam = 157 -points;
+        }
+        const pointsPerTeamPerRound: PointsPerTeamPerRound[] = [
+            {points: points, wiisPoints: 0, teamId: teamId},
+            {points: pointsOtherTeam, wiisPoints: 0, teamId: getTeamIdOtherTeam()}];
+
+        const round: Round = {id: getNextId(), trumpfId: trumpfId, pointsPerTeamPerRound: pointsPerTeamPerRound};
+        currentGame.rounds.push(round);
+        setGame(currentGame);
+        //test if does rerender
+    };
 
     const HistoryTable = () => {
         let rounds = mockedGame.rounds;
@@ -107,7 +145,8 @@ function GameBoard(props: any) {
 
 
         return <HistoryWrapper teamNameOne={team1.name}
-                               teamNameTwo={team2.name}>
+                               teamNameTwo={team2.name}
+                               addRound={addRound}>
             {rounds.map((round: Round, numOfRounds: number) => {
                 let trumpf = trump[round.trumpfId];
                 let pointsPerTeamPerRound = round.pointsPerTeamPerRound;
@@ -126,7 +165,7 @@ function GameBoard(props: any) {
                                         teamTwoPoints={teamTwoPoints} trump={trumpf.name}/>
             })
             }
-        </HistoryWrapper>
+        </HistoryWrapper >
     };
 
     return <ViewWrapper>

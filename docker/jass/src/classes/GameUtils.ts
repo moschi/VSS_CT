@@ -5,26 +5,16 @@ import {Round} from "./Game";
 function calculatePointsPerTeam(game: FullGame) {
 
     const rounds: Round[] = game.rounds;
-    //
-    // const team1: Team = rounds[0].pointsPerTeamPerRound[0].team;
-    // const team2: Team = rounds[0].pointsPerTeamPerRound[1].team;
-
-
 
     const team1: Team = game.teams[0];
-    const teamId1 :number = team1.id;
     const team2: Team = game.teams[1];
-    const teamId2 :number = team2.id;
 
     let pointsTeam1: number = 0;
     let pointsTeam2: number = 0;
 
     rounds.forEach((round: Round) => {
-
         for (let i = 0; i < 2; i++) {
-
             const teamToAddPoints = round.pointsPerTeamPerRound[i].teamId;
-
             if (team1.id === teamToAddPoints) {
                 pointsTeam1 += round.pointsPerTeamPerRound[i].points;
                 pointsTeam1 += round.pointsPerTeamPerRound[i].wiisPoints;
@@ -35,9 +25,6 @@ function calculatePointsPerTeam(game: FullGame) {
                 console.log("Team does not exist: " + teamToAddPoints)
             }
         }
-
-
-
     });
 
     return {
