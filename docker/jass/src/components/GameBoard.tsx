@@ -15,6 +15,13 @@ const trump: Trumpf[] = [
     {id: 5, name: "UntenUfen", multiplier: 3}];
 
 const HistoryWrapper = (props: any) => {
+
+    const [team, setTeam] = useState(props.teamNameOne);
+    const [points, setPoints] = useState(0);
+    const [trumpf, setTrumpf] = useState(trump[0].name);
+    const [wiisPoints, setWiisPoints] = useState(0);
+
+
     return <table>
         <tbody>
         <tr>
@@ -25,21 +32,34 @@ const HistoryWrapper = (props: any) => {
         </tr>
         {props.children}
         <tr>
-            <td><select>
-                //todo
+            <td>{props.round}</td>
+        </tr>
+        <tr>
+            <td><select onChange={(value) => {
+                setTeam(value);
+            }
+            }>
+
                 <optgroup>
                     <option>{props.teamNameOne}</option>
                     <option>{props.teamNameTwo}</option>
                 </optgroup>
             </select>
             </td>
+        </tr>
+        <tr>
             <td>
-                //todo
-                <input type={"number"}/>
+                <input value={points} type={"number"} onChange={e => setPoints(Number(e.currentTarget.value))}/>
             </td>
+        </tr>
+        <tr>
             <td>
-                <select>
-                    //todo
+                <input value={wiisPoints} type={"number"} onChange={e => setWiisPoints(Number(e.currentTarget.value))}/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <select defaultValue={trumpf} onChange={e => setTrumpf(e.currentTarget.value)}>
                     <optgroup>
                         {
                             trump.map((trumpf: Trumpf) => {
@@ -52,10 +72,17 @@ const HistoryWrapper = (props: any) => {
                     </optgroup>
                 </select>
             </td>
+        </tr>
+        <tr>
             <td>
                 <input value={"Submit round"} type={"button"} onClick={() => {
-
-                    {props.addRound(0,100,0);}
+                    {
+                        trump.forEach(trump => {
+                            if (trump.name === trumpf) {
+                                props.addRound(trump.id, points, team, wiisPoints);
+                            }
+                        });
+                    }
                 }
                 }/>
             </td>
@@ -92,7 +119,6 @@ function GameBoard(props: any) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     const random = Math.round(Math.random() * 2);
-    console.log(random);
     const mockedGame: FullGame = GameMocks[random];
 
     const [game, setGame] = useState(mockedGame);
@@ -103,38 +129,46 @@ function GameBoard(props: any) {
         boardRenderer.render();
     });
 
-    const addRound = (trumpfId: number, points: number, teamId: number) => {
-        const rounds = game.rounds;
-        console.log(rounds);
-        const getNextId = () => {
-            if(rounds.length>0){
-                return rounds[rounds.length-1].id + 1 ;
-            }else{
-                return 0;
-            }
-        };
+    const getNextRoundId = (rounds: Round[]) => {
+        if (rounds.length > 0) {
+            return rounds[rounds.length - 1].id + 1;
+        } else {
+            return 0;
+        }
+    };
 
-        const getTeamIdOtherTeam = () =>{
+    const addRound = (trumpfId: number, points: number, teamName: string, wiisPoints: number) => {
+        let teamId = game.teams[0].name === teamName ? game.teams[0].id : game.teams[1].id;
+        const rounds = game.rounds;
+
+
+        const getTeamIdOtherTeam = () => {
             return game.teams[0].id === teamId ? game.teams[1].id : game.teams[0].id;
         };
 
         let pointsOtherTeam = 0;
-        if(points === 157){
+        if (points === 157) {
             points = 257;
-        }else{
-            pointsOtherTeam = 157 -points;
+        } else if (points === 0) {
+            pointsOtherTeam = 257;
+        } else {
+            pointsOtherTeam = 157 - points;
         }
         const pointsPerTeamPerRound: PointsPerTeamPerRound[] = [
-            {points: points, wiisPoints: 0, teamId: teamId},
-            {points: pointsOtherTeam, wiisPoints: 0, teamId: getTeamIdOtherTeam()}];
+            {points: points, wiisPoints: wiisPoints, teamId: teamId},
+            {points: pointsOtherTeam, wiisPoints: wiisPoints, teamId: getTeamIdOtherTeam()}];
 
-        const round: Round = {id: getNextId(), trumpfId: trumpfId, pointsPerTeamPerRound: pointsPerTeamPerRound};
+        const round: Round = {
+            id: getNextRoundId(rounds),
+            trumpfId: trumpfId,
+            pointsPerTeamPerRound: pointsPerTeamPerRound
+        };
         game.rounds.push(round);
         setGame(game);
         setRerender(!rerender);
     };
 
-    const HistoryTable = (props:any) => {
+    const HistoryTable = (props: any) => {
         let rounds = props.game.rounds;
 
         const team1 = props.game.teams[0];
@@ -142,24 +176,37 @@ function GameBoard(props: any) {
 
         return <HistoryWrapper teamNameOne={team1.name}
                                teamNameTwo={team2.name}
+                               round={getNextRoundId(rounds) + 1}
                                addRound={addRound}>
             {rounds.map((round: Round, numOfRounds: number) => {
                 let trumpf = trump[round.trumpfId];
                 let pointsPerTeamPerRound = round.pointsPerTeamPerRound;
                 let teamOnePoints = 0;
                 let teamTwoPoints = 0;
+
+                console.log(round.trumpfId);
                 pointsPerTeamPerRound.map(pointsPerRound => {
                     let teamId = pointsPerRound.teamId;
                     let pointsTeam = pointsPerRound.points * trumpf.multiplier;
                     let wiisPoints = pointsPerRound.wiisPoints * trumpf.multiplier;
+                    console.log("points", pointsTeam);
+                    console.log("wiis", wiisPoints);
+
+
                     let points = pointsTeam + wiisPoints;
-                    teamId === team1.id ? teamOnePoints = points : teamTwoPoints = points;
+
+                    console.log("points", points)
+                    if (teamId === team1.id) {
+                        teamOnePoints = points;
+                    } else {
+                        teamTwoPoints = points;
+                    }
                 });
                 return <HistoryTableRow runde={numOfRounds + 1} teamOnePoints={teamOnePoints}
                                         teamTwoPoints={teamTwoPoints} trump={trumpf.name}/>
             })
             }
-        </HistoryWrapper >
+        </HistoryWrapper>
     };
 
     return <ViewWrapper>
