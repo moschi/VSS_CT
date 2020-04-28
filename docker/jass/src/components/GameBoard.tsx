@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Component, useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import DrawGameBoard from "../classes/DrawGameBoard";
 import {FullGame, PointsPerTeamPerRound, Round, Trumpf} from "../classes/Game";
 import GameMocks from "../classes/GameMocks";
@@ -55,7 +55,7 @@ const HistoryWrapper = (props: any) => {
             <td>
                 <input value={"Submit round"} type={"button"} onClick={() => {
 
-                    {props.addRound(0,0,0);}
+                    {props.addRound(0,100,0);}
                 }
                 }/>
             </td>
@@ -98,7 +98,7 @@ function GameBoard(props: any) {
     const[game, setGame] = useState(mockedGame);
 
     useEffect(() => {
-        const boardRenderer = new DrawGameBoard(canvasRef, mockedGame, jasstafel);
+        const boardRenderer = new DrawGameBoard(canvasRef, game, jasstafel);
         boardRenderer.render();
     });
 
@@ -106,19 +106,18 @@ function GameBoard(props: any) {
         //TODO add wiispoints
         alert("yeet");
 
-        const currentGame = game;
-
-        const rounds = currentGame.rounds;
+        const rounds = game.rounds;
+        console.log(rounds);
         const getNextId = () => {
             if(rounds.length>0){
-                return rounds[rounds.length].id + 1 ;
+                return rounds[rounds.length-1].id + 1 ;
             }else{
                 return 0;
             }
         };
 
         const getTeamIdOtherTeam = () =>{
-            return currentGame.teams[0].id === teamId ? currentGame.teams[1].id : currentGame.teams[0].id;
+            return game.teams[0].id === teamId ? game.teams[1].id : game.teams[0].id;
         };
 
         let pointsOtherTeam = 0;
@@ -132,16 +131,17 @@ function GameBoard(props: any) {
             {points: pointsOtherTeam, wiisPoints: 0, teamId: getTeamIdOtherTeam()}];
 
         const round: Round = {id: getNextId(), trumpfId: trumpfId, pointsPerTeamPerRound: pointsPerTeamPerRound};
-        currentGame.rounds.push(round);
-        setGame(currentGame);
+        game.rounds.push(round);
+        setGame(game);
+        console.log(game);
         //test if does rerender
     };
 
     const HistoryTable = () => {
-        let rounds = mockedGame.rounds;
+        let rounds = game.rounds;
 
-        const team1 = mockedGame.teams[0];
-        const team2 = mockedGame.teams[1];
+        const team1 = game.teams[0];
+        const team2 = game.teams[1];
 
 
         return <HistoryWrapper teamNameOne={team1.name}
