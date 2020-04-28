@@ -137,11 +137,11 @@ function GameBoard(props: any) {
         //test if does rerender
     };
 
-    const HistoryTable = () => {
-        let rounds = game.rounds;
+    const HistoryTable = (props:any) => {
+        let rounds = props.game.rounds;
 
-        const team1 = game.teams[0];
-        const team2 = game.teams[1];
+        const team1 = props.game.teams[0];
+        const team2 = props.game.teams[1];
 
 
         return <HistoryWrapper teamNameOne={team1.name}
@@ -178,7 +178,7 @@ function GameBoard(props: any) {
                 <div className={"gameBoardInnerWrapper"}>
                     <div>
                         <h2>History</h2>
-                        <HistoryTable/>
+                        <HistoryTable game={game}/>
                     </div>
                 </div>
             </div>
