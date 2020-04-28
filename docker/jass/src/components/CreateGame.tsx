@@ -59,7 +59,7 @@ function CreateGame() {
     const [gameId, setGameId] = useState<number>();
 
     useEffect(() => {
-        fetch('/api/v1/team', {
+        fetch('/v1/team', {
             method: 'GET',
         })
             .then((response) => {
@@ -155,7 +155,7 @@ function CreateGame() {
     };
 
     const postGame = async (game: GameCreation): Promise<number> => {
-        const response = await fetch('/api/v1/game', {
+        const response = await fetch('/v1/game', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -198,7 +198,7 @@ function CreateGame() {
     };
 
     const postTeam = async (name: string): Promise<number> => {
-        const response = await fetch('/api/v1/team', {
+        const response = await fetch('/v1/team', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

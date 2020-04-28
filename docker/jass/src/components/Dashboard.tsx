@@ -17,7 +17,7 @@ function Dashboard(props: any) {
 
     useEffect(() => {
         setIsLoading(true);
-        fetch('api/v1/game', {
+        fetch('/v1/game', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

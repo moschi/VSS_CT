@@ -21,6 +21,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "mock": "set \"MOCK=true\" && react-scripts start ",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -28,7 +29,6 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "proxy": "http://localhost:9090",
   "browserslist": {
     "production": [
       ">0.2%",
