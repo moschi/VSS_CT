@@ -84,6 +84,8 @@ func GetgameById(w http.ResponseWriter, r *http.Request) {
 	var rounds = loadRounds(gameID, database)
 	fullGame.Rounds = rounds
 
+	log.Println(rounds)
+
 	json.NewEncoder(w).Encode(fullGame)
 	w.WriteHeader(http.StatusOK)
 }

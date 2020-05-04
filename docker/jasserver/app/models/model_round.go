@@ -28,7 +28,7 @@ func loadRound(id int64, db *sqlx.DB) Round {
 func loadRounds(gameID int, db *sqlx.DB) []Round {
 	sqlStatement := "SELECT * FROM round WHERE game = $1"
 
-	var rounds []Round
+	rounds := make([]Round, 0)
 
 	err := db.Select(&rounds, sqlStatement, gameID)
 	if err != nil {
