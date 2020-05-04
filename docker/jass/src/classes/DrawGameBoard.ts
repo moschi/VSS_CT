@@ -161,7 +161,6 @@ class DrawGameBoard {
 
     drawRest(rest: Rest,
              context: CanvasRenderingContext2D) {
-
         const restTeamOne:string = rest.team1.toString();
         const restTeamTwo:string = rest.team2.toString();
 
@@ -170,8 +169,6 @@ class DrawGameBoard {
         context.font = "25px Arial";
         context.strokeText(restTeamOne, 375,200);
         context.strokeText(restTeamTwo, 375,500);
-
-
     }
 
     render() {

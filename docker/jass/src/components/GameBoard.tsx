@@ -5,6 +5,8 @@ import {FullGame, PointsPerTeamPerRound, Round, Trumpf} from "../classes/Game";
 import GameMocks from "../classes/GameMocks";
 import jasstafel from "../images/jasstafel.jpg";
 import ViewWrapper from "./ViewWrapper";
+import {get, post, /* getError, getIsLoading*/} from "../classes/RestHelper";
+import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 
 const trump: Trumpf[] = [
     {id: 0, name: "Eichel", multiplier: 1},
@@ -58,10 +60,12 @@ const HistoryWrapper = (props: any) => {
         <tr>
             <td>WiisPoints</td>
             <td>
-                <input value={wiisPoints1} type={"number"} onChange={e => setWiisPoints1(Number(e.currentTarget.value))}/>
+                <input value={wiisPoints1} type={"number"}
+                       onChange={e => setWiisPoints1(Number(e.currentTarget.value))}/>
             </td>
             <td>
-                <input value={wiisPoints2} type={"number"} onChange={e => setWiisPoints2(Number(e.currentTarget.value))}/>
+                <input value={wiisPoints2} type={"number"}
+                       onChange={e => setWiisPoints2(Number(e.currentTarget.value))}/>
             </td>
         </tr>
         <tr>
@@ -132,49 +136,60 @@ function GameBoard(props: any) {
 
     const [game, setGame] = useState(mockedGame);
     const [rerender, setRerender] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState();
 
     useEffect(() => {
-        const boardRenderer = new DrawGameBoard(canvasRef, game, jasstafel);
-        boardRenderer.render();
-    });
+        setIsLoading(true);
+        get("game/" + props.match.params.id, (game: any) => {
+            setGame(game);
+            const boardRenderer = new DrawGameBoard(canvasRef, game, jasstafel);
+            boardRenderer.render();
+            setIsLoading(false);
+        }, (error: any) => {
+            setError({message: error.message, error: error});
+            setIsLoading(false);
+        });
+    }, [setGame, setError, setIsLoading]);
 
     const getNextRoundId = (rounds: Round[]) => {
-        if (rounds.length > 0) {
-            return rounds[rounds.length - 1].id + 1;
-        } else {
-            return 0;
-        }
+            if (rounds.length > 0) {
+                return rounds[rounds.length - 1].id + 1;
+            } else {
+                return 0;
+            }
     };
 
-    const addRound = (trumpfId: number, points: number, teamName: string, wiisPoints1: number, wiisPoints2:number) => {
-        let teamId = game.teams[0].name === teamName ? game.teams[0].id : game.teams[1].id;
-        const rounds = game.rounds;
+    const addRound = (trumpfId: number, points: number, teamName: string, wiisPoints1: number, wiisPoints2: number) => {
+        post("game/" + game.id + "/round",
+            (roundID: any) => {
+                let teamId = game.teams[0].name === teamName ? game.teams[0].id : game.teams[1].id;
+                const getTeamIdOtherTeam = () => {
+                    return game.teams[0].id === teamId ? game.teams[1].id : game.teams[0].id;
+                };
 
+                let pointsOtherTeam = 0;
+                if (points === 157) {
+                    points = 257;
+                } else if (points === 0) {
+                    pointsOtherTeam = 257;
+                } else {
+                    pointsOtherTeam = 157 - points;
+                }
+                const pointsPerTeamPerRound: PointsPerTeamPerRound[] = [
+                    {points: points, wiisPoints: wiisPoints1, teamId: teamId},
+                    {points: pointsOtherTeam, wiisPoints: wiisPoints2, teamId: getTeamIdOtherTeam()}];
 
-        const getTeamIdOtherTeam = () => {
-            return game.teams[0].id === teamId ? game.teams[1].id : game.teams[0].id;
-        };
-
-        let pointsOtherTeam = 0;
-        if (points === 157) {
-            points = 257;
-        } else if (points === 0) {
-            pointsOtherTeam = 257;
-        } else {
-            pointsOtherTeam = 157 - points;
-        }
-        const pointsPerTeamPerRound: PointsPerTeamPerRound[] = [
-            {points: points, wiisPoints: wiisPoints1, teamId: teamId},
-            {points: pointsOtherTeam, wiisPoints: wiisPoints2, teamId: getTeamIdOtherTeam()}];
-
-        const round: Round = {
-            id: getNextRoundId(rounds),
-            trumpfId: trumpfId,
-            pointsPerTeamPerRound: pointsPerTeamPerRound
-        };
-        game.rounds.push(round);
-        setGame(game);
-        setRerender(!rerender);
+                const round: Round = {
+                    id: roundID,
+                    trumpfId: trumpfId,
+                    pointsPerTeamPerRound: pointsPerTeamPerRound
+                };
+                game.rounds.push(round);
+                setGame(game);
+                setRerender(!rerender);
+                post("game/" + game.id + "/" + roundID);
+            });
     };
 
     const HistoryTable = (props: any) => {
@@ -193,18 +208,11 @@ function GameBoard(props: any) {
                 let teamOnePoints = 0;
                 let teamTwoPoints = 0;
 
-                console.log(round.trumpfId);
                 pointsPerTeamPerRound.map(pointsPerRound => {
                     let teamId = pointsPerRound.teamId;
                     let pointsTeam = pointsPerRound.points * trumpf.multiplier;
                     let wiisPoints = pointsPerRound.wiisPoints * trumpf.multiplier;
-                    console.log("points", pointsTeam);
-                    console.log("wiis", wiisPoints);
-
-
                     let points = pointsTeam + wiisPoints;
-
-                    console.log("points", points)
                     if (teamId === team1.id) {
                         teamOnePoints = points;
                     } else {
@@ -220,21 +228,28 @@ function GameBoard(props: any) {
 
     return <ViewWrapper>
         <h1>{props.match.params.id}</h1>
-        <div className={"gameBoardWrapper"}>
-            <div>
-                <canvas ref={canvasRef} width={515} height={720}/>
-            </div>
-            <div>
-                <div className={"gameBoardInnerWrapper"}>
+        {isLoading ?
+            <CircularProgress/>
+            :
+            error ?
+                <p>error: {error.message}</p>
+                :
+                <div className={"gameBoardWrapper"}>
                     <div>
-                        <h2>History</h2>
-                        <HistoryTable game={game}/>
+                        <canvas ref={canvasRef} width={515} height={720}/>
+                    </div>
+                    <div>
+                        <div className={"gameBoardInnerWrapper"}>
+                            <div>
+                                <h2>History</h2>
+                                <HistoryTable game={game}/>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-    </ViewWrapper>;
+        }
+    </ViewWrapper>
 }
 
 export default GameBoard;

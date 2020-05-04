@@ -8,6 +8,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import ViewWrapper from "./ViewWrapper";
 import Card from "@material-ui/core/Card";
 import DashboardCard from "./DashboardCard";
+import {get} from "../classes/RestHelper";
 
 function Dashboard(props: any) {
 
@@ -17,26 +18,13 @@ function Dashboard(props: any) {
 
     useEffect(() => {
         setIsLoading(true);
-        fetch('/v1/game', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setGames(data);
-                        setIsLoading(false);
-                    });
-                } else {
-                    throw new Error("Error during game loading, please try again!");
-                }
-            })
-            .catch((error) => {
-                setError({message: error.message, error: error});
-                setIsLoading(false);
-            });
+        get("game", (games: any) => {
+            setGames(games);
+            setIsLoading(false);
+        }, (error: any) => {
+            setError({message: error.message, error: error});
+            setIsLoading(false);
+        });
     }, [setIsLoading, setGames, setError]);
 
     const createGame = () => {
