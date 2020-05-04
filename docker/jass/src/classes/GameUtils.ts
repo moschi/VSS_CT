@@ -4,7 +4,6 @@ import {Round} from "./Game";
 
 function calculatePointsPerTeam(game: FullGame) {
 
-
     const team1: Team = game.teams[0];
     const team2: Team = game.teams[1];
 

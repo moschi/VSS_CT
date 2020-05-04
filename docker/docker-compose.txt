@@ -1,3 +1,4 @@
 docker-compose --file .\jasstable.yml --project-name CT --project-directory . up -d --build --remove-orphans
 
+
 docker-compose --file .\jasstable.yml --project-name CT --project-directory . down --remove-orphans

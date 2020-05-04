@@ -19,7 +19,7 @@ func CreateRound(w http.ResponseWriter, r *http.Request) {
 	var round Round
 	json.NewDecoder(r.Body).Decode(&round)
 
-	var roundID int
+	var roundID int32
 	database.QueryRow("INSERT INTO round(game, trumpf) VALUES($1, $2) RETURNING id;", gameID, &round.TrumpfID).Scan(&roundID)
 
 	log.Println(&round.PointsPerTeamPerRound[0].Points)
@@ -31,6 +31,7 @@ func CreateRound(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 	}
+	json.NewEncoder(w).Encode(InlineResponse201{roundID})
 	w.WriteHeader(http.StatusOK)
 }
 

@@ -18,6 +18,7 @@ yarn-lock.json
 # production
 /build
 /jass/build
+/docker/jass/build
 
 # misc
 .DS_Store
