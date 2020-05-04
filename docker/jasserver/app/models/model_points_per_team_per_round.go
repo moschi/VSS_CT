@@ -8,9 +8,9 @@ import (
 
 // PointsPerTeamPerRound ...
 type PointsPerTeamPerRound struct {
-	WiisPoints int64 `json:"wiisPoints,omitempty"`
-	Points     int64 `json:"points,omitempty"`
-	TeamID     int64 `json:"teamId,omitempty" db:"team"`
+	WiisPoints int64 `json:"wiisPoints"`
+	Points     int64 `json:"points"`
+	TeamID     int64 `json:"teamId" db:"team"`
 	Round      int64 `json:"-"`
 	ID         int64 `json:"-"`
 }

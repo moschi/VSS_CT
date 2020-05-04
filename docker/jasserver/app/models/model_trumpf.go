@@ -11,9 +11,9 @@ import (
 
 // Trumpf ...
 type Trumpf struct {
-	ID         int64  `json:"id,omitempty"`
-	Name       string `json:"name,omitempty"`
-	Multiplier int32  `json:"multiplier,omitempty"`
+	ID         int64  `json:"id"`
+	Name       string `json:"name"`
+	Multiplier int32  `json:"multiplier"`
 }
 
 func loadTrumpf(id int, db *sqlx.DB) Trumpf {

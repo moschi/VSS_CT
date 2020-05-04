@@ -8,9 +8,9 @@ import (
 
 // Round ...
 type Round struct {
-	ID                    int64                   `json:"id,omitempty"`
-	TrumpfID              int64                   `json:"trumpfId,omitempty" db:"trumpf"`
-	PointsPerTeamPerRound []PointsPerTeamPerRound `json:"pointsPerTeamPerRound,omitempty"`
+	ID                    int64                   `json:"id"`
+	TrumpfID              int64                   `json:"trumpfId" db:"trumpf"`
+	PointsPerTeamPerRound []PointsPerTeamPerRound `json:"pointsPerTeamPerRound"`
 	Game                  int64                   `json:"-"`
 }
 
