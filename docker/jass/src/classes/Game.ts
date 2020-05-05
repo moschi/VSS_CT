@@ -34,9 +34,7 @@ export interface Round {
     id: number
     trumpfId: number
     pointsPerTeamPerRound: PointsPerTeamPerRound[],
-
 }
-
 export interface PointsPerTeamPerRound {
     __typename?: string
     wiisPoints: number

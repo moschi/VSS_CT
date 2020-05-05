@@ -1,10 +1,10 @@
 import * as React from "react";
 import {useEffect, useRef, useState} from "react";
 import DrawGameBoard from "../classes/DrawGameBoard";
-import {FullGame, PointsPerTeamPerRound, Round, Trumpf} from "../classes/Game";
+import {PointsPerTeamPerRound, Round, Trumpf} from "../classes/Game";
 import jasstafel from "../images/jasstafel.jpg";
 import ViewWrapper from "./ViewWrapper";
-import {get, post, /* getError, getIsLoading*/} from "../classes/RestHelper";
+import {del, get, post} from "../classes/RestHelper";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 import GameMocks from "../classes/GameMocks";
 
@@ -125,6 +125,9 @@ const HistoryTableRow = (props: any) => {
                 {props.trump}
             </p>
         </td>
+        <td>
+            <input type={"button"} value={"X"} onClick={() => props.removeRound(props.roundId)}/>
+        </td>
     </tr>
 };
 
@@ -132,6 +135,7 @@ function GameBoard(props: any) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [game, setGame] = useState(GameMocks[0]);
     const [rerender, setRerender] = useState(false);
+    const [rererenderer, setRerererenderer] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
 
@@ -146,7 +150,7 @@ function GameBoard(props: any) {
             setError({message: error.message, error: error});
             setIsLoading(false);
         });
-    }, [props.match.params.id]);
+    }, [rererenderer, props.match.params.id]);
 
     useEffect(() => {
         console.log("should rerender");
@@ -159,7 +163,6 @@ function GameBoard(props: any) {
     };
 
     const addRound = (trumpfId: number, points: number, teamName: string, wiisPoints1: number, wiisPoints2: number) => {
-        const roundID = getNextRoundId(game.rounds);
         let teamId = game.teams[0].name === teamName ? game.teams[0].id : game.teams[1].id;
         const getTeamIdOtherTeam = () => {
             return game.teams[0].id === teamId ? game.teams[1].id : game.teams[0].id;
@@ -179,21 +182,27 @@ function GameBoard(props: any) {
             {points: points, wiisPoints: wiisPoints1, teamId: teamId},
             {points: pointsOtherTeam, wiisPoints: wiisPoints2, teamId: getTeamIdOtherTeam()}];
 
-        const round: Round = {
-            id: roundID,
+        const postRound: Round = {
+            id: 0,
             trumpfId: trumpfId,
             pointsPerTeamPerRound: pointsPerTeamPerRound
         };
 
-        game.rounds.push(round);
-        setGame(game);
-        setRerender(!rerender);
-        console.log(rerender);
+        post("game/" + game.id + "/round", (resp: any) => {
+            const round: Round = postRound;
+            round.id = resp.id;
+            game.rounds.push(round);
+            setGame(game);
+            setRerender(!rerender);
+        }, () => {
+            console.log("fuck");
+        }, postRound);
+    };
 
-        post("game/" + game.id + "/round", () => {
-            console.log("yeet");
-        }, () => {console.log("fuck");
-        }, round);
+    const removeRound = (roundId: number) => {
+        return new Promise((resolve) => {
+            resolve(del("game/" + game.id + "/" + roundId));
+        }).then(() => {setRerererenderer(!rererenderer); console.log("blah")});
     };
 
     const HistoryTable = (props: any) => {
@@ -225,7 +234,8 @@ function GameBoard(props: any) {
                     }
                 });
                 return <HistoryTableRow runde={numOfRounds + 1} teamOnePoints={teamOnePoints}
-                                        teamTwoPoints={teamTwoPoints} trump={trumpf.name}/>
+                                        teamTwoPoints={teamTwoPoints} trump={trumpf.name} removeRound={removeRound}
+                                        roundId={round.id}/>
             })
             }
         </HistoryWrapper>
