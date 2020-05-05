@@ -11,9 +11,7 @@ This is a WebApp to record points for a "Schieber-Jass". The app has the followi
 
 ## Architecture
 
-```
 ![component diagram][./components.png]
-```
 
 ## Design Decisions
 
