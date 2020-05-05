@@ -8,7 +8,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import ViewWrapper from "./ViewWrapper";
 import Card from "@material-ui/core/Card";
 import DashboardCard from "./DashboardCard";
-import {deleteRequest, get} from "../classes/RestHelper";
+import {del, get} from "../classes/RestHelper";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import CardContent from "@material-ui/core/CardContent";
@@ -51,7 +51,7 @@ function Dashboard(props: any) {
     };
 
     const deleteGame = (id: number, index: number) => {
-        deleteRequest("game/" + id,
+        del("game/" + id,
             () => {
                 const gamesCopy = [...games];
                 gamesCopy.splice(index, 1);

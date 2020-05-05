@@ -40,6 +40,6 @@ export const post = (route: string, callback?: (data?: object)=>void, errorHandl
     request("POST", route, true, callback, errorHandling, body);
 };
 
-export const deleteRequest = (route: string, callback?: (data?: object) => void, errorHandling?: (error: Error) => void) =>{
+export const del = (route: string, callback?: (data?: object) => void, errorHandling?: (error: Error) => void) =>{
     request("DELETE", route, false, callback, errorHandling);
 };
