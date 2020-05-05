@@ -76,7 +76,8 @@ function Dashboard(props: any) {
                     show: true,
                     message: GAME_DELETE_FAILURE,
                     error: error,
-                    showSnackbar: false,
+                    showSnackbar: true,
+                    type: 'error',
                 });
             }
         );
@@ -124,28 +125,34 @@ function Dashboard(props: any) {
             {isLoading ? (
                 <CircularProgress />
             ) : (
-                <Grid container>
-                    {message.show && message.showSnackbar ? (
-                        <Snackbar
-                            open={message.showSnackbar}
-                            autoHideDuration={3000}
-                        >
-                            <Alert severity={message.type}>
-                                {message.message}
-                            </Alert>
-                        </Snackbar>
-                    ) : (
-                        <Grid
-                            justify="center"
-                            align-items="center"
-                            item
-                            xs={12}
-                            md={12}
-                            lg={12}
-                        >
-                            {message.message}
-                        </Grid>
-                    )}
+                <Grid container
+                    direction="row"
+                    justify="center"
+                    align-items="center">
+                    {message.show &&
+                        <React.Fragment>
+                            {message.showSnackbar ? (
+                                <Snackbar
+                                    open={message.showSnackbar}
+                                    autoHideDuration={3000}
+                                >
+                                    <Alert severity={message.type}>
+                                        {message.message}
+                                    </Alert>
+                                </Snackbar>
+                            ) : (
+                                <Grid
+                                    item
+                                    xs={12}
+                                    md={12}
+                                    lg={12}
+                                >
+                                    <Alert severity="info"> {message.message} </Alert>
+                                </Grid>
+                            )
+                            }
+                        </React.Fragment>
+                    }
                     <Grid
                         container
                         spacing={10}
