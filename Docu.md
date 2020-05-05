@@ -21,7 +21,7 @@ bibedi bidiebd bdbbababa bebbeeidi b dbabbdidia bababai aiaib abaabbaiabai
 
 ### ERD
 
-The database design looks the following: 
+The database design follows this erd: 
 
 ![erd](./Docu.assets/erd.png)
 
