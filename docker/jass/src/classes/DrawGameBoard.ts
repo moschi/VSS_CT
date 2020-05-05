@@ -1,4 +1,4 @@
-import {FullGame, Game, Round, Trumpf} from "./Game";
+import {FullGame, Round, Trumpf} from "./Game";
 import {RefObject} from "react";
 import calculatePointsPerTeam from "../classes/GameUtils";
 import {PointsDrawn, Rest} from "./drawing";

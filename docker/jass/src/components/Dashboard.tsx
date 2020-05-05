@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {Grid} from "@material-ui/core";
-import {FullGame, Game} from "../classes/Game";
+import {FullGame} from "../classes/Game";
 import calculatePointsPerTeam from "../classes/GameUtils";
 import {withRouter} from "react-router";
 import Button from "@material-ui/core/Button";

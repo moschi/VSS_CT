@@ -150,7 +150,7 @@ function GameBoard(props: any) {
             setError({message: error.message, error: error});
             setIsLoading(false);
         });
-    }, [setGame, setError, setIsLoading]);
+    }, [setGame, setError, setIsLoading, props.match.params.id]);
 
     const getNextRoundId = (rounds: Round[]) => {
             if (rounds.length > 0) {

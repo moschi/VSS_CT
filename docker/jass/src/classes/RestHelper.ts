@@ -1,4 +1,6 @@
-import {Response, Server} from "miragejs";
+
+const ERROR_OCCURED = 'Es ist ein Fehler aufgetretten, bitte versuchen sie es erneut.';
+
 
 const request = (method:string, route: string, callback?:(data:object) => void, errorHandling?:(error:object)=> void)=>{
     fetch('/v1/' + route, {
@@ -14,7 +16,7 @@ const request = (method:string, route: string, callback?:(data:object) => void, 
                 }
             });
         } else {
-            throw new Error("Error during game loading, please try again!");
+            throw new Error(ERROR_OCCURED);
         }
     }).catch((error) => {
         if(errorHandling){

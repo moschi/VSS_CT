@@ -29,7 +29,6 @@ export interface Trumpf {
     multiplier: number
 }
 
-
 export interface Round {
     __typename?: string
     id: number

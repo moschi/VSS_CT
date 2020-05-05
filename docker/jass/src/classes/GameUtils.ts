@@ -1,4 +1,4 @@
-import {FullGame, Game} from "./Game";
+import {FullGame} from "./Game";
 import {Team} from "./Game";
 import {Round} from "./Game";
 

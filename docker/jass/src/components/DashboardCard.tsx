@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 export default function DashboardCard(props: any) {
 
     return <div className={"dashboardCardWrapper"}>

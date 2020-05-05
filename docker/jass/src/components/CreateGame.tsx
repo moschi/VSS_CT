@@ -7,6 +7,7 @@ import {GameCreation, Team} from "../classes/Game";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ViewWrapper from "./ViewWrapper";
 import { Redirect } from 'react-router-dom';
+import {get} from "../classes/RestHelper";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -28,17 +29,13 @@ interface TeamType extends Team {
 const GAME_NOT_CREATED = 'Spiel wurde nicht erstellt, bitte versuchen sie es erneut.';
 const NOT_AVAILABLE = 'Momentant können keine Spiele erstellt werden, bitte versuchen sie es später erneut.';
 const BAD_TEAM_NAME = 'Ein Teamname muss aus Buchstaben und Zahlen bestehen.';
-
 const TEAM_FAILURE = 'Team wurde nicht erstellt, bitte versuchen sie es erneut!';
 
 function CreateGame() {
 
     const teamNameRegex = RegExp('^[\\w\\d]{1,20}$');
-
     const [isLoading, setIsLoading] = useState<Boolean>(true);
-
     const classes = useStyles();
-
     const initialMessage: Message = {show: false, message: ''};
 
     const [team1, setTeam1] = useState<Team>({} as Team);
@@ -59,7 +56,22 @@ function CreateGame() {
     const [gameId, setGameId] = useState<number>();
 
     useEffect(() => {
-        fetch('/v1/team', {
+        setIsLoading(true);
+        get("team", (data: any) => {
+            setTeams(data);
+            setTeamError({
+                message: '',
+                show: false,
+            });
+            setIsLoading(false);
+        }, (error: any) => {
+            setTeamError({
+                show: true,
+                message: error.message,
+                error: error
+            });
+        });
+        /*fetch('/v1/team', {
             method: 'GET',
         })
             .then((response) => {
@@ -83,7 +95,8 @@ function CreateGame() {
                     message: error.message,
                     error: error
                 });
-            });
+            });*/
+
     }, [setTeams, setTeamError, setIsLoading]);
 
     const validateName1 = (value: string) => {
@@ -311,7 +324,7 @@ function CreateGame() {
                     isLoading ?
                         <CircularProgress/>
                         :
-                        gameId ?
+                        gameId || gameId === 0 ?
                             <Redirect to={'/game/' + gameId}/>
                             :
                             <form className={classes.root}>

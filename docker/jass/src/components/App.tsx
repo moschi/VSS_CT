@@ -28,7 +28,6 @@ function App() {
               </Button>
             </Toolbar>
           </AppBar>
-
           {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
           <Switch>
@@ -43,7 +42,6 @@ function App() {
             <Route path="/">
               <Dashboard/>
             </Route>
-
           </Switch>
         </div>
       </Router>

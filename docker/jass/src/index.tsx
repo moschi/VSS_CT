@@ -46,7 +46,7 @@ if (process.env.NODE_ENV !== 'production') {
             }, {timing: timeout});
             this.post('/game', (schema: any, request: Request) => {
                 return new Response(201, {}, {
-                    id: 56
+                    id: 0
                 });
             }, {timing: timeout});
             this.post("game/0/round", () => {
