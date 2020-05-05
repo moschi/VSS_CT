@@ -22,9 +22,6 @@ function App() {
               <Button className={"headerButton"} aria-label="menu">
                 <Link className={"headerLink"} to="/">Dashboard</Link>
               </Button>
-              <Button className={"headerButton"} aria-label="menu">
-                <Link className={"headerLink"} to="/users">Users</Link>
-              </Button>
             </Toolbar>
           </AppBar>
           {/* A <Switch> looks through its children <Route>s and
