@@ -83,7 +83,8 @@ paths:
       responses:
         200:
           description: "Team updated"
-    delete:
+  /team/{teamId}:
+    delete: 
       tags:
         - "team"
       summary: "delete team"

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Grid} from "@material-ui/core";
+import {CardHeader, Grid} from "@material-ui/core";
 import {FullGame} from "../classes/Game";
 import calculatePointsPerTeam from "../classes/GameUtils";
 import {withRouter} from "react-router";
@@ -8,12 +8,26 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import ViewWrapper from "./ViewWrapper";
 import Card from "@material-ui/core/Card";
 import DashboardCard from "./DashboardCard";
-import {get} from "../classes/RestHelper";
+import {del, get} from "../classes/RestHelper";
+import IconButton from "@material-ui/core/IconButton";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import CardContent from "@material-ui/core/CardContent";
+import Snackbar from "@material-ui/core/Snackbar";
+import {Alert, Color} from "@material-ui/lab";
+
+interface SnackbarMessage extends Message {
+    showSnackbar?: boolean;
+    type?: Color;
+}
 
 function Dashboard(props: any) {
 
+    const GAME_DELETE_FAILURE = "The game could not be deleted, please try again.";
+    const GAME_DELETE_SUCCESS = "The game was deleted.";
+    const NO_GAMES = "No Games recorded, please add one.";
+
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState();
+    const [message, setMessage] = useState<SnackbarMessage>({show: false, message: ''});
     const [games, setGames] = useState([]);
 
     useEffect(() => {
@@ -22,29 +36,67 @@ function Dashboard(props: any) {
             setGames(games);
             setIsLoading(false);
         }, (error: any) => {
-            setError({message: error.message, error: error});
+            setMessage({
+                show: true,
+                message: NO_GAMES,
+                error: error,
+                showSnackbar: false,
+            })
             setIsLoading(false);
         });
-    }, [setIsLoading, setGames, setError]);
+    }, []);
 
     const createGame = () => {
         props.history.push("/game/create");
     };
 
+    const deleteGame = (id: number, index: number) => {
+        del("game/" + id,
+            () => {
+                const gamesCopy = [...games];
+                gamesCopy.splice(index, 1);
+                setGames(gamesCopy);
+                setMessage({
+                    show: true,
+                    message: GAME_DELETE_SUCCESS,
+                    showSnackbar: true,
+                    type: 'success',
+                })
+            },
+            (error: Error) => {
+                setMessage({
+                    show: true,
+                    message: GAME_DELETE_FAILURE,
+                    error: error,
+                    showSnackbar: false,
+                })
+            }
+         );
+    };
+
     const renderGames = () => {
-        return games.map((game: FullGame) => {
+        return games.map((game: FullGame, index: number) => {
             const results = calculatePointsPerTeam(game);
             return (
                 <Grid item xs={12} md={6} lg={3} key={game.id}>
-                    <Card onClick={() => {
-                        props.history.push("/game/" + game.id);
-                    }}>
-                        <DashboardCard gameTitle={game.id}
-                                   teamOne={results.team1.team.name}
-                                   pointsTeamOne={results.team1.points}
-                                   teamTwo={results.team2.team.name}
-                                   pointsTeamTwo={results.team2.points}
+                    <Card>
+                        <CardHeader
+                            action={
+                                <IconButton aria-label="settings" onClick={() => deleteGame(game.id, index) }>
+                                    <DeleteOutlineIcon />
+                                </IconButton>
+                            }
+                            title={game.id}
                         />
+                        <CardContent onClick={() => {
+                            props.history.push("/game/" + game.id);
+                        }}>
+                            <DashboardCard teamOne={results.team1.team.name}
+                                       pointsTeamOne={results.team1.points}
+                                       teamTwo={results.team2.team.name}
+                                       pointsTeamTwo={results.team2.points}
+                            />
+                        </CardContent>
                     </Card>
                 </Grid>
             )
@@ -59,11 +111,17 @@ function Dashboard(props: any) {
             {isLoading ?
                 <CircularProgress/>
                 :
-                error ?
-                    <p>error: {error.message}</p>
+                <Grid container>
+                {message.show &&
+                    message.showSnackbar ? <Snackbar open={message.showSnackbar} autoHideDuration={3000}>
+                        <Alert severity={message.type}>
+                            {message.message}
+                        </Alert>
+                    </Snackbar>
                     :
-                    <Grid container
-                          spacing={10}
+                    <Grid justify="center" align-items="center" item xs={12} md={12} lg={12}>{message.message}</Grid>
+                }
+                    <Grid container spacing={10}
                           direction="row"
                           justify="center"
                           align-items="center">
@@ -72,6 +130,7 @@ function Dashboard(props: any) {
                             <Button onClick={createGame}>+ Game</Button>
                         </Grid>
                     </Grid>
+                </Grid>
             }
         </ViewWrapper>
     );

@@ -44,14 +44,21 @@ if (process.env.NODE_ENV !== 'production') {
             this.get('/game/0', (schema: any, request: Request) => {
                 return new Response(200, {}, GameMocks[0]);
             }, {timing: timeout});
+
+            this.delete('/game/0', (schema: any, request: Request) => {
+                return new Response(204, {});
+            }, {timing: timeout});
+
             this.post('/game', (schema: any, request: Request) => {
                 return new Response(201, {}, {
                     id: 0
                 });
             }, {timing: timeout});
+
             this.post("game/0/round", () => {
                 return new Response(201, {}, "6")
             }, {timing: timeout});
+
             this.post("game/0/6", () => {
                 return new Response(201, {})
             }, {timing: timeout});

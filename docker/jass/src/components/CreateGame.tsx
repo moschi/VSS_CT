@@ -26,10 +26,10 @@ interface TeamType extends Team {
     title?: string;
 }
 
-const GAME_NOT_CREATED = 'Spiel wurde nicht erstellt, bitte versuchen sie es erneut.';
-const NOT_AVAILABLE = 'Momentant können keine Spiele erstellt werden, bitte versuchen sie es später erneut.';
-const BAD_TEAM_NAME = 'Ein Teamname muss aus Buchstaben und Zahlen bestehen.';
-const TEAM_FAILURE = 'Team wurde nicht erstellt, bitte versuchen sie es erneut!';
+const GAME_NOT_CREATED = 'Game was not created, please try again.';
+const NOT_AVAILABLE = 'Currently no games can be created, please try again later.';
+const BAD_TEAM_NAME = 'A teamname must only consist of letters and numbers.';
+const TEAM_FAILURE = 'The team wasn\'t created, please try again.';
 
 function CreateGame() {
 
@@ -125,7 +125,7 @@ function CreateGame() {
                     reset();
                     setGameId(id);
                 })
-                .catch((error: ErrorEvent) => {
+                .catch((error: Error) => {
                     reset();
                     setMessage({
                         show: true,
@@ -211,7 +211,7 @@ function CreateGame() {
                 team.id = id;
                 setTeam(team);
             } else {
-                return Promise.reject('Team nicht erstellt!');
+                return Promise.reject(TEAM_FAILURE);
             }
         }
         return Promise.resolve();
@@ -226,7 +226,7 @@ function CreateGame() {
                         setIsLoadingTeam1(false);
                         setTeam1ready(true);
                     })
-                    .catch((error: ErrorEvent) => {
+                    .catch((error: Error) => {
                         setMessage({
                             show: true,
                             message: error.message,
@@ -251,7 +251,7 @@ function CreateGame() {
                         setIsLoadingTeam2(false);
                         setTeam2ready(true);
                     })
-                    .catch((error: ErrorEvent) => {
+                    .catch((error: Error) => {
                         setMessage({
                             show: true,
                             message: error.message,

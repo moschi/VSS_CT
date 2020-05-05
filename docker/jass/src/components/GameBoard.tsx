@@ -200,9 +200,12 @@ function GameBoard(props: any) {
     };
 
     const removeRound = (roundId: number) => {
-        return new Promise((resolve) => {
-            resolve(del("game/" + game.id + "/" + roundId));
-        }).then(() => {setRerererenderer(!rererenderer); console.log("blah")});
+        del("game/" + game.id + "/" + roundId, () => {
+            setRerererenderer(!rererenderer);
+            console.log("blah")
+        }, () => {
+            console.log("fuck");
+        });
     };
 
     const HistoryTable = (props: any) => {
