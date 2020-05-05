@@ -2,11 +2,11 @@ package jassmodels
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
 )
 
 // CreateGame ...
@@ -14,15 +14,22 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	var game Game
 
-	json.NewDecoder(r.Body).Decode(&game)
+	decodeErr := json.NewDecoder(r.Body).Decode(&game)
 
-	var gameID int32
-	err := database.QueryRow("INSERT INTO game (team1, team2, isfinished, createdby) VALUES($1, $2, false, $3) RETURNING id", &game.Teams[0].ID, &game.Teams[1].ID, getUserIDFromRequest(r)).Scan(&gameID)
-	if err != nil {
-		log.Fatal(err)
+	if HandleBadRequest(w, decodeErr) {
+		return
 	}
 
-	log.Println(gameID)
+	userID, databaseErr := getUserIDFromRequest(r)
+	if HandleDbError(w, databaseErr) {
+		return
+	}
+
+	var gameID int32
+	databaseErr = database.QueryRow("INSERT INTO game (team1, team2, isfinished, createdby) VALUES($1, $2, false, $3) RETURNING id", &game.Teams[0].ID, &game.Teams[1].ID, userID).Scan(&gameID)
+	if HandleDbError(w, databaseErr) {
+		return
+	}
 
 	json.NewEncoder(w).Encode(InlineResponse201{gameID})
 	w.WriteHeader(http.StatusOK)
@@ -33,14 +40,44 @@ func DeleteGame(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	vars := mux.Vars(r)
-	gameID, _ := strconv.Atoi(vars["gameId"])
+	gameID, convErr := strconv.Atoi(vars["gameId"])
+	if HandleBadRequest(w, convErr) {
+		return
+	}
 
-	database.Exec("DELETE FROM pointsperteamperround WHERE round IN(SELECT id FROM round WHERE game = $1)", gameID)
-	database.Exec("DELETE FROM round WHERE game = $1", gameID)
-	_, err := database.Exec("DELETE FROM game WHERE id = $1;", gameID)
+	userID, databaseErr := getUserIDFromRequest(r)
+	if HandleDbError(w, databaseErr) {
+		return
+	}
 
-	if err != nil {
-		panic(err)
+	if !gameExists(gameID, userID, database) {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	tx, databaseErr := database.Begin()
+	if HandleDbError(w, databaseErr) {
+		return
+	}
+
+	_, databaseErr = tx.Exec("DELETE FROM pointsperteamperround WHERE round IN(SELECT id FROM round WHERE game = $1)", gameID)
+	if HandleTxDbError(w, tx, databaseErr) {
+		return
+	}
+
+	_, databaseErr = tx.Exec("DELETE FROM round WHERE game = $1", gameID)
+	if HandleTxDbError(w, tx, databaseErr) {
+		return
+	}
+
+	_, databaseErr = tx.Exec("DELETE FROM game WHERE id = $1;", gameID)
+	if HandleTxDbError(w, tx, databaseErr) {
+		return
+	}
+
+	databaseErr = tx.Commit()
+	if HandleTxDbError(w, tx, databaseErr) {
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -50,42 +87,86 @@ func DeleteGame(w http.ResponseWriter, r *http.Request) {
 func GetGame(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
+	userID, databaseErr := getUserIDFromRequest(r)
+	if HandleDbError(w, databaseErr) {
+		return
+	}
+
 	games := []Game{}
-	database.Select(&games, "SELECT * FROM game WHERE createdby = $1", getUserIDFromRequest(r))
+	databaseErr = database.Select(&games, "SELECT * FROM game WHERE createdby = $1", userID)
+	if HandleDbError(w, databaseErr) {
+		return
+	}
 
 	for i := range games {
-		games[i].Teams = [2]Team{
-			loadTeam(games[i].Team1, database),
-			loadTeam(games[i].Team2, database),
+		team1, databaseErr := loadTeam(games[i].Team1, database)
+		if HandleDbError(w, databaseErr) {
+			return
 		}
+		team2, databaseErr := loadTeam(games[i].Team2, database)
+		if HandleDbError(w, databaseErr) {
+			return
+		}
+		games[i].Teams = [2]Team{team1, team2}
 	}
 
 	json.NewEncoder(w).Encode(games)
 	w.WriteHeader(http.StatusOK)
 }
 
-// GetgameById ...
-func GetgameById(w http.ResponseWriter, r *http.Request) {
+// GetgameByID ...
+func GetgameByID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	vars := mux.Vars(r)
-	gameID, _ := strconv.Atoi(vars["gameId"])
+	gameID, convErr := strconv.Atoi(vars["gameId"])
+	if HandleBadRequest(w, convErr) {
+		return
+	}
+
+	userID, databaseErr := getUserIDFromRequest(r)
+	if HandleDbError(w, databaseErr) {
+		return
+	}
+
+	if !gameExists(gameID, userID, database) {
+		http.Error(w, "Not Found", http.StatusNotFound)
+		return
+	}
 
 	var fullGame FullGame
-	game := loadGame(gameID, database)
+	game, databaseErr := loadGame(gameID, database)
+	if HandleDbError(w, databaseErr) {
+		return
+	}
 
 	fullGame.ID = game.ID
 	fullGame.IsFinished = game.IsFinished
-	fullGame.Teams = []Team{
-		loadTeam(game.Team1, database),
-		loadTeam(game.Team2, database),
+	team1, databaseErr := loadTeam(game.Team1, database)
+	if HandleDbError(w, databaseErr) {
+		return
 	}
 
-	var rounds = loadRounds(gameID, database)
-	fullGame.Rounds = rounds
+	team2, databaseErr := loadTeam(game.Team2, database)
+	if HandleDbError(w, databaseErr) {
+		return
+	}
 
-	log.Println(rounds)
+	fullGame.Teams = []Team{team1, team2}
+
+	rounds, databaseErr := loadRounds(gameID, database)
+	if HandleDbError(w, databaseErr) {
+		return
+	}
+	fullGame.Rounds = rounds
 
 	json.NewEncoder(w).Encode(fullGame)
 	w.WriteHeader(http.StatusOK)
+}
+
+func gameExists(id int, userID int, db *sqlx.DB) bool {
+	var count int32
+	database.QueryRow("SELECT COUNT(*) FROM game WHERE id = $1 and createdby = $2", id, userID).Scan(&count)
+
+	return count > 0
 }

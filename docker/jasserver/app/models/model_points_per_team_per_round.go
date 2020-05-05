@@ -1,8 +1,6 @@
 package jassmodels
 
 import (
-	"fmt"
-
 	"github.com/jmoiron/sqlx"
 )
 
@@ -15,26 +13,18 @@ type PointsPerTeamPerRound struct {
 	ID         int64 `json:"-"`
 }
 
-func loadPointsPerTeamPerRound(teamID int, roundID int64, db *sqlx.DB) PointsPerTeamPerRound {
+func loadPointsPerTeamPerRound(teamID int, roundID int64, db *sqlx.DB) (PointsPerTeamPerRound, error) {
 	sqlStatement := "SELECT * FROM pointsPerTeamPerRound WHERE teamID = $1 AND round = $2"
 	var pointsPerTeamPerRound PointsPerTeamPerRound
 
-	err := db.Get(&pointsPerTeamPerRound, sqlStatement, teamID, roundID)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return pointsPerTeamPerRound
+	databaseErr := db.Get(&pointsPerTeamPerRound, sqlStatement, teamID, roundID)
+	return pointsPerTeamPerRound, databaseErr
 }
 
-func loadPointsPerRound(roundID int64, db *sqlx.DB) []PointsPerTeamPerRound {
+func loadPointsPerRound(roundID int64, db *sqlx.DB) ([]PointsPerTeamPerRound, error) {
 	sqlStatement := "SELECT * FROM pointsPerTeamPerRound WHERE round = $1"
 	var pointsPerTeamPerRound []PointsPerTeamPerRound
 
-	err := db.Select(&pointsPerTeamPerRound, sqlStatement, roundID)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return pointsPerTeamPerRound
+	databaseErr := db.Select(&pointsPerTeamPerRound, sqlStatement, roundID)
+	return pointsPerTeamPerRound, databaseErr
 }

@@ -7,11 +7,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
-	//"github.com/lib/pq"
-	//"database/sql"
-	//"gopkg.in/mgo.v2/bson"
-
-	//jassmodels "./models"
 	jassmodels "jasserver/app/models" // used in docker
 	//jassmodels "./models"
 )
@@ -37,7 +32,12 @@ func main() {
 	log.Println(port)
 	log.Printf("Server started")
 	connStr := "user=postgres dbname=jass sslmode=disable password=postgres host=" + host + " port=" + dbport + ""
-	db, _ := sqlx.Open("postgres", connStr)
+	db, databaseErr := sqlx.Open("postgres", connStr)
+
+	if databaseErr != nil {
+		log.Fatal(databaseErr)
+	}
+
 	router := jassmodels.NewRouter(db)
 
 	// use port 9090 for local debugging (since its hopefully free) and 8080 for using in docker

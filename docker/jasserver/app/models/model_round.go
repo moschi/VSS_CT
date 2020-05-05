@@ -1,8 +1,6 @@
 package jassmodels
 
 import (
-	"fmt"
-
 	"github.com/jmoiron/sqlx"
 )
 
@@ -14,30 +12,26 @@ type Round struct {
 	Game                  int64                   `json:"-"`
 }
 
-func loadRound(id int64, db *sqlx.DB) Round {
+func loadRound(id int64, db *sqlx.DB) (Round, error) {
 	sqlStatement := "SELECT * FROM round WHERE id = $1"
 	var round Round
 
-	err := db.Get(&round, sqlStatement, id)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return round
+	databaseErr := db.Get(&round, sqlStatement, id)
+	return round, databaseErr
 }
 
-func loadRounds(gameID int, db *sqlx.DB) []Round {
+func loadRounds(gameID int, db *sqlx.DB) ([]Round, error) {
 	sqlStatement := "SELECT * FROM round WHERE game = $1"
 
 	rounds := make([]Round, 0)
 
-	err := db.Select(&rounds, sqlStatement, gameID)
-	if err != nil {
-		fmt.Println(err)
-	}
-
+	databaseErr := db.Select(&rounds, sqlStatement, gameID)
 	for i := range rounds {
-		rounds[i].PointsPerTeamPerRound = loadPointsPerRound(rounds[i].ID, db)
+		rounds[i].PointsPerTeamPerRound, databaseErr = loadPointsPerRound(rounds[i].ID, db)
+		if databaseErr != nil {
+			break
+		}
 	}
 
-	return rounds
+	return rounds, databaseErr
 }

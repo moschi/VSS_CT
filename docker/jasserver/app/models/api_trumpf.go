@@ -10,7 +10,10 @@ func GetTrumpfs(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	var trumpfs []Trumpf
 
-	database.Select(&trumpfs, "SELECT * FROM trumpf")
+	databaseErr := database.Select(&trumpfs, "SELECT * FROM trumpf")
+	if HandleDbError(w, databaseErr) {
+		return
+	}
 
 	json.NewEncoder(w).Encode(trumpfs)
 

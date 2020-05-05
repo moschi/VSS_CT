@@ -1,8 +1,6 @@
 package jassmodels
 
 import (
-	"fmt"
-
 	"github.com/jmoiron/sqlx"
 )
 
@@ -13,13 +11,8 @@ type Team struct {
 	CreatedBy int64  `json:"-"`
 }
 
-func loadTeam(id int32, db *sqlx.DB) Team {
-	sqlStatement := "SELECT * FROM team WHERE id = $1"
+func loadTeam(id int32, db *sqlx.DB) (Team, error) {
 	var team Team
-
-	err := db.Get(&team, sqlStatement, id)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return team
+	databaseErr := db.Get(&team, "SELECT * FROM team WHERE id = $1", id)
+	return team, databaseErr
 }

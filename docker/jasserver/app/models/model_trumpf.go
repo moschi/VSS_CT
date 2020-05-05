@@ -4,8 +4,6 @@ package jassmodels
 import (
 	//"github.com/jmoiron/sqlx"
 
-	"fmt"
-
 	"github.com/jmoiron/sqlx"
 )
 
@@ -16,13 +14,10 @@ type Trumpf struct {
 	Multiplier int32  `json:"multiplier"`
 }
 
-func loadTrumpf(id int, db *sqlx.DB) Trumpf {
+func loadTrumpf(id int, db *sqlx.DB) (Trumpf, error) {
 	sqlStatement := "SELECT * FROM trumpf WHERE id = $1"
 	var trumpf Trumpf
 
-	err := db.Get(&trumpf, sqlStatement, id)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return trumpf
+	databaseErr := db.Get(&trumpf, sqlStatement, id)
+	return trumpf, databaseErr
 }

@@ -1,8 +1,6 @@
 package jassmodels
 
 import (
-	"fmt"
-
 	"github.com/jmoiron/sqlx"
 )
 
@@ -16,16 +14,12 @@ type Game struct {
 	Teams      [2]Team `json:"teams"`
 }
 
-func loadGame(id int, db *sqlx.DB) Game {
+func loadGame(id int, db *sqlx.DB) (Game, error) {
 	sqlStatement := "SELECT * FROM game WHERE id = $1"
 	var game Game
 
-	err := db.Get(&game, sqlStatement, id)
-	if err != nil {
-		fmt.Println(err)
-	}
-
+	databaseErr := db.Get(&game, sqlStatement, id)
 	game.Teams = [2]Team{}
 
-	return game
+	return game, databaseErr
 }

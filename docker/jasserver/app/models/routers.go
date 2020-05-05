@@ -1,6 +1,7 @@
 package jassmodels
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -18,50 +19,101 @@ type Route struct {
 	HandlerFunc http.HandlerFunc
 }
 
-// authMiddleware
-type authenticationMiddleware struct {
-	tokenUsers map[string]string
+const DEBUG bool = false // Switch between DEBUG and PRODUCTION: if true, auth will not be checked
+
+// check if DB is running
+type dbCheckMiddleware struct{}
+
+func (dbcheck *dbCheckMiddleware) Middleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if database.Ping() != nil {
+			log.Println("Database system is unavailable")
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		} else {
+			next.ServeHTTP(w, r)
+		}
+	})
 }
+
+// authMiddleware
+type authenticationMiddleware struct{}
 
 // Middleware function, which will be called for each request
 func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("X-WebAuth-User")
 
-		log.Println(token)
+		userExists, databaseErr := userExists(token)
 
-		if userExists(token) {
-			// We found the token in our map
+		if DEBUG {
+			userExists = true
+		}
+
+		if databaseErr != nil {
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		}
+
+		if userExists {
 			log.Printf("Authenticated user %s\n", token)
-			// Pass down the request to the next middleware (or final handler)
 			next.ServeHTTP(w, r)
 		} else {
-			// Write an error and stop the handler chain
-			http.Error(w, "Forbidden", http.StatusForbidden)
+			http.Error(w, "Forbidden", http.StatusUnauthorized)
 		}
 	})
 }
 
-func userExists(username string) bool {
-	var count int
-	err := database.QueryRow("SELECT COUNT(*) FROM jassuser WHERE name = '" + username + "'").Scan(&count)
-
+// HandleDbError ...
+func HandleDbError(w http.ResponseWriter, err error) bool {
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return true
 	}
 
-	return count == 1
+	return false
 }
 
-func getUserID(username string) int {
+// HandleTxDbError ...
+func HandleTxDbError(w http.ResponseWriter, tx *sql.Tx, err error) bool {
+	if err != nil {
+		log.Println(err)
+		tx.Rollback()
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return true
+	}
+
+	return false
+}
+
+// HandleBadRequest ...
+func HandleBadRequest(w http.ResponseWriter, err error) bool {
+	if err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return true
+	}
+
+	return false
+}
+
+func userExists(username string) (bool, error) {
+	var count int
+	databaseErr := database.QueryRow("SELECT COUNT(*) FROM jassuser WHERE name = $1", username).Scan(&count)
+
+	return count == 1, databaseErr
+}
+
+func getUserID(username string) (int, error) {
+
+	if DEBUG {
+		return 0, nil
+	}
+
 	var userID int
-	res := database.QueryRow("SELECT id FROM jassuser WHERE name = '" + username + "'")
-	res.Scan(&userID)
-
-	return userID
+	databaseErr := database.QueryRow("SELECT id FROM jassuser WHERE name = $1", username).Scan(&userID)
+	return userID, databaseErr
 }
 
-func getUserIDFromRequest(r *http.Request) int {
+func getUserIDFromRequest(r *http.Request) (int, error) {
 	token := r.Header.Get("X-WebAuth-User")
 	return getUserID(token)
 }
@@ -74,6 +126,10 @@ var database *sqlx.DB
 // NewRouter ...
 func NewRouter(db *sqlx.DB) *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
+
+	dbc := dbCheckMiddleware{}
+	router.Use(dbc.Middleware)
+
 	amw := authenticationMiddleware{}
 	router.Use(amw.Middleware)
 	database = db
@@ -130,7 +186,7 @@ var routes = Routes{
 		"GetgameById",
 		strings.ToUpper("Get"),
 		"/v1/game/{gameId}",
-		GetgameById,
+		GetgameByID,
 	},
 
 	Route{
