@@ -1,0 +1,34 @@
+@startuml
+
+title Packages - Component Diagram
+
+rectangle "Front End" {
+    component [User Interface] as GUI
+}
+
+cloud Internet {
+}
+ 
+node "traefik" {
+    component "jasserver1:8888" <<golang:latest>> as jasserver1
+    component "jasserver2:8889" <<golang:latest>> as jasserver2
+    component "jasstatic1:3000" <<nginx:alpine>> as jasstatic1
+    component "jasstatic2:3001" <<nginx:alpine>> as jasstatic2
+    interface "websecure:9443" as access
+} 
+
+database "Database" <<postgres:latest>> {
+    [jassdb:5443] as jassdb
+}
+
+
+GUI -down-> Internet
+Internet -down-( access
+access -down- jasstatic1 :/
+access -down- jasstatic2 :/
+access -down- jasserver1 :v1
+access -down- jasserver2 :v1
+jasserver1 .. [jassdb]
+jasserver2 .. [jassdb]
+
+@enduml
