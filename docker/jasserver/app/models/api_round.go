@@ -18,12 +18,10 @@ func CreateRound(w http.ResponseWriter, r *http.Request) {
 	HandleBadRequest(w, convErr)
 
 	var round Round
-	decodeErr := json.NewDecoder(r.Body).Decode(&round)
-	HandleBadRequest(w, decodeErr)
+	HandleBadRequest(w, json.NewDecoder(r.Body).Decode(&round))
 
 	var roundID int32
-	databaseErr := database.QueryRow("INSERT INTO round(game, trumpf) VALUES($1, $2) RETURNING id;", gameID, &round.TrumpfID).Scan(&roundID)
-	HandleDbError(w, databaseErr)
+	HandleDbError(w, database.QueryRow("INSERT INTO round(game, trumpf) VALUES($1, $2) RETURNING id;", gameID, &round.TrumpfID).Scan(&roundID))
 
 	tx, databaseErr := database.Begin()
 	HandleDbError(w, databaseErr)
@@ -33,8 +31,7 @@ func CreateRound(w http.ResponseWriter, r *http.Request) {
 		HandleTxDbError(w, tx, databaseErr)
 	}
 
-	databaseErr = tx.Commit()
-	HandleTxDbError(w, tx, databaseErr)
+	HandleTxDbError(w, tx, tx.Commit())
 
 	json.NewEncoder(w).Encode(InlineResponse201{roundID})
 	w.WriteHeader(http.StatusOK)
@@ -60,9 +57,7 @@ func DeleteRound(w http.ResponseWriter, r *http.Request) {
 	_, databaseErr = database.Exec("DELETE FROM round WHERE id = $1 AND game = $2;", roundID, gameID)
 	HandleTxDbError(w, tx, databaseErr)
 
-	databaseErr = tx.Commit()
-	HandleTxDbError(w, tx, databaseErr)
-
+	HandleTxDbError(w, tx, tx.Commit())
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -78,8 +73,7 @@ func UpdateRound(w http.ResponseWriter, r *http.Request) {
 	HandleBadRequest(w, convErr)
 
 	var round Round
-	decodeErr := json.NewDecoder(r.Body).Decode(&round)
-	HandleBadRequest(w, decodeErr)
+	HandleBadRequest(w, json.NewDecoder(r.Body).Decode(&round))
 
 	userID, databaseErr := getUserIDFromRequest(r)
 	HandleDbError(w, databaseErr)
@@ -102,9 +96,7 @@ func UpdateRound(w http.ResponseWriter, r *http.Request) {
 		HandleTxDbError(w, tx, databaseErr)
 	}
 
-	databaseErr = tx.Commit()
-	HandleTxDbError(w, tx, databaseErr)
-
+	HandleTxDbError(w, tx, tx.Commit())
 	w.WriteHeader(http.StatusOK)
 }
 

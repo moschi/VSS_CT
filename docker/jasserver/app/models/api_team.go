@@ -10,8 +10,7 @@ import (
 // CreateTeam ...
 func CreateTeam(w http.ResponseWriter, r *http.Request) {
 	var team Team
-	decodeErr := json.NewDecoder(r.Body).Decode(&team)
-	HandleBadRequest(w, decodeErr)
+	HandleBadRequest(w, json.NewDecoder(r.Body).Decode(&team))
 
 	if teamExists(team.Name, database) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
@@ -24,8 +23,7 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 	HandleDbError(w, databaseErr)
 
 	var id int32
-	databaseErr = database.QueryRow("INSERT INTO team (name, createdby) VALUES ($1, $2) RETURNING id", team.Name, userID).Scan(&id)
-	HandleDbError(w, databaseErr)
+	HandleDbError(w, database.QueryRow("INSERT INTO team (name, createdby) VALUES ($1, $2) RETURNING id", team.Name, userID).Scan(&id))
 
 	json.NewEncoder(w).Encode(InlineResponse201{id})
 	w.WriteHeader(http.StatusOK)
@@ -46,8 +44,7 @@ func GetTeam(w http.ResponseWriter, r *http.Request) {
 	HandleDbError(w, databaseErr)
 
 	teams := []Team{}
-	databaseErr = database.Select(&teams, "SELECT * FROM team WHERE createdby = $1", userID)
-	HandleDbError(w, databaseErr)
+	HandleDbError(w, database.Select(&teams, "SELECT * FROM team WHERE createdby = $1", userID))
 
 	json.NewEncoder(w).Encode(teams)
 }
@@ -55,8 +52,7 @@ func GetTeam(w http.ResponseWriter, r *http.Request) {
 // UpdateTeam ...
 func UpdateTeam(w http.ResponseWriter, r *http.Request) {
 	var team Team
-	decodeErr := json.NewDecoder(r.Body).Decode(&team)
-	HandleBadRequest(w, decodeErr)
+	HandleBadRequest(w, json.NewDecoder(r.Body).Decode(&team))
 
 	if team.ID == 0 || team.Name == "" {
 		w.WriteHeader(http.StatusBadRequest)

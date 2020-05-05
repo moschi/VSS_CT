@@ -24,6 +24,7 @@ const DEBUG bool = false // Switch between DEBUG and PRODUCTION: if true, auth w
 // catches routines that panic and returns from the function in order to make sure responses are sent to the webclient
 type panicMiddleware struct{}
 
+// our own routines panic if e.g. a request is formed badly or the database is suddenly unavaiable
 func (panicCheck *panicMiddleware) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {

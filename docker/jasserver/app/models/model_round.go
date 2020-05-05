@@ -24,7 +24,6 @@ func loadRounds(gameID int, db *sqlx.DB) ([]Round, error) {
 	sqlStatement := "SELECT * FROM round WHERE game = $1"
 
 	rounds := make([]Round, 0)
-
 	databaseErr := db.Select(&rounds, sqlStatement, gameID)
 	for i := range rounds {
 		rounds[i].PointsPerTeamPerRound, databaseErr = loadPointsPerRound(rounds[i].ID, db)

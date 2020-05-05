@@ -13,9 +13,7 @@ import (
 func CreateGame(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	var game Game
-
-	decodeErr := json.NewDecoder(r.Body).Decode(&game)
-	HandleBadRequest(w, decodeErr)
+	HandleBadRequest(w, json.NewDecoder(r.Body).Decode(&game))
 
 	userID, databaseErr := getUserIDFromRequest(r)
 	HandleDbError(w, databaseErr)
