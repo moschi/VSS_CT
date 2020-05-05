@@ -2,19 +2,19 @@ import * as React from "react";
 import {useEffect, useRef, useState} from "react";
 import DrawGameBoard from "../classes/DrawGameBoard";
 import {FullGame, PointsPerTeamPerRound, Round, Trumpf} from "../classes/Game";
-import GameMocks from "../classes/GameMocks";
 import jasstafel from "../images/jasstafel.jpg";
 import ViewWrapper from "./ViewWrapper";
 import {get, post, /* getError, getIsLoading*/} from "../classes/RestHelper";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
+import GameMocks from "../classes/GameMocks";
 
 const trump: Trumpf[] = [
-    {id: 0, name: "Eichel", multiplier: 1},
-    {id: 1, name: "Rose", multiplier: 1},
-    {id: 2, name: "Schellen", multiplier: 2},
-    {id: 3, name: "Schilten", multiplier: 2},
-    {id: 4, name: "ObenAben", multiplier: 3},
-    {id: 5, name: "UntenUfen", multiplier: 3}];
+    {id: 1, name: "Eichel", multiplier: 1},
+    {id: 2, name: "Rose", multiplier: 1},
+    {id: 3, name: "Schellen", multiplier: 2},
+    {id: 4, name: "Schilten", multiplier: 2},
+    {id: 5, name: "ObenAben", multiplier: 3},
+    {id: 6, name: "UntenUfen", multiplier: 3}];
 
 const HistoryWrapper = (props: any) => {
 
@@ -130,11 +130,7 @@ const HistoryTableRow = (props: any) => {
 
 function GameBoard(props: any) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-
-    const random = Math.round(Math.random() * 2);
-    const mockedGame: FullGame = GameMocks[random];
-
-    const [game, setGame] = useState(mockedGame);
+    const [game, setGame] = useState(GameMocks[0]);
     const [rerender, setRerender] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -150,46 +146,54 @@ function GameBoard(props: any) {
             setError({message: error.message, error: error});
             setIsLoading(false);
         });
-    }, [setGame, setError, setIsLoading, props.match.params.id]);
+    }, [props.match.params.id]);
+
+    useEffect(() => {
+        console.log("should rerender");
+        const boardRenderer = new DrawGameBoard(canvasRef, game, jasstafel);
+        boardRenderer.render();
+    }, [rerender]);
 
     const getNextRoundId = (rounds: Round[]) => {
-            if (rounds.length > 0) {
-                return rounds[rounds.length - 1].id + 1;
-            } else {
-                return 0;
-            }
+        return rounds.length + 1;
     };
 
     const addRound = (trumpfId: number, points: number, teamName: string, wiisPoints1: number, wiisPoints2: number) => {
-        post("game/" + game.id + "/round",
-            (roundID: any) => {
-                let teamId = game.teams[0].name === teamName ? game.teams[0].id : game.teams[1].id;
-                const getTeamIdOtherTeam = () => {
-                    return game.teams[0].id === teamId ? game.teams[1].id : game.teams[0].id;
-                };
+        const roundID = getNextRoundId(game.rounds);
+        let teamId = game.teams[0].name === teamName ? game.teams[0].id : game.teams[1].id;
+        const getTeamIdOtherTeam = () => {
+            return game.teams[0].id === teamId ? game.teams[1].id : game.teams[0].id;
+        };
 
-                let pointsOtherTeam = 0;
-                if (points === 157) {
-                    points = 257;
-                } else if (points === 0) {
-                    pointsOtherTeam = 257;
-                } else {
-                    pointsOtherTeam = 157 - points;
-                }
-                const pointsPerTeamPerRound: PointsPerTeamPerRound[] = [
-                    {points: points, wiisPoints: wiisPoints1, teamId: teamId},
-                    {points: pointsOtherTeam, wiisPoints: wiisPoints2, teamId: getTeamIdOtherTeam()}];
+        let pointsOtherTeam = 0;
+        if (points === 157) {
+            points = 257;
+        } else if (points === 0) {
+            pointsOtherTeam = 257;
+        } else if (points === 257) {
+            pointsOtherTeam = 0;
+        } else {
+            pointsOtherTeam = 157 - points;
+        }
+        const pointsPerTeamPerRound: PointsPerTeamPerRound[] = [
+            {points: points, wiisPoints: wiisPoints1, teamId: teamId},
+            {points: pointsOtherTeam, wiisPoints: wiisPoints2, teamId: getTeamIdOtherTeam()}];
 
-                const round: Round = {
-                    id: roundID,
-                    trumpfId: trumpfId,
-                    pointsPerTeamPerRound: pointsPerTeamPerRound
-                };
-                game.rounds.push(round);
-                setGame(game);
-                setRerender(!rerender);
-                post("game/" + game.id + "/" + roundID);
-            });
+        const round: Round = {
+            id: roundID,
+            trumpfId: trumpfId,
+            pointsPerTeamPerRound: pointsPerTeamPerRound
+        };
+
+        game.rounds.push(round);
+        setGame(game);
+        setRerender(!rerender);
+        console.log(rerender);
+
+        post("game/" + game.id + "/round", () => {
+            console.log("yeet");
+        }, () => {console.log("fuck");
+        }, round);
     };
 
     const HistoryTable = (props: any) => {
@@ -200,10 +204,11 @@ function GameBoard(props: any) {
 
         return <HistoryWrapper teamNameOne={team1.name}
                                teamNameTwo={team2.name}
-                               round={getNextRoundId(rounds) + 1}
+                               round={getNextRoundId(rounds)}
                                addRound={addRound}>
             {rounds.map((round: Round, numOfRounds: number) => {
-                let trumpf = trump[round.trumpfId];
+                //Fuck you databases!
+                let trumpf = trump[round.trumpfId - 1];
                 let pointsPerTeamPerRound = round.pointsPerTeamPerRound;
                 let teamOnePoints = 0;
                 let teamTwoPoints = 0;
