@@ -11,7 +11,13 @@ This is a WebApp to record points for a "Schieber-Jass". The app has the followi
 
 ## Architecture
 
+The application consists of the following components:
+
 ![image-20200505115328400](./Docu.assets/image-20200505115328400.png)
+
+### Authentication
+
+bibedi bidiebd bdbbababa bebbeeidi b dbabbdidia bababai aiaib abaabbaiabai
 
 ## Design Decisions
 
