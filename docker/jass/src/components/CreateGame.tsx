@@ -6,7 +6,7 @@ import Autocomplete, {createFilterOptions} from '@material-ui/lab/Autocomplete';
 import {GameCreation, Team} from "../classes/Game";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ViewWrapper from "./ViewWrapper";
-import { Redirect } from 'react-router-dom';
+import {Redirect} from 'react-router-dom';
 import {get} from "../classes/RestHelper";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -71,32 +71,6 @@ function CreateGame() {
                 error: error
             });
         });
-        /*fetch('/v1/team', {
-            method: 'GET',
-        })
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        setTeams(data);
-                        setTeamError({
-                            message: '',
-                            show: false,
-                        });
-                        setIsLoading(false);
-                    });
-                } else {
-                    setIsLoading(false);
-                    throw new Error(NOT_AVAILABLE);
-                }
-            })
-            .catch((error) => {
-                setTeamError({
-                    show: true,
-                    message: error.message,
-                    error: error
-                });
-            });*/
-
     }, [setTeams, setTeamError, setIsLoading]);
 
     const validateName1 = (value: string) => {
@@ -341,7 +315,8 @@ function CreateGame() {
                                     style={{width: 300}}
                                     freeSolo
                                     renderInput={(params) => (
-                                        <TextField error={team1Message.show} helperText={team1Message.message} {...params}
+                                        <TextField error={team1Message.show}
+                                                   helperText={team1Message.message} {...params}
                                                    label="Team 1" variant="outlined"/>
                                     )}
                                 />
@@ -357,7 +332,8 @@ function CreateGame() {
                                     style={{width: 300}}
                                     freeSolo
                                     renderInput={(params) => (
-                                        <TextField error={team2Message.show} helperText={team2Message.message} {...params}
+                                        <TextField error={team2Message.show}
+                                                   helperText={team2Message.message} {...params}
                                                    label="Team 2" variant="outlined"/>
                                     )}
                                 />

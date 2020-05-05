@@ -188,7 +188,7 @@ class DrawGameBoard {
                         const pointPerRound = round.pointsPerTeamPerRound;
                         let pointsPerRoundTeam1 = 0;
                         let pointsPerRoundTeam2 = 0;
-                        let trump = this.trumpf[round.trumpfId];
+                        let trump = this.trumpf[round.trumpfId-1];
                         for (let i = 0; i < 2; i++) {
                             let team = pointPerRound[i].teamId;
                             let points = pointPerRound[i].points;
