@@ -1,9 +1,16 @@
+
 import React from 'react';
 
-export default function DashboardCard(props: any) {
+interface DashboardCardProps {
+    teamOne: string;
+    pointsTeamOne: number;
+    teamTwo: string;
+    pointsTeamTwo: number;
+}
+
+export default function DashboardCard(props: DashboardCardProps) {
 
     return <div className={"dashboardCardWrapper"}>
-        <h3>{props.gameTitle}</h3>
         <div className={"dashboardCardInnerWrapper"}>
             <div>
                 <p>{props.teamOne}</p>

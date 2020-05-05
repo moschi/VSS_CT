@@ -125,7 +125,7 @@ function CreateGame() {
                     reset();
                     setGameId(id);
                 })
-                .catch((error: ErrorEvent) => {
+                .catch((error: Error) => {
                     reset();
                     setMessage({
                         show: true,
@@ -226,7 +226,7 @@ function CreateGame() {
                         setIsLoadingTeam1(false);
                         setTeam1ready(true);
                     })
-                    .catch((error: ErrorEvent) => {
+                    .catch((error: Error) => {
                         setMessage({
                             show: true,
                             message: error.message,
@@ -251,7 +251,7 @@ function CreateGame() {
                         setIsLoadingTeam2(false);
                         setTeam2ready(true);
                     })
-                    .catch((error: ErrorEvent) => {
+                    .catch((error: Error) => {
                         setMessage({
                             show: true,
                             message: error.message,

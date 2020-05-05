@@ -2,7 +2,7 @@
 const ERROR_OCCURED = 'Es ist ein Fehler aufgetretten, bitte versuchen sie es erneut.';
 
 
-const request = (method:string, route: string,callback?:(data:object) => void, errorHandling?:(error:object)=> void, body?:{})=>{
+const request = (method:string, route: string, extractBody: boolean, callback?:(data?: object) => void, errorHandling?:(error: Error)=> void, body?:{})=>{
     fetch('/v1/' + route, {
         method: method,
         headers: {
@@ -11,25 +11,35 @@ const request = (method:string, route: string,callback?:(data:object) => void, e
         body: JSON.stringify(body),
     }).then((response) => {
         if (response.ok) {
-            response.json().then((data:any) => {
-                if(callback) {
-                    callback(data);
+            if (extractBody) {
+                response.json().then((data: any) => {
+                    if (callback) {
+                        callback(data);
+                    }
+                });
+            } else {
+                if (callback) {
+                    callback();
                 }
-            });
+            }
         } else {
             throw new Error(ERROR_OCCURED);
         }
     }).catch((error) => {
-        if(errorHandling){
+        if (errorHandling){
             errorHandling(error);
         }
     });
 };
 
-export const get = (route: string,  callback?:(data:object)=>void, errorHandling?:(error:object)=>void) => {
-    request("GET", route, callback, errorHandling);
+export const get = (route: string,  callback?: (data?: object) => void, errorHandling?: (error: Error) => void) => {
+    request("GET", route, true, callback, errorHandling);
 };
 
-export const post = (route: string, callback?:(data:object)=>void, errorHandling?:(error:object)=>void, body?:{}) =>{
-    request("POST", route, callback, errorHandling, body);
+export const post = (route: string, callback?: (data?: object)=>void, errorHandling?:(error: Error) => void, body?: {}) =>{
+    request("POST", route, true, callback, errorHandling, body);
+};
+
+export const deleteRequest = (route: string, callback?: (data?: object) => void, errorHandling?: (error: Error) => void) =>{
+    request("DELETE", route, false, callback, errorHandling);
 };

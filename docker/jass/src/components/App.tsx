@@ -7,7 +7,6 @@ import {
   Link
 } from "react-router-dom";
 import Dashboard from './Dashboard';
-import User from './User';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
@@ -31,9 +30,6 @@ function App() {
           {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
           <Switch>
-            <Route path="/users">
-              <User/>
-            </Route>
             <Route path="/game/create">
               <CreateGame/>
             </Route>
