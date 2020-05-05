@@ -23,7 +23,7 @@ func loadPointsPerTeamPerRound(teamID int, roundID int64, db *sqlx.DB) (PointsPe
 
 func loadPointsPerRound(roundID int64, db *sqlx.DB) ([]PointsPerTeamPerRound, error) {
 	sqlStatement := "SELECT * FROM pointsPerTeamPerRound WHERE round = $1"
-	var pointsPerTeamPerRound []PointsPerTeamPerRound
+	pointsPerTeamPerRound := make([]PointsPerTeamPerRound, 0)
 
 	databaseErr := db.Select(&pointsPerTeamPerRound, sqlStatement, roundID)
 	return pointsPerTeamPerRound, databaseErr

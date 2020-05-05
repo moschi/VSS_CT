@@ -20,11 +20,11 @@ func CreateRound(w http.ResponseWriter, r *http.Request) {
 	var round Round
 	HandleBadRequest(w, json.NewDecoder(r.Body).Decode(&round))
 
-	var roundID int32
-	HandleDbError(w, database.QueryRow("INSERT INTO round(game, trumpf) VALUES($1, $2) RETURNING id;", gameID, &round.TrumpfID).Scan(&roundID))
-
 	tx, databaseErr := database.Begin()
 	HandleDbError(w, databaseErr)
+
+	var roundID int32
+	HandleDbError(w, tx.QueryRow("INSERT INTO round(game, trumpf) VALUES($1, $2) RETURNING id;", gameID, &round.TrumpfID).Scan(&roundID))
 
 	for _, perTeam := range round.PointsPerTeamPerRound {
 		_, databaseErr = tx.Exec("INSERT INTO pointsperteamperround (wiispoints, points, round, team) VALUES($1, $2, $3, $4)", perTeam.WiisPoints, perTeam.Points, roundID, perTeam.TeamID)
