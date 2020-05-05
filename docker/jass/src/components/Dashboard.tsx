@@ -36,7 +36,12 @@ function Dashboard(props: any) {
             setGames(games);
             setIsLoading(false);
         }, (error: any) => {
-            setMessage({show: true, message: NO_GAMES, error: error})
+            setMessage({
+                show: true,
+                message: NO_GAMES,
+                error: error,
+                showSnackbar: false,
+            })
             setIsLoading(false);
         });
     }, []);
@@ -59,7 +64,12 @@ function Dashboard(props: any) {
                 })
             },
             (error: Error) => {
-                setMessage({show: true, message: GAME_DELETE_FAILURE, error: error})
+                setMessage({
+                    show: true,
+                    message: GAME_DELETE_FAILURE,
+                    error: error,
+                    showSnackbar: false,
+                })
             }
          );
     };
