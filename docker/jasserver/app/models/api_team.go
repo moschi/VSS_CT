@@ -11,9 +11,7 @@ import (
 func CreateTeam(w http.ResponseWriter, r *http.Request) {
 	var team Team
 	decodeErr := json.NewDecoder(r.Body).Decode(&team)
-	if HandleBadRequest(w, decodeErr) {
-		return
-	}
+	HandleBadRequest(w, decodeErr)
 
 	if teamExists(team.Name, database) {
 		w.WriteHeader(http.StatusUnprocessableEntity)
@@ -23,15 +21,11 @@ func CreateTeam(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID, databaseErr := getUserIDFromRequest(r)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	var id int32
 	databaseErr = database.QueryRow("INSERT INTO team (name, createdby) VALUES ($1, $2) RETURNING id", team.Name, userID).Scan(&id)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	json.NewEncoder(w).Encode(InlineResponse201{id})
 	w.WriteHeader(http.StatusOK)
@@ -49,15 +43,11 @@ func GetTeam(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	userID, databaseErr := getUserIDFromRequest(r)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	teams := []Team{}
 	databaseErr = database.Select(&teams, "SELECT * FROM team WHERE createdby = $1", userID)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	json.NewEncoder(w).Encode(teams)
 }
@@ -66,9 +56,7 @@ func GetTeam(w http.ResponseWriter, r *http.Request) {
 func UpdateTeam(w http.ResponseWriter, r *http.Request) {
 	var team Team
 	decodeErr := json.NewDecoder(r.Body).Decode(&team)
-	if HandleBadRequest(w, decodeErr) {
-		return
-	}
+	HandleBadRequest(w, decodeErr)
 
 	if team.ID == 0 || team.Name == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -76,8 +64,7 @@ func UpdateTeam(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, databaseErr := database.Exec("UPDATE team SET name=$1 WHERE ID=$2", team.Name, team.ID)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
+
 	w.WriteHeader(http.StatusOK)
 }

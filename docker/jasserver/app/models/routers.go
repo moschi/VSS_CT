@@ -21,6 +21,20 @@ type Route struct {
 
 const DEBUG bool = false // Switch between DEBUG and PRODUCTION: if true, auth will not be checked
 
+// catches routines that panic and returns from the function in order to make sure responses are sent to the webclient
+type panicMiddleware struct{}
+
+func (panicCheck *panicMiddleware) Middleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if r := recover(); r != nil {
+				return
+			}
+		}()
+		next.ServeHTTP(w, r)
+	})
+}
+
 // check if DB is running
 type dbCheckMiddleware struct{}
 
@@ -63,36 +77,31 @@ func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler 
 }
 
 // HandleDbError ...
-func HandleDbError(w http.ResponseWriter, err error) bool {
+func HandleDbError(w http.ResponseWriter, err error) {
 	if err != nil {
 		log.Println(err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return true
+		panic(err)
 	}
-
-	return false
 }
 
 // HandleTxDbError ...
-func HandleTxDbError(w http.ResponseWriter, tx *sql.Tx, err error) bool {
+func HandleTxDbError(w http.ResponseWriter, tx *sql.Tx, err error) {
 	if err != nil {
 		log.Println(err)
 		tx.Rollback()
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return true
+		panic(err)
 	}
-
-	return false
 }
 
 // HandleBadRequest ...
-func HandleBadRequest(w http.ResponseWriter, err error) bool {
+func HandleBadRequest(w http.ResponseWriter, err error) {
 	if err != nil {
+		log.Println(err)
 		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return true
+		panic(err)
 	}
-
-	return false
 }
 
 func userExists(username string) (bool, error) {
@@ -126,6 +135,9 @@ var database *sqlx.DB
 // NewRouter ...
 func NewRouter(db *sqlx.DB) *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
+
+	pnc := panicMiddleware{}
+	router.Use(pnc.Middleware)
 
 	dbc := dbCheckMiddleware{}
 	router.Use(dbc.Middleware)

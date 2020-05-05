@@ -11,9 +11,7 @@ func GetTrumpfs(w http.ResponseWriter, r *http.Request) {
 	var trumpfs []Trumpf
 
 	databaseErr := database.Select(&trumpfs, "SELECT * FROM trumpf")
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	json.NewEncoder(w).Encode(trumpfs)
 

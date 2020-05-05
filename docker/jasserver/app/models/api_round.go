@@ -15,38 +15,26 @@ func CreateRound(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	gameID, convErr := strconv.Atoi(vars["gameId"])
-	if HandleBadRequest(w, convErr) {
-		return
-	}
+	HandleBadRequest(w, convErr)
 
 	var round Round
 	decodeErr := json.NewDecoder(r.Body).Decode(&round)
-	if HandleBadRequest(w, decodeErr) {
-		return
-	}
+	HandleBadRequest(w, decodeErr)
 
 	var roundID int32
 	databaseErr := database.QueryRow("INSERT INTO round(game, trumpf) VALUES($1, $2) RETURNING id;", gameID, &round.TrumpfID).Scan(&roundID)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	tx, databaseErr := database.Begin()
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	for _, perTeam := range round.PointsPerTeamPerRound {
 		_, databaseErr = tx.Exec("INSERT INTO pointsperteamperround (wiispoints, points, round, team) VALUES($1, $2, $3, $4)", perTeam.WiisPoints, perTeam.Points, roundID, perTeam.TeamID)
-		if HandleTxDbError(w, tx, databaseErr) {
-			return
-		}
+		HandleTxDbError(w, tx, databaseErr)
 	}
 
 	databaseErr = tx.Commit()
-	if HandleTxDbError(w, tx, databaseErr) {
-		return
-	}
+	HandleTxDbError(w, tx, databaseErr)
 
 	json.NewEncoder(w).Encode(InlineResponse201{roundID})
 	w.WriteHeader(http.StatusOK)
@@ -58,34 +46,22 @@ func DeleteRound(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	gameID, convErr := strconv.Atoi(vars["gameId"])
-	if HandleBadRequest(w, convErr) {
-		return
-	}
+	HandleBadRequest(w, convErr)
 
 	roundID, convErr := strconv.Atoi(vars["roundId"])
-	if HandleBadRequest(w, convErr) {
-		return
-	}
+	HandleBadRequest(w, convErr)
 
 	tx, databaseErr := database.Begin()
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	_, databaseErr = tx.Exec("DELETE FROM pointsPerTeamPerRound where round = $1;", roundID)
-	if HandleTxDbError(w, tx, databaseErr) {
-		return
-	}
+	HandleTxDbError(w, tx, databaseErr)
 
 	_, databaseErr = database.Exec("DELETE FROM round WHERE id = $1 AND game = $2;", roundID, gameID)
-	if HandleTxDbError(w, tx, databaseErr) {
-		return
-	}
+	HandleTxDbError(w, tx, databaseErr)
 
 	databaseErr = tx.Commit()
-	if HandleTxDbError(w, tx, databaseErr) {
-		return
-	}
+	HandleTxDbError(w, tx, databaseErr)
 
 	w.WriteHeader(http.StatusNoContent)
 }
@@ -96,55 +72,38 @@ func UpdateRound(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	gameID, convErr := strconv.Atoi(vars["gameId"])
-	if HandleBadRequest(w, convErr) {
-		return
-	}
+	HandleBadRequest(w, convErr)
 
 	roundID, convErr := strconv.Atoi(vars["roundId"])
-	if HandleBadRequest(w, convErr) {
-		return
-	}
+	HandleBadRequest(w, convErr)
 
 	var round Round
 	decodeErr := json.NewDecoder(r.Body).Decode(&round)
-	if HandleBadRequest(w, decodeErr) {
-		return
-	}
+	HandleBadRequest(w, decodeErr)
 
 	userID, databaseErr := getUserIDFromRequest(r)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	exists, databaseErr := roundExists(roundID, gameID, userID, database)
 	if !exists {
 		w.WriteHeader(http.StatusNotFound)
-	}
-	if HandleDbError(w, databaseErr) {
 		return
 	}
+	HandleDbError(w, databaseErr)
 
 	tx, databaseErr := database.Begin()
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	_, databaseErr = tx.Exec("UPDATE round SET trumpf = $1 WHERE id = $2 and game = $3", &round.TrumpfID, roundID, gameID)
-	if HandleTxDbError(w, tx, databaseErr) {
-		return
-	}
+	HandleTxDbError(w, tx, databaseErr)
 
 	for _, perTeam := range round.PointsPerTeamPerRound {
 		_, databaseErr = tx.Exec("UPDATE pointsperteamperround SET wiispoints = $1, points = $2, round = $3, team = $4) WHERE round = $5 and team = $6", perTeam.WiisPoints, perTeam.Points, roundID, perTeam.TeamID, roundID, perTeam.TeamID)
-		if HandleTxDbError(w, tx, databaseErr) {
-			return
-		}
+		HandleTxDbError(w, tx, databaseErr)
 	}
 
 	databaseErr = tx.Commit()
-	if HandleTxDbError(w, tx, databaseErr) {
-		return
-	}
+	HandleTxDbError(w, tx, databaseErr)
 
 	w.WriteHeader(http.StatusOK)
 }

@@ -15,21 +15,14 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 	var game Game
 
 	decodeErr := json.NewDecoder(r.Body).Decode(&game)
-
-	if HandleBadRequest(w, decodeErr) {
-		return
-	}
+	HandleBadRequest(w, decodeErr)
 
 	userID, databaseErr := getUserIDFromRequest(r)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	var gameID int32
 	databaseErr = database.QueryRow("INSERT INTO game (team1, team2, isfinished, createdby) VALUES($1, $2, false, $3) RETURNING id", &game.Teams[0].ID, &game.Teams[1].ID, userID).Scan(&gameID)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	json.NewEncoder(w).Encode(InlineResponse201{gameID})
 	w.WriteHeader(http.StatusOK)
@@ -41,14 +34,10 @@ func DeleteGame(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	gameID, convErr := strconv.Atoi(vars["gameId"])
-	if HandleBadRequest(w, convErr) {
-		return
-	}
+	HandleBadRequest(w, convErr)
 
 	userID, databaseErr := getUserIDFromRequest(r)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	if !gameExists(gameID, userID, database) {
 		w.WriteHeader(http.StatusNotFound)
@@ -56,29 +45,19 @@ func DeleteGame(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tx, databaseErr := database.Begin()
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	_, databaseErr = tx.Exec("DELETE FROM pointsperteamperround WHERE round IN(SELECT id FROM round WHERE game = $1)", gameID)
-	if HandleTxDbError(w, tx, databaseErr) {
-		return
-	}
+	HandleTxDbError(w, tx, databaseErr)
 
 	_, databaseErr = tx.Exec("DELETE FROM round WHERE game = $1", gameID)
-	if HandleTxDbError(w, tx, databaseErr) {
-		return
-	}
+	HandleTxDbError(w, tx, databaseErr)
 
 	_, databaseErr = tx.Exec("DELETE FROM game WHERE id = $1;", gameID)
-	if HandleTxDbError(w, tx, databaseErr) {
-		return
-	}
+	HandleTxDbError(w, tx, databaseErr)
 
 	databaseErr = tx.Commit()
-	if HandleTxDbError(w, tx, databaseErr) {
-		return
-	}
+	HandleTxDbError(w, tx, databaseErr)
 
 	w.WriteHeader(http.StatusOK)
 }
@@ -88,25 +67,19 @@ func GetGame(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	userID, databaseErr := getUserIDFromRequest(r)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	games := []Game{}
 	databaseErr = database.Select(&games, "SELECT * FROM game WHERE createdby = $1", userID)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	for i := range games {
 		team1, databaseErr := loadTeam(games[i].Team1, database)
-		if HandleDbError(w, databaseErr) {
-			return
-		}
+		HandleDbError(w, databaseErr)
+
 		team2, databaseErr := loadTeam(games[i].Team2, database)
-		if HandleDbError(w, databaseErr) {
-			return
-		}
+		HandleDbError(w, databaseErr)
+
 		games[i].Teams = [2]Team{team1, team2}
 	}
 
@@ -120,14 +93,10 @@ func GetgameByID(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	gameID, convErr := strconv.Atoi(vars["gameId"])
-	if HandleBadRequest(w, convErr) {
-		return
-	}
+	HandleBadRequest(w, convErr)
 
 	userID, databaseErr := getUserIDFromRequest(r)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	if !gameExists(gameID, userID, database) {
 		http.Error(w, "Not Found", http.StatusNotFound)
@@ -136,28 +105,20 @@ func GetgameByID(w http.ResponseWriter, r *http.Request) {
 
 	var fullGame FullGame
 	game, databaseErr := loadGame(gameID, database)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	fullGame.ID = game.ID
 	fullGame.IsFinished = game.IsFinished
 	team1, databaseErr := loadTeam(game.Team1, database)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	team2, databaseErr := loadTeam(game.Team2, database)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 
 	fullGame.Teams = []Team{team1, team2}
 
 	rounds, databaseErr := loadRounds(gameID, database)
-	if HandleDbError(w, databaseErr) {
-		return
-	}
+	HandleDbError(w, databaseErr)
 	fullGame.Rounds = rounds
 
 	json.NewEncoder(w).Encode(fullGame)
