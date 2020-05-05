@@ -71,17 +71,25 @@ func GetGame(w http.ResponseWriter, r *http.Request) {
 	databaseErr = database.Select(&games, "SELECT * FROM game WHERE createdby = $1", userID)
 	HandleDbError(w, databaseErr)
 
+	fullgames := make([]FullGame, len(games))
 	for i := range games {
+		fullgames[i].ID = games[i].ID
+		fullgames[i].IsFinished = games[i].IsFinished
+
 		team1, databaseErr := loadTeam(games[i].Team1, database)
 		HandleDbError(w, databaseErr)
 
 		team2, databaseErr := loadTeam(games[i].Team2, database)
 		HandleDbError(w, databaseErr)
+		fullgames[i].Teams = []Team{team1, team2}
 
-		games[i].Teams = [2]Team{team1, team2}
+		rounds, databaseErr := loadRounds(games[i].ID, database)
+		HandleDbError(w, databaseErr)
+
+		fullgames[i].Rounds = rounds
 	}
 
-	json.NewEncoder(w).Encode(games)
+	json.NewEncoder(w).Encode(fullgames)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -115,7 +123,7 @@ func GetgameByID(w http.ResponseWriter, r *http.Request) {
 
 	fullGame.Teams = []Team{team1, team2}
 
-	rounds, databaseErr := loadRounds(gameID, database)
+	rounds, databaseErr := loadRounds(int64(gameID), database)
 	HandleDbError(w, databaseErr)
 	fullGame.Rounds = rounds
 

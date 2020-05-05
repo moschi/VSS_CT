@@ -20,7 +20,7 @@ func loadRound(id int64, db *sqlx.DB) (Round, error) {
 	return round, databaseErr
 }
 
-func loadRounds(gameID int, db *sqlx.DB) ([]Round, error) {
+func loadRounds(gameID int64, db *sqlx.DB) ([]Round, error) {
 	sqlStatement := "SELECT * FROM round WHERE game = $1"
 
 	rounds := make([]Round, 0)
