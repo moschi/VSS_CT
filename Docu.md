@@ -19,6 +19,12 @@ The application consists of the following components:
 
 bibedi bidiebd bdbbababa bebbeeidi b dbabbdidia bababai aiaib abaabbaiabai
 
+### ERD
+
+The database design looks the following: 
+
+![erd](./Docu.assets/erd.png)
+
 ## Design Decisions
 
 The application is a SPA calling a REST Service. We used this project to gain know how in several technologies. 
