@@ -1,19 +1,19 @@
-import React, {useState, useEffect} from 'react';
-import {CardHeader, Grid} from "@material-ui/core";
-import {FullGame} from "../classes/Game";
-import calculatePointsPerTeam from "../classes/GameUtils";
-import {withRouter} from "react-router";
-import Button from "@material-ui/core/Button";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import ViewWrapper from "./ViewWrapper";
-import Card from "@material-ui/core/Card";
-import DashboardCard from "./DashboardCard";
-import {del, get} from "../classes/RestHelper";
-import IconButton from "@material-ui/core/IconButton";
-import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
-import CardContent from "@material-ui/core/CardContent";
-import Snackbar from "@material-ui/core/Snackbar";
-import {Alert, Color} from "@material-ui/lab";
+import React, { useState, useEffect } from 'react';
+import { CardHeader, Grid } from '@material-ui/core';
+import { FullGame } from '../classes/Game';
+import calculatePointsPerTeam from '../classes/GameUtils';
+import { withRouter } from 'react-router';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ViewWrapper from './ViewWrapper';
+import Card from '@material-ui/core/Card';
+import DashboardCard from './DashboardCard';
+import { del, get } from '../classes/RestHelper';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import CardContent from '@material-ui/core/CardContent';
+import Snackbar from '@material-ui/core/Snackbar';
+import { Alert, Color } from '@material-ui/lab';
 
 interface SnackbarMessage extends Message {
     showSnackbar?: boolean;
@@ -21,37 +21,45 @@ interface SnackbarMessage extends Message {
 }
 
 function Dashboard(props: any) {
-
-    const GAME_DELETE_FAILURE = "The game could not be deleted, please try again.";
-    const GAME_DELETE_SUCCESS = "The game was deleted.";
-    const NO_GAMES = "No Games recorded, please add one.";
+    const GAME_DELETE_FAILURE =
+        'The game could not be deleted, please try again.';
+    const GAME_DELETE_SUCCESS = 'The game was deleted.';
+    const NO_GAMES = 'No Games recorded, please add one.';
 
     const [isLoading, setIsLoading] = useState(true);
-    const [message, setMessage] = useState<SnackbarMessage>({show: false, message: ''});
+    const [message, setMessage] = useState<SnackbarMessage>({
+        show: false,
+        message: '',
+    });
     const [games, setGames] = useState([]);
 
     useEffect(() => {
         setIsLoading(true);
-        get("game", (games: any) => {
-            setGames(games);
-            setIsLoading(false);
-        }, (error: any) => {
-            setMessage({
-                show: true,
-                message: NO_GAMES,
-                error: error,
-                showSnackbar: false,
-            })
-            setIsLoading(false);
-        });
+        get(
+            'game',
+            (games: any) => {
+                setGames(games);
+                setIsLoading(false);
+            },
+            (error: any) => {
+                setMessage({
+                    show: true,
+                    message: NO_GAMES,
+                    error: error,
+                    showSnackbar: false,
+                });
+                setIsLoading(false);
+            }
+        );
     }, []);
 
     const createGame = () => {
-        props.history.push("/game/create");
+        props.history.push('/game/create');
     };
 
     const deleteGame = (id: number, index: number) => {
-        del("game/" + id,
+        del(
+            'game/' + id,
             () => {
                 const gamesCopy = [...games];
                 gamesCopy.splice(index, 1);
@@ -61,17 +69,18 @@ function Dashboard(props: any) {
                     message: GAME_DELETE_SUCCESS,
                     showSnackbar: true,
                     type: 'success',
-                })
+                });
             },
             (error: Error) => {
                 setMessage({
                     show: true,
                     message: GAME_DELETE_FAILURE,
                     error: error,
-                    showSnackbar: false,
-                })
+                    showSnackbar: true,
+                    type: 'error',
+                });
             }
-         );
+        );
     };
 
     const renderGames = () => {
@@ -82,58 +91,84 @@ function Dashboard(props: any) {
                     <Card>
                         <CardHeader
                             action={
-                                <IconButton aria-label="settings" onClick={() => deleteGame(game.id, index) }>
+                                <IconButton
+                                    aria-label="settings"
+                                    onClick={() => deleteGame(game.id, index)}
+                                >
                                     <DeleteOutlineIcon />
                                 </IconButton>
                             }
                             title={game.id}
                         />
-                        <CardContent onClick={() => {
-                            props.history.push("/game/" + game.id);
-                        }}>
-                            <DashboardCard teamOne={results.team1.team.name}
-                                       pointsTeamOne={results.team1.points}
-                                       teamTwo={results.team2.team.name}
-                                       pointsTeamTwo={results.team2.points}
+                        <CardContent
+                            onClick={() => {
+                                props.history.push('/game/' + game.id);
+                            }}
+                        >
+                            <DashboardCard
+                                teamOne={results.team1.team.name}
+                                pointsTeamOne={results.team1.points}
+                                teamTwo={results.team2.team.name}
+                                pointsTeamTwo={results.team2.points}
                             />
                         </CardContent>
                     </Card>
                 </Grid>
-            )
+            );
         });
     };
-
 
     return (
         <ViewWrapper>
             <h1>Dashboard</h1>
             <h2>Games</h2>
-            {isLoading ?
-                <CircularProgress/>
-                :
-                <Grid container>
-                {message.show &&
-                    message.showSnackbar ? <Snackbar open={message.showSnackbar} autoHideDuration={3000}>
-                        <Alert severity={message.type}>
-                            {message.message}
-                        </Alert>
-                    </Snackbar>
-                    :
-                    <Grid justify="center" align-items="center" item xs={12} md={12} lg={12}>{message.message}</Grid>
-                }
-                    <Grid container spacing={10}
-                          direction="row"
-                          justify="center"
-                          align-items="center">
+            {isLoading ? (
+                <CircularProgress />
+            ) : (
+                <Grid container
+                    direction="row"
+                    justify="center"
+                    align-items="center">
+                    {message.show &&
+                        <React.Fragment>
+                            {message.showSnackbar ? (
+                                <Snackbar
+                                    open={message.showSnackbar}
+                                    autoHideDuration={3000}
+                                >
+                                    <Alert severity={message.type}>
+                                        {message.message}
+                                    </Alert>
+                                </Snackbar>
+                            ) : (
+                                <Grid
+                                    item
+                                    xs={12}
+                                    md={12}
+                                    lg={12}
+                                >
+                                    <Alert severity="info"> {message.message} </Alert>
+                                </Grid>
+                            )
+                            }
+                        </React.Fragment>
+                    }
+                    <Grid
+                        container
+                        spacing={10}
+                        direction="row"
+                        justify="center"
+                        align-items="center"
+                    >
                         {renderGames()}
                         <Grid item xs={12} md={4} lg={2}>
                             <Button onClick={createGame}>+ Game</Button>
                         </Grid>
                     </Grid>
                 </Grid>
-            }
+            )}
         </ViewWrapper>
     );
 }
 
-export default withRouter(Dashboard)
+export default withRouter(Dashboard);

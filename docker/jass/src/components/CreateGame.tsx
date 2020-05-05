@@ -1,13 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
-import Autocomplete, {createFilterOptions} from '@material-ui/lab/Autocomplete';
-import {GameCreation, Team} from "../classes/Game";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import ViewWrapper from "./ViewWrapper";
-import {Redirect} from 'react-router-dom';
-import {get} from "../classes/RestHelper";
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import Autocomplete, {
+    createFilterOptions,
+} from '@material-ui/lab/Autocomplete';
+import { GameCreation, Team } from '../classes/Game';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import ViewWrapper from './ViewWrapper';
+import { Redirect } from 'react-router-dom';
+import { get } from '../classes/RestHelper';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -17,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
                 width: '25ch',
             },
         },
-    }),
+    })
 );
 
 const filter = createFilterOptions<TeamType>();
@@ -27,16 +29,16 @@ interface TeamType extends Team {
 }
 
 const GAME_NOT_CREATED = 'Game was not created, please try again.';
-const NOT_AVAILABLE = 'Currently no games can be created, please try again later.';
+const NOT_AVAILABLE =
+    'Currently no games can be created, please try again later.';
 const BAD_TEAM_NAME = 'A teamname must only consist of letters and numbers.';
-const TEAM_FAILURE = 'The team wasn\'t created, please try again.';
+const TEAM_FAILURE = "The team wasn't created, please try again.";
 
 function CreateGame() {
-
     const teamNameRegex = RegExp('^[\\w\\d]{1,20}$');
     const [isLoading, setIsLoading] = useState<Boolean>(true);
     const classes = useStyles();
-    const initialMessage: Message = {show: false, message: ''};
+    const initialMessage: Message = { show: false, message: '' };
 
     const [team1, setTeam1] = useState<Team>({} as Team);
     const [team2, setTeam2] = useState<Team>({} as Team);
@@ -57,71 +59,79 @@ function CreateGame() {
 
     useEffect(() => {
         setIsLoading(true);
-        get("team", (data: any) => {
-            setTeams(data);
-            setTeamError({
-                message: '',
-                show: false,
-            });
-            setIsLoading(false);
-        }, (error: any) => {
-            setTeamError({
-                show: true,
-                message: error.message,
-                error: error
-            });
-        });
+        get(
+            'team',
+            (data: any) => {
+                setTeams(data);
+                setTeamError({
+                    message: '',
+                    show: false,
+                });
+                setIsLoading(false);
+            },
+            (error: any) => {
+                setTeamError({
+                    show: true,
+                    message: error.message,
+                    error: error,
+                });
+            }
+        );
     }, [setTeams, setTeamError, setIsLoading]);
 
     const validateName1 = (value: string) => {
-        return validate(value,
+        return validate(
+            value,
             teamNameRegex,
             setTeam1Messages,
             () => {
                 return {
                     message: '',
-                    show: false
+                    show: false,
                 };
             },
             () => {
                 return {
                     show: true,
-                    message: BAD_TEAM_NAME
+                    message: BAD_TEAM_NAME,
                 };
             }
         );
     };
 
     const validateName2 = (value: string) => {
-        return validate(value,
+        return validate(
+            value,
             teamNameRegex,
             setTeam2Messages,
             () => {
                 return {
                     ...team2Message,
-                    show: false
+                    show: false,
                 };
             },
             () => {
                 return {
                     show: true,
-                    message: BAD_TEAM_NAME
+                    message: BAD_TEAM_NAME,
                 };
-
             }
         );
     };
 
     const submit = () => {
-        if (((team1.id || team1.id === 0) && team1.id.toString()) && ((team2.id || team2.id === 0) && team2.id.toString()) && (team1.id !== team2.id)) {
+        if (
+            (team1.id || team1.id === 0) &&
+            team1.id.toString() &&
+            (team2.id || team2.id === 0) &&
+            team2.id.toString() &&
+            team1.id !== team2.id
+        ) {
             const game: GameCreation = {
-                teams: [
-                    team1,
-                    team2,
-                ]
+                teams: [team1, team2],
             };
             postGame(game)
-                .then(id => {
+                .then((id) => {
                     reset();
                     setGameId(id);
                 })
@@ -165,7 +175,13 @@ function CreateGame() {
      * @param noValidationError
      * @param validationError
      */
-    const validate = (value: string, regex: RegExp, setMessage: (message: Message) => void, noValidationError: () => Message, validationError: () => Message): boolean => {
+    const validate = (
+        value: string,
+        regex: RegExp,
+        setMessage: (message: Message) => void,
+        noValidationError: () => Message,
+        validationError: () => Message
+    ): boolean => {
         let hasError = false;
         if (regex.test(value)) {
             setMessage(noValidationError());
@@ -191,7 +207,7 @@ function CreateGame() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                name: name
+                name: name,
             }),
         });
         if (response.ok) {
@@ -255,7 +271,7 @@ function CreateGame() {
                         setMessage({
                             show: true,
                             message: error.message,
-                            error: error
+                            error: error,
                         });
                     });
             } else {
@@ -294,59 +310,72 @@ function CreateGame() {
     return (
         <ViewWrapper>
             <React.Fragment>
-                {teamError ?
-                    isLoading ?
-                        <CircularProgress/>
-                        :
-                        gameId || gameId === 0 ?
-                            <Redirect to={'/game/' + gameId}/>
-                            :
-                            <form className={classes.root}>
-                                <h1>Create Game</h1>
-                                <Autocomplete
-                                    value={team1}
-                                    loading={isLoadingTeam1}
-                                    onChange={onChangeTeam1}
-                                    filterOptions={filterInput}
-                                    id="free-solo-with-text-demo"
-                                    options={teams}
-                                    getOptionLabel={getOptionLabel}
-                                    renderOption={renderOption}
-                                    style={{width: 300}}
-                                    freeSolo
-                                    renderInput={(params) => (
-                                        <TextField error={team1Message.show}
-                                                   helperText={team1Message.message} {...params}
-                                                   label="Team 1" variant="outlined"/>
-                                    )}
-                                />
-                                <Autocomplete
-                                    value={team2}
-                                    loading={isLoadingTeam2}
-                                    onChange={onChangeTeam2}
-                                    filterOptions={filterInput}
-                                    id="free-solo-with-text-demo"
-                                    options={teams}
-                                    getOptionLabel={getOptionLabel}
-                                    renderOption={renderOption}
-                                    style={{width: 300}}
-                                    freeSolo
-                                    renderInput={(params) => (
-                                        <TextField error={team2Message.show}
-                                                   helperText={team2Message.message} {...params}
-                                                   label="Team 2" variant="outlined"/>
-                                    )}
-                                />
-                                <Button disabled={!team1ready || !team2ready} onClick={submit}>Create</Button>
-                                <Button onClick={reset}>Reset</Button>
-                                <p>{message.show && message.message}</p>
-                            </form>
-                    :
+                {teamError ? (
+                    isLoading ? (
+                        <CircularProgress />
+                    ) : gameId || gameId === 0 ? (
+                        <Redirect to={'/game/' + gameId} />
+                    ) : (
+                        <form className={classes.root}>
+                            <h1>Create Game</h1>
+                            <Autocomplete
+                                value={team1}
+                                loading={isLoadingTeam1}
+                                onChange={onChangeTeam1}
+                                filterOptions={filterInput}
+                                id="free-solo-with-text-demo"
+                                options={teams}
+                                getOptionLabel={getOptionLabel}
+                                renderOption={renderOption}
+                                style={{ width: 300 }}
+                                freeSolo
+                                renderInput={(params) => (
+                                    <TextField
+                                        error={team1Message.show}
+                                        helperText={team1Message.message}
+                                        {...params}
+                                        label="Team 1"
+                                        variant="outlined"
+                                    />
+                                )}
+                            />
+                            <Autocomplete
+                                value={team2}
+                                loading={isLoadingTeam2}
+                                onChange={onChangeTeam2}
+                                filterOptions={filterInput}
+                                id="free-solo-with-text-demo"
+                                options={teams}
+                                getOptionLabel={getOptionLabel}
+                                renderOption={renderOption}
+                                style={{ width: 300 }}
+                                freeSolo
+                                renderInput={(params) => (
+                                    <TextField
+                                        error={team2Message.show}
+                                        helperText={team2Message.message}
+                                        {...params}
+                                        label="Team 2"
+                                        variant="outlined"
+                                    />
+                                )}
+                            />
+                            <Button
+                                disabled={!team1ready || !team2ready}
+                                onClick={submit}
+                            >
+                                Create
+                            </Button>
+                            <Button onClick={reset}>Reset</Button>
+                            <p>{message.show && message.message}</p>
+                        </form>
+                    )
+                ) : (
                     <p>{NOT_AVAILABLE}</p>
-                }
+                )}
             </React.Fragment>
         </ViewWrapper>
     );
 }
 
-export default CreateGame
+export default CreateGame;

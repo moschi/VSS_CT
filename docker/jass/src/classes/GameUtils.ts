@@ -1,9 +1,8 @@
-import {FullGame} from "./Game";
-import {Team} from "./Game";
-import {Round} from "./Game";
+import { FullGame } from './Game';
+import { Team } from './Game';
+import { Round } from './Game';
 
 function calculatePointsPerTeam(game: FullGame) {
-
     const team1: Team = game.teams[0];
     const team2: Team = game.teams[1];
 
@@ -21,19 +20,19 @@ function calculatePointsPerTeam(game: FullGame) {
                     pointsTeam2 += round.pointsPerTeamPerRound[i].points;
                     pointsTeam2 += round.pointsPerTeamPerRound[i].wiisPoints;
                 } else {
-                    console.log("Team does not exist: " + teamToAddPoints)
+                    console.log('Team does not exist: ' + teamToAddPoints);
                 }
             }
         });
         return {
             team1: {
                 team: team1,
-                points: pointsTeam1
+                points: pointsTeam1,
             },
             team2: {
                 team: team2,
-                points: pointsTeam2
-            }
+                points: pointsTeam2,
+            },
         };
     }
     return {
@@ -44,7 +43,7 @@ function calculatePointsPerTeam(game: FullGame) {
         team2: {
             team: team2,
             points: 0,
-        }
+        },
     };
 }
 
