@@ -12,6 +12,13 @@ import {deleteRequest, get} from "../classes/RestHelper";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 import CardContent from "@material-ui/core/CardContent";
+import Snackbar from "@material-ui/core/Snackbar";
+import {Alert, Color} from "@material-ui/lab";
+
+interface SnackbarMessage extends Message {
+    showSnackbar?: boolean;
+    type?: Color;
+}
 
 function Dashboard(props: any) {
 
@@ -20,7 +27,7 @@ function Dashboard(props: any) {
     const NO_GAMES = "No Games recorded, please add one.";
 
     const [isLoading, setIsLoading] = useState(true);
-    const [message, setMessage] = useState<Message>({show: false, message: ''});
+    const [message, setMessage] = useState<SnackbarMessage>({show: false, message: ''});
     const [games, setGames] = useState([]);
 
     useEffect(() => {
@@ -44,7 +51,12 @@ function Dashboard(props: any) {
                 const gamesCopy = [...games];
                 gamesCopy.splice(index, 1);
                 setGames(gamesCopy);
-                setMessage({show: true, message: GAME_DELETE_SUCCESS})
+                setMessage({
+                    show: true,
+                    message: GAME_DELETE_SUCCESS,
+                    showSnackbar: true,
+                    type: 'success',
+                })
             },
             (error: Error) => {
                 setMessage({show: true, message: GAME_DELETE_FAILURE, error: error})
@@ -90,7 +102,15 @@ function Dashboard(props: any) {
                 <CircularProgress/>
                 :
                 <Grid container>
-                {message.show && <Grid item xs={12} md={12} lg={12}>{message.message}</Grid>}
+                {message.show &&
+                    message.showSnackbar ? <Snackbar open={message.showSnackbar} autoHideDuration={3000}>
+                        <Alert severity={message.type}>
+                            {message.message}
+                        </Alert>
+                    </Snackbar>
+                    :
+                    <Grid justify="center" align-items="center" item xs={12} md={12} lg={12}>{message.message}</Grid>
+                }
                     <Grid container spacing={10}
                           direction="row"
                           justify="center"
