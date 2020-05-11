@@ -17,16 +17,16 @@ export const HistoryTableRow = (props: HistoryTableRowProps) => {
     return (
         <TableRow key={props.roundId}>
             <TableCell>
-                <p>{props.runde}</p>
+                {props.runde}
             </TableCell>
             <TableCell>
-                <p>{props.teamOnePoints}</p>
+                {props.teamOnePoints}
             </TableCell>
             <TableCell>
-                <p>{props.teamTwoPoints}</p>
+                {props.teamTwoPoints}
             </TableCell>
             <TableCell>
-                <p>{props.trump}</p>
+                {props.trump}
             </TableCell>
             <TableCell>
                 <IconButton

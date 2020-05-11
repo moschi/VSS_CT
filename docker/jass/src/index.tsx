@@ -6,7 +6,7 @@ import { Server, Response } from 'miragejs';
 import GameMocks from './classes/GameMocks';
 
 if (process.env.NODE_ENV !== 'production') {
-    const timeout = 2000;
+    const timeout = 20;
 
     new Server({
         routes() {
