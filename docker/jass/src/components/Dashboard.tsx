@@ -92,7 +92,7 @@ function Dashboard(props: any) {
                         <CardHeader
                             action={
                                 <IconButton
-                                    aria-label="settings"
+                                    aria-label="delete"
                                     onClick={() => deleteGame(game.id, index)}
                                 >
                                     <DeleteOutlineIcon />
