@@ -1,5 +1,5 @@
 import {FullGame, Round} from '../classes/Game';
-import {default as React, useCallback, useEffect, useState} from 'react';
+import {default as React, RefObject, useCallback, useEffect, useState} from 'react';
 import {HistoryTableRow} from './HistoryTableRow';
 import {HistoryWrapper} from './HistoryWrapper';
 import {TableBody} from '@material-ui/core';
@@ -10,6 +10,7 @@ interface HistoryTableProps {
     removeRound: Function;
     getNextRoundId: Function;
     addRound: Function;
+    containerRef: RefObject<HTMLDivElement>;
 }
 
 export const HistoryTable = (props: HistoryTableProps) => {
@@ -77,19 +78,20 @@ export const HistoryTable = (props: HistoryTableProps) => {
     };
 
     return (
-        <HistoryWrapper
-            teamNameOne={team1.name}
-            teamNameTwo={team2.name}
-            round={props.getNextRoundId(rounds)}
-            addRound={props.addRound}
-            team1Total={team1Total}
-            team2Total={team2Total}
-        >
-            <React.Fragment>
-            <TableBody>
-                {renderRounds()}
-            </TableBody>
-            </React.Fragment>
-        </HistoryWrapper>
+        <React.Fragment>
+            <HistoryWrapper
+                teamNameOne={team1.name}
+                teamNameTwo={team2.name}
+                round={props.getNextRoundId(rounds)}
+                addRound={props.addRound}
+                team1Total={team1Total}
+                team2Total={team2Total}
+                containerRef={props.containerRef}
+            >
+                <TableBody>
+                    {renderRounds()}
+                </TableBody>
+            </HistoryWrapper>
+        </React.Fragment>
     );
 };

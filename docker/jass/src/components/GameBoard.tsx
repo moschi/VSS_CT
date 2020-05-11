@@ -26,6 +26,7 @@ function GameBoard(props: any) {
     const [rererenderer, setRerererenderer] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState();
+    const divRef = React.useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setIsLoading(true);
@@ -135,7 +136,7 @@ function GameBoard(props: any) {
             ) : error ? (
                 <p>error: {error.message}</p>
             ) : (
-                <div className={'gameBoardWrapper'}>
+                <div className={'gameBoardWrapper'} ref={divRef}>
                     <div>
                         <canvas ref={canvasRef} width={515} height={720} />
                     </div>
@@ -143,7 +144,7 @@ function GameBoard(props: any) {
                         <div className={'gameBoardInnerWrapper'}>
                             <div>
                                 <h2>History</h2>
-                                <HistoryTable game={game} removeRound={removeRound} getNextRoundId={getNextRoundId} addRound={addRound}/>
+                                <HistoryTable game={game} removeRound={removeRound} getNextRoundId={getNextRoundId} addRound={addRound} containerRef={divRef}/>
                             </div>
                         </div>
                     </div>

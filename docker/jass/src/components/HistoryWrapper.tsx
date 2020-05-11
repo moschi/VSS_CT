@@ -1,12 +1,11 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import {RefObject, useEffect, useState} from 'react';
 import {Trumpf} from '../classes/Game';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import {FormControl, TableCell} from '@material-ui/core';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -14,6 +13,9 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import {trump} from './GameBoard';
+import {Prices} from './Price';
+import TableCell from '@material-ui/core/TableCell';
+import FormControl from '@material-ui/core/FormControl';
 
 interface HistoryWrapperProps {
     teamNameOne: string;
@@ -23,6 +25,7 @@ interface HistoryWrapperProps {
     children: React.ReactChild;
     team1Total: number;
     team2Total: number;
+    containerRef: RefObject<HTMLDivElement>;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -34,24 +37,17 @@ const useStyles = makeStyles((theme: Theme) =>
         container: {
             height: 300,
         },
-        scrollDown: {
-            // display:"flex",
-            // flexDirection: "column-reverse"
-        },
         total: {
             width: "10%",
         },
         totalValues: {
             width: "24%",
         },
-        tableHead: {
-            position: "sticky",
-            top: 0
-        },
-        bottomMost: {
-            position: "sticky",
-            bottom: 0,
-
+        popover: {
+            '& .MuiPaper-elevation8': {
+                width: "300px",
+                height: "150px",
+            }
         }
     })
 );
@@ -62,26 +58,31 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
     const [trumpf, setTrumpf] = useState<Trumpf>(trump[0]);
     const [wiisPoints1, setWiisPoints1] = useState<number>(0);
     const [wiisPoints2, setWiisPoints2] = useState<number>(0);
-
     const classes = useStyles();
 
     let tableEnd: any;
 
     const scrollToBottom = () => {
         tableEnd.scrollIntoView({behavior: "smooth"});
-    }
+    };
 
     useEffect(()=>{
         scrollToBottom();
-    })
+    });
 
     return (
         <React.Fragment>
             <div>
+                <Prices
+                    team1Total={props.team1Total}
+                    team2Total={props.team2Total}
+                    containerRef={props.containerRef}
+                    teamNameOne={props.teamNameOne}
+                    teamNameTwo={props.teamNameTwo}/>
                 <Paper>
                     <TableContainer className={classes.container}>
-                        <Table stickyHeader className={classes.scrollDown} aria-label="sticky table">
-                            <TableHead className="tableHead">
+                        <Table stickyHeader aria-label="sticky table">
+                            <TableHead>
                                 <TableRow>
                                     <TableCell key="Runde">
                                         Runde
@@ -101,11 +102,10 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                                 </TableRow>
                             </TableHead>
                             {props.children}
-                            <div className="bottomMost" ref={(el) => {
+                            <div ref={(el) => {
                                 tableEnd = el;
                             }}/>
                         </Table>
-
                     </TableContainer>
                     <Table>
                         <TableRow>
@@ -192,7 +192,6 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                             wiisPoints1,
                             wiisPoints2
                         );
-                        // scrollToBottom();
                     }}>
                         Add Round
                     </Button>
