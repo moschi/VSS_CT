@@ -120,7 +120,6 @@ function GameBoard(props: any) {
             'game/' + game.id + '/' + roundId,
             () => {
                 setRerererenderer(!rererenderer);
-                console.log('blah');
             },
             () => {
                 console.log('fuck');

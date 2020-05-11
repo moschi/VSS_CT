@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Trumpf} from '../classes/Game';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -35,9 +35,8 @@ const useStyles = makeStyles((theme: Theme) =>
             height: 300,
         },
         scrollDown: {
-            "overflowY": "scroll",
-            "overscrollBehaviorY": "contain",
-            "scrollSnapType": "y mandatory",
+            // display:"flex",
+            // flexDirection: "column-reverse"
         },
         total: {
             width: "10%",
@@ -45,6 +44,15 @@ const useStyles = makeStyles((theme: Theme) =>
         totalValues: {
             width: "24%",
         },
+        tableHead: {
+            position: "sticky",
+            top: 0
+        },
+        bottomMost: {
+            position: "sticky",
+            bottom: 0,
+
+        }
     })
 );
 
@@ -57,13 +65,23 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
 
     const classes = useStyles();
 
+    let tableEnd: any;
+
+    const scrollToBottom = () => {
+        tableEnd.scrollIntoView({behavior: "smooth"});
+    }
+
+    useEffect(()=>{
+        scrollToBottom();
+    })
+
     return (
         <React.Fragment>
             <div>
                 <Paper>
                     <TableContainer className={classes.container}>
                         <Table stickyHeader className={classes.scrollDown} aria-label="sticky table">
-                            <TableHead>
+                            <TableHead className="tableHead">
                                 <TableRow>
                                     <TableCell key="Runde">
                                         Runde
@@ -83,13 +101,19 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                                 </TableRow>
                             </TableHead>
                             {props.children}
+                            <div className="bottomMost" ref={(el) => {
+                                tableEnd = el;
+                            }}/>
                         </Table>
+
                     </TableContainer>
                     <Table>
                         <TableRow>
                             <TableCell className={classes.total} size="small" align="left">Total:</TableCell>
-                            <TableCell className={classes.totalValues} size="medium" align="left">{props.team1Total}</TableCell>
-                            <TableCell className={classes.totalValues} size="medium" align="left">{props.team2Total}</TableCell>
+                            <TableCell className={classes.totalValues} size="medium"
+                                       align="left">{props.team1Total}</TableCell>
+                            <TableCell className={classes.totalValues} size="medium"
+                                       align="left">{props.team2Total}</TableCell>
                             <TableCell size="medium"/>
                             <TableCell size="medium"/>
                         </TableRow>
@@ -126,7 +150,7 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                     />
                     <TextField
                         id="points"
-                        label={"Wiis Points "+props.teamNameOne}
+                        label={"Wiis Points " + props.teamNameOne}
                         placeholder="0"
                         value={wiisPoints1}
                         type={'number'}
@@ -136,7 +160,7 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                     />
                     <TextField
                         id="points"
-                        label={"Wiis Points "+props.teamNameTwo}
+                        label={"Wiis Points " + props.teamNameTwo}
                         placeholder="0"
                         value={wiisPoints2}
                         type={'number'}
@@ -168,6 +192,7 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                             wiisPoints1,
                             wiisPoints2
                         );
+                        // scrollToBottom();
                     }}>
                         Add Round
                     </Button>
