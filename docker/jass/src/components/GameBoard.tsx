@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import DrawGameBoard from '../classes/DrawGameBoard';
-import { PointsPerTeamPerRound, Round, Trumpf } from '../classes/Game';
+import {FullGame, Game, PointsPerTeamPerRound, Round, Trumpf} from '../classes/Game';
 import jasstafel from '../images/jasstafel.jpg';
 import ViewWrapper from './ViewWrapper';
 import { del, get, post } from '../classes/RestHelper';
@@ -31,14 +31,6 @@ const trump: Trumpf[] = [
     { id: 6, name: 'UntenUfen', multiplier: 3 },
 ];
 
-interface HistoryWrapperProps {
-    teamNameOne: string;
-    teamNameTwo: string;
-    children: React.ReactChildren;
-    round: number;
-    addRound: Function;
-}
-
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         formControl: {
@@ -51,12 +43,20 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
+interface HistoryWrapperProps {
+    teamNameOne: string;
+    teamNameTwo: string;
+    children: React.ReactChildren;
+    round: number;
+    addRound: Function;
+}
+
 const HistoryWrapper = (props: HistoryWrapperProps) => {
-    const [team, setTeam] = useState(props.teamNameOne);
-    const [points, setPoints] = useState(0);
-    const [trumpf, setTrumpf] = useState(trump[0].name);
-    const [wiisPoints1, setWiisPoints1] = useState(0);
-    const [wiisPoints2, setWiisPoints2] = useState(0);
+    const [team, setTeam] = useState<string>(props.teamNameOne);
+    const [points, setPoints] = useState<number>(0);
+    const [trumpf, setTrumpf] = useState<Trumpf>(trump[0]);
+    const [wiisPoints1, setWiisPoints1] = useState<number>(0);
+    const [wiisPoints2, setWiisPoints2] = useState<number>(0);
 
     const classes = useStyles();
 
@@ -145,28 +145,25 @@ const HistoryWrapper = (props: HistoryWrapperProps) => {
                         <Select
                             labelId="trumpf-select-label"
                             id="trumpf-select"
-                            defaultValue={trumpf}
-                            onChange={(e) => setTrumpf(e.currentTarget.value as string)}
+                            defaultValue={trumpf.id}
+                            onChange={(e) => {
+                                const value = e.target.value as number;
+                                setTrumpf(trump[value - 1])
+                            }}
                         >
                             {trump.map((trumpf: Trumpf) => {
-                                return <MenuItem value={trumpf.name}>{trumpf.name}</MenuItem>;
+                                return <MenuItem key={trumpf.id} value={trumpf.id}>{trumpf.name}</MenuItem>;
                             })}
                         </Select>
                     </FormControl>
                     <Button onClick={() => {
-                        {
-                            trump.forEach((trump) => {
-                                if (trump.name === trumpf) {
-                                    props.addRound(
-                                        trump.id,
-                                        points,
-                                        team,
-                                        wiisPoints1,
-                                        wiisPoints2
-                                    );
-                                }
-                            });
-                        }
+                            props.addRound(
+                                trumpf.id,
+                                points,
+                                team,
+                                wiisPoints1,
+                                wiisPoints2
+                            );
                     }}>
                         Add Round
                     </Button>
@@ -176,9 +173,18 @@ const HistoryWrapper = (props: HistoryWrapperProps) => {
     );
 };
 
-const HistoryTableRow = (props: any) => {
+interface HistoryTableRowProps {
+    runde: number;
+    teamOnePoints: number;
+    teamTwoPoints: number;
+    trump: string;
+    roundId: number;
+    removeRound: Function;
+}
+
+const HistoryTableRow = (props: HistoryTableRowProps) => {
     return (
-        <TableRow>
+        <TableRow key={props.roundId}>
             <TableCell>
                 <p>{props.runde}</p>
             </TableCell>
@@ -205,10 +211,11 @@ const HistoryTableRow = (props: any) => {
 
 function GameBoard(props: any) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [game, setGame] = useState(GameMocks[0]);
-    const [rerender, setRerender] = useState(false);
-    const [rererenderer, setRerererenderer] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    // TODO remove mock usage
+    const [game, setGame] = useState<FullGame>(GameMocks[0]);
+    const [rerender, setRerender] = useState<boolean>(false);
+    const [rererenderer, setRerererenderer] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState();
 
     useEffect(() => {
@@ -354,6 +361,7 @@ function GameBoard(props: any) {
                             trump={trumpf.name}
                             removeRound={removeRound}
                             roundId={round.id}
+                            key={round.id}
                         />
                     );
                 })}
