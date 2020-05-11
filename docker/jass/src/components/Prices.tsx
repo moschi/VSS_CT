@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useEffect } from 'react';
-import { RefObject } from 'react';
 import { useState } from 'react';
 import { Button } from '@material-ui/core';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -29,22 +28,31 @@ const SimpleDialog = (props: SimpleDialogProps) => {
     );
 };
 
+interface PriceStorage {
+    bergPriisShown: boolean;
+    schniiderShown1: boolean;
+    schniiderShown2: boolean;
+}
+
 interface PricesProps {
+    gameId: number;
     team1Total: number;
     team2Total: number;
-    containerRef: RefObject<HTMLDivElement>;
     teamNameOne: string;
     teamNameTwo: string;
 }
 export const Prices = (props: PricesProps) => {
+    // TODO local storage is may not the best place for all prices.
+    const storageKey: string = "prices"+props.gameId;
+    const storage: PriceStorage = localStorage.getItem(storageKey) != null ? JSON.parse(localStorage.getItem(storageKey) as string) : {} as PriceStorage;
     const [showWinner, setShowWinner] = useState<boolean>(false);
     const [winnerShown, setWinnerShown] = useState<boolean>(false);
     const [showBergPriis, setShowbergPriis] = useState<boolean>(false);
-    const [bergPriisShown, setBergPriisShown] = useState<boolean>(false);
+    const [bergPriisShown, setBergPriisShown] = useState<boolean>(storage.bergPriisShown ? storage.bergPriisShown : false);
     const [showSchniider1, setShowSchniider1] = useState<boolean>(false);
     const [showSchniider2, setShowSchniider2] = useState<boolean>(false);
-    const [schniiderShown1, setSchniiderShown1] = useState<boolean>(false);
-    const [schniiderShown2, setSchniiderShown2] = useState<boolean>(false);
+    const [schniiderShown1, setSchniiderShown1] = useState<boolean>(storage.schniiderShown1 ? storage.schniiderShown1 : false);
+    const [schniiderShown2, setSchniiderShown2] = useState<boolean>(storage.schniiderShown2 ? storage.schniiderShown2 : false);
     const maxPoints = 2500;
     const bergpriis = 1500;
     const schniider = 1250;
@@ -61,9 +69,12 @@ export const Prices = (props: PricesProps) => {
                 setShowSchniider2(true);
             } else if (props.team1Total > schniider && !schniiderShown1) {
                 setShowSchniider1(true);
+            } else {
+                setShowSchniider2(false);
+                setShowSchniider1(false);
             }
         }
-    }, [props.team1Total, props.team2Total, schniiderShown2]);
+    }, [props.team1Total, props.team2Total, schniiderShown2, schniiderShown1]);
 
     const showWinnerClose = () => {
         setShowWinner(false);
@@ -71,16 +82,28 @@ export const Prices = (props: PricesProps) => {
     };
 
     const showBergPriisClose = () => {
+        localStorage.setItem(storageKey, JSON.stringify({
+            ...(localStorage.getItem(storageKey) != null && JSON.parse(localStorage.getItem(storageKey) as string)),
+            bergPriisShown: true,
+        }));
         setShowbergPriis(false);
         setBergPriisShown(true);
     };
 
     const showSchniiderClose1 = () => {
+        localStorage.setItem(storageKey, JSON.stringify({
+            ...(localStorage.getItem(storageKey) != null && JSON.parse(localStorage.getItem(storageKey) as string)),
+            schniiderShown1: true,
+        }));
         setShowSchniider1(false);
         setSchniiderShown1(true);
     };
 
     const showSchniiderClose2 = () => {
+        localStorage.setItem(storageKey, JSON.stringify({
+            ...(localStorage.getItem(storageKey) != null && JSON.parse(localStorage.getItem(storageKey) as string)),
+            schniiderShown2: true,
+        }));
         setShowSchniider2(false);
         setSchniiderShown2(true);
     };

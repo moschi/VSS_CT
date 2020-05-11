@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { RefObject, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Trumpf } from '../classes/Game';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -13,7 +13,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { trump } from './GameBoard';
-import { Prices } from './Price';
+import { Prices } from './Prices';
 import TableCell from '@material-ui/core/TableCell';
 import FormControl from '@material-ui/core/FormControl';
 
@@ -25,7 +25,7 @@ interface HistoryWrapperProps {
     children: React.ReactChild;
     team1Total: number;
     team2Total: number;
-    containerRef: RefObject<HTMLDivElement>;
+    gameId: number
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -76,9 +76,9 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                 <Prices
                     team1Total={props.team1Total}
                     team2Total={props.team2Total}
-                    containerRef={props.containerRef}
                     teamNameOne={props.teamNameOne}
                     teamNameTwo={props.teamNameTwo}
+                    gameId={props.gameId}
                 />
                 <Paper>
                     <TableContainer className={classes.container}>

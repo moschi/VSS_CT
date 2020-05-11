@@ -154,7 +154,6 @@ function GameBoard(props: any) {
                                     removeRound={removeRound}
                                     getNextRoundId={getNextRoundId}
                                     addRound={addRound}
-                                    containerRef={divRef}
                                 />
                             </div>
                         </div>

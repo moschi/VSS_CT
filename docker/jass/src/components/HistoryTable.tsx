@@ -1,7 +1,6 @@
 import { FullGame, Round } from '../classes/Game';
 import {
     default as React,
-    RefObject,
     useCallback,
     useEffect,
     useState,
@@ -16,7 +15,6 @@ interface HistoryTableProps {
     removeRound: Function;
     getNextRoundId: Function;
     addRound: Function;
-    containerRef: RefObject<HTMLDivElement>;
 }
 
 export const HistoryTable = (props: HistoryTableProps) => {
@@ -101,7 +99,7 @@ export const HistoryTable = (props: HistoryTableProps) => {
                 addRound={props.addRound}
                 team1Total={team1Total}
                 team2Total={team2Total}
-                containerRef={props.containerRef}
+                gameId={props.game.id}
             >
                 <TableBody>{renderRounds()}</TableBody>
             </HistoryWrapper>
