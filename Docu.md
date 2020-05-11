@@ -7,9 +7,11 @@
 This is a WebApp to record points for a "Schieber-Jass". The app has the following features: 
 
 * Create/Delete a game
+* Create/Delete Teams
 * Insert rounds for a game 
   * for each team 
   * with the appropriate multiplier
+  * show points on a "Jass"-table
 
 ## Architecture
 
@@ -17,11 +19,11 @@ The application consists of the following components:
 
 ![image-20200505115328400](./Docu.assets/image-20200505115328400.png)
 
-### Authentication
+## Authentication
 
-bibedi bidiebd bdbbababa bebbeeidi b dbabbdidia bababai aiaib abaabbaiabai
+Each request to the server is protected with https basic authentication, to check whether a user is logged in or not.
 
-### ERD
+## ERD
 
 The database design is based on this erd: 
 
@@ -29,9 +31,11 @@ The database design is based on this erd:
 
 ## Design Decisions
 
-The application is a SPA calling a REST Service. We used this project to gain know-how in several technologies none of us had used before. 
+The application is a React Single Page Application calling a REST Service. We used this project to gain know-how in several technologies none of us had used before.  
 
 The SPA is based on [react](https://reactjs.org/) and [TypeScript](https://www.typescriptlang.org/). It uses [create-react-app](https://github.com/facebook/create-react-app) this allowed us to directly start coding, as the create-react-app scripts care about the linting setup, the webpack setup, the testing setup and the production setup. We decided to use react as we already had some experience but wanted to dive deeper and share the knowledge among each other. The page makes use of many [MATERIAL-UI](https://material-ui.com/) components for proper styling.
+
+[Webpack](https://webpack.js.org/) is used to bundle the typescript files and their dependencies into a single .js file, which then can be served as static resources.
 
 The back-end is written in GO. To define the contract between the front-end and the back-end we created an OpenAPI specification of the API. This [file](./swagger.yaml) can be viewed in the [online editor](https://editor.swagger.io) provided by swagger. The [https://github.com/swagger-api/swagger-codegen](https://github.com/swagger-api/swagger-codegen) was used to generate a lot of  boilerplate for the back-end, we then extended it and implemented the REST Service. We decided to use GO because we saw it in the lecture and were fascinated by the syntax and the possibilities. This was a new language for all of us, and in the beginning we had to overcome some struggles, but soon after we really started to like it and implemented our first services. 
 
