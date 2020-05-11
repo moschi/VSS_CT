@@ -31,14 +31,6 @@ const trump: Trumpf[] = [
     { id: 6, name: 'UntenUfen', multiplier: 3 },
 ];
 
-interface HistoryWrapperProps {
-    teamNameOne: string;
-    teamNameTwo: string;
-    children: React.ReactChildren;
-    round: number;
-    addRound: Function;
-}
-
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         formControl: {
@@ -50,6 +42,14 @@ const useStyles = makeStyles((theme: Theme) =>
         },
     })
 );
+
+interface HistoryWrapperProps {
+    teamNameOne: string;
+    teamNameTwo: string;
+    children: React.ReactChildren;
+    round: number;
+    addRound: Function;
+}
 
 const HistoryWrapper = (props: HistoryWrapperProps) => {
     const [team, setTeam] = useState<string>(props.teamNameOne);
@@ -152,7 +152,7 @@ const HistoryWrapper = (props: HistoryWrapperProps) => {
                             }}
                         >
                             {trump.map((trumpf: Trumpf) => {
-                                return <MenuItem value={trumpf.id}>{trumpf.name}</MenuItem>;
+                                return <MenuItem key={trumpf.id} value={trumpf.id}>{trumpf.name}</MenuItem>;
                             })}
                         </Select>
                     </FormControl>
@@ -173,9 +173,18 @@ const HistoryWrapper = (props: HistoryWrapperProps) => {
     );
 };
 
-const HistoryTableRow = (props: any) => {
+interface HistoryTableRowProps {
+    runde: number;
+    teamOnePoints: number;
+    teamTwoPoints: number;
+    trump: string;
+    roundId: number;
+    removeRound: Function;
+}
+
+const HistoryTableRow = (props: HistoryTableRowProps) => {
     return (
-        <TableRow>
+        <TableRow key={props.roundId}>
             <TableCell>
                 <p>{props.runde}</p>
             </TableCell>
@@ -352,6 +361,7 @@ function GameBoard(props: any) {
                             trump={trumpf.name}
                             removeRound={removeRound}
                             roundId={round.id}
+                            key={round.id}
                         />
                     );
                 })}
