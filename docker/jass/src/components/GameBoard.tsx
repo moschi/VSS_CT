@@ -334,7 +334,6 @@ function GameBoard(props: any) {
                 addRound={addRound}
             >
                 {rounds.map((round: Round, numOfRounds: number) => {
-                    // Fuck you databases!
                     let trumpf = trump[round.trumpfId - 1];
                     let pointsPerTeamPerRound = round.pointsPerTeamPerRound;
                     let teamOnePoints = 0;
