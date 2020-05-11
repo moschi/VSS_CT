@@ -19,9 +19,9 @@ The application consists of the following components:
 
 ![image-20200505115328400](./Docu.assets/image-20200505115328400.png)
 
-The user has to be authenticated, each request to the server is protected with https basic authentication. The Authentication is ensured by Traefik. Traefik is also configured to load balance all requests to access the static resource or the backend service. 
+The user has to be authenticated, each request to the server is protected with basic authentication. The Authentication is ensured by Traefik. Traefik is also configured to load balance all requests to access the static resource or the backend service. 
 
-The API definition can be found [here](./swagger.yaml) and can be be viewed in the [online editor](https://editor.swagger.io) provided by swagger. The API provides access points for game, team and round use case, The data fetching is done asynchronous and every request sends back a proper response to the UI, which is then handled on the client side, even if a  "wrong" request was sent.  For every request it's ensured that the requesting user only gets back data related to him. No calculations are done on the server, all calculations are done by the client.
+The API definition can be found [here](./swagger.yaml) and can be be viewed in the [online editor](https://editor.swagger.io) provided by swagger. The API provides access points for game, team and round use cases. The data fetching is done asynchronous and every request sends back a proper response, which is then handled on the client side, even if a  "wrong" request was sent.  For every request it's ensured that the requesting user only gets back data related to him. No calculations are done on the server, all calculations are done by the client.
 
 ## ERD
 
