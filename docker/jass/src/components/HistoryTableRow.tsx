@@ -1,5 +1,5 @@
 import TableRow from '@material-ui/core/TableRow';
-import {TableCell} from '@material-ui/core';
+import { TableCell } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
 import * as React from 'react';
@@ -16,18 +16,10 @@ interface HistoryTableRowProps {
 export const HistoryTableRow = (props: HistoryTableRowProps) => {
     return (
         <TableRow key={props.roundId}>
-            <TableCell>
-                {props.runde}
-            </TableCell>
-            <TableCell>
-                {props.teamOnePoints}
-            </TableCell>
-            <TableCell>
-                {props.teamTwoPoints}
-            </TableCell>
-            <TableCell>
-                {props.trump}
-            </TableCell>
+            <TableCell>{props.runde}</TableCell>
+            <TableCell>{props.teamOnePoints}</TableCell>
+            <TableCell>{props.teamTwoPoints}</TableCell>
+            <TableCell>{props.trump}</TableCell>
             <TableCell>
                 <IconButton
                     aria-label="delete"

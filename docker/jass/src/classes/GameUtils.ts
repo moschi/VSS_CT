@@ -1,4 +1,4 @@
-import {FullGame, Trumpf, Team, Round} from './Game';
+import { FullGame, Trumpf, Team, Round } from './Game';
 
 const trump: Trumpf[] = [
     { id: 1, name: 'Eichel', multiplier: 1 },
@@ -20,13 +20,17 @@ function calculatePointsPerTeam(game: FullGame) {
         game.rounds.forEach((round: Round) => {
             for (let i = 0; i < 2; i++) {
                 const teamToAddPoints = round.pointsPerTeamPerRound[i].teamId;
-                const multiplier = trump[round.trumpfId-1].multiplier;
+                const multiplier = trump[round.trumpfId - 1].multiplier;
                 if (team1.id === teamToAddPoints) {
-                    pointsTeam1 += round.pointsPerTeamPerRound[i].points * multiplier;
-                    pointsTeam1 += round.pointsPerTeamPerRound[i].wiisPoints * multiplier;
+                    pointsTeam1 +=
+                        round.pointsPerTeamPerRound[i].points * multiplier;
+                    pointsTeam1 +=
+                        round.pointsPerTeamPerRound[i].wiisPoints * multiplier;
                 } else if (team2.id === teamToAddPoints) {
-                    pointsTeam2 += round.pointsPerTeamPerRound[i].points * multiplier;
-                    pointsTeam2 += round.pointsPerTeamPerRound[i].wiisPoints * multiplier;
+                    pointsTeam2 +=
+                        round.pointsPerTeamPerRound[i].points * multiplier;
+                    pointsTeam2 +=
+                        round.pointsPerTeamPerRound[i].wiisPoints * multiplier;
                 } else {
                     console.log('Team does not exist: ' + teamToAddPoints);
                 }

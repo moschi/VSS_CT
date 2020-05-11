@@ -64,4 +64,3 @@ export const del = (
 ) => {
     request('DELETE', route, false, callback, errorHandling);
 };
-

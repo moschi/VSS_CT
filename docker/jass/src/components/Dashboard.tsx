@@ -2,7 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { FullGame } from '../classes/Game';
 import calculatePointsPerTeam from '../classes/GameUtils';
 import { withRouter } from 'react-router';
-import {CircularProgress, CardContent, IconButton, Card , Button, CardHeader, Grid, Snackbar} from '@material-ui/core';
+import {
+    CircularProgress,
+    CardContent,
+    IconButton,
+    Card,
+    Button,
+    CardHeader,
+    Grid,
+    Snackbar,
+} from '@material-ui/core';
 import ViewWrapper from './ViewWrapper';
 import DashboardCard from './DashboardCard';
 import { del, get } from '../classes/RestHelper';
@@ -119,11 +128,13 @@ function Dashboard(props: any) {
             {isLoading ? (
                 <CircularProgress />
             ) : (
-                <Grid container
+                <Grid
+                    container
                     direction="row"
                     justify="center"
-                    align-items="center">
-                    {message.show &&
+                    align-items="center"
+                >
+                    {message.show && (
                         <React.Fragment>
                             {message.showSnackbar ? (
                                 <Snackbar
@@ -135,18 +146,15 @@ function Dashboard(props: any) {
                                     </Alert>
                                 </Snackbar>
                             ) : (
-                                <Grid
-                                    item
-                                    xs={12}
-                                    md={12}
-                                    lg={12}
-                                >
-                                    <Alert severity="info"> {message.message} </Alert>
+                                <Grid item xs={12} md={12} lg={12}>
+                                    <Alert severity="info">
+                                        {' '}
+                                        {message.message}{' '}
+                                    </Alert>
                                 </Grid>
-                            )
-                            }
+                            )}
                         </React.Fragment>
-                    }
+                    )}
                     <Grid
                         container
                         spacing={10}

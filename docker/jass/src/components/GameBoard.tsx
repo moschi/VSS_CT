@@ -1,7 +1,12 @@
 import * as React from 'react';
-import {useEffect, useRef, useState} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import DrawGameBoard from '../classes/DrawGameBoard';
-import {FullGame, PointsPerTeamPerRound, Round, Trumpf} from '../classes/Game';
+import {
+    FullGame,
+    PointsPerTeamPerRound,
+    Round,
+    Trumpf,
+} from '../classes/Game';
 import jasstafel from '../images/jasstafel.jpg';
 import ViewWrapper from './ViewWrapper';
 import { del, get, post } from '../classes/RestHelper';
@@ -144,7 +149,13 @@ function GameBoard(props: any) {
                         <div className={'gameBoardInnerWrapper'}>
                             <div>
                                 <h2>History</h2>
-                                <HistoryTable game={game} removeRound={removeRound} getNextRoundId={getNextRoundId} addRound={addRound} containerRef={divRef}/>
+                                <HistoryTable
+                                    game={game}
+                                    removeRound={removeRound}
+                                    getNextRoundId={getNextRoundId}
+                                    addRound={addRound}
+                                    containerRef={divRef}
+                                />
                             </div>
                         </div>
                     </div>

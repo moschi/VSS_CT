@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {RefObject, useEffect, useState} from 'react';
-import {Trumpf} from '../classes/Game';
+import { RefObject, useEffect, useState } from 'react';
+import { Trumpf } from '../classes/Game';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -11,9 +11,9 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
-import {trump} from './GameBoard';
-import {Prices} from './Price';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { trump } from './GameBoard';
+import { Prices } from './Price';
 import TableCell from '@material-ui/core/TableCell';
 import FormControl from '@material-ui/core/FormControl';
 
@@ -38,17 +38,17 @@ const useStyles = makeStyles((theme: Theme) =>
             height: 300,
         },
         total: {
-            width: "10%",
+            width: '10%',
         },
         totalValues: {
-            width: "24%",
+            width: '24%',
         },
         popover: {
             '& .MuiPaper-elevation8': {
-                width: "300px",
-                height: "150px",
-            }
-        }
+                width: '300px',
+                height: '150px',
+            },
+        },
     })
 );
 
@@ -63,10 +63,10 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
     let tableEnd: any;
 
     const scrollToBottom = () => {
-        tableEnd.scrollIntoView({behavior: "smooth"});
+        tableEnd.scrollIntoView({ behavior: 'smooth' });
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         scrollToBottom();
     });
 
@@ -78,64 +78,88 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                     team2Total={props.team2Total}
                     containerRef={props.containerRef}
                     teamNameOne={props.teamNameOne}
-                    teamNameTwo={props.teamNameTwo}/>
+                    teamNameTwo={props.teamNameTwo}
+                />
                 <Paper>
                     <TableContainer className={classes.container}>
                         <Table stickyHeader aria-label="sticky table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell key="Runde">
-                                        Runde
-                                    </TableCell>
+                                    <TableCell key="Runde">Runde</TableCell>
                                     <TableCell key={props.teamNameOne}>
                                         {props.teamNameOne}
                                     </TableCell>
                                     <TableCell key={props.teamNameTwo}>
                                         {props.teamNameTwo}
                                     </TableCell>
-                                    <TableCell key="Trumpf">
-                                        Trumpf
-                                    </TableCell>
-                                    <TableCell key="Actions">
-                                        Actions
-                                    </TableCell>
+                                    <TableCell key="Trumpf">Trumpf</TableCell>
+                                    <TableCell key="Actions">Actions</TableCell>
                                 </TableRow>
                             </TableHead>
                             {props.children}
-                            <div ref={(el) => {
-                                tableEnd = el;
-                            }}/>
+                            <div
+                                ref={(el) => {
+                                    tableEnd = el;
+                                }}
+                            />
                         </Table>
                     </TableContainer>
                     <Table>
                         <TableRow>
-                            <TableCell className={classes.total} size="small" align="left">Total:</TableCell>
-                            <TableCell className={classes.totalValues} size="medium"
-                                       align="left">{props.team1Total}</TableCell>
-                            <TableCell className={classes.totalValues} size="medium"
-                                       align="left">{props.team2Total}</TableCell>
-                            <TableCell size="medium"/>
-                            <TableCell size="medium"/>
+                            <TableCell
+                                className={classes.total}
+                                size="small"
+                                align="left"
+                            >
+                                Total:
+                            </TableCell>
+                            <TableCell
+                                className={classes.totalValues}
+                                size="medium"
+                                align="left"
+                            >
+                                {props.team1Total}
+                            </TableCell>
+                            <TableCell
+                                className={classes.totalValues}
+                                size="medium"
+                                align="left"
+                            >
+                                {props.team2Total}
+                            </TableCell>
+                            <TableCell size="medium" />
+                            <TableCell size="medium" />
                         </TableRow>
                     </Table>
                 </Paper>
             </div>
-            <br/>
+            <br />
             <form>
                 <FormControl className={classes.formControl}>
                     <FormControl>
-                        <InputLabel htmlFor="team-select" id="team-select-label">Team</InputLabel>
+                        <InputLabel
+                            htmlFor="team-select"
+                            id="team-select-label"
+                        >
+                            Team
+                        </InputLabel>
                         <Select
                             labelId="team-select-label"
                             id="team-select"
                             value={team}
-                            onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
+                            onChange={(
+                                e: React.ChangeEvent<{ value: unknown }>
+                            ) => {
                                 const value: string = e.target.value as string;
                                 setTeam(value);
                             }}
                         >
-                            <MenuItem value={props.teamNameOne}>{props.teamNameOne}</MenuItem>
-                            <MenuItem value={props.teamNameTwo}>{props.teamNameTwo}</MenuItem>
+                            <MenuItem value={props.teamNameOne}>
+                                {props.teamNameOne}
+                            </MenuItem>
+                            <MenuItem value={props.teamNameTwo}>
+                                {props.teamNameTwo}
+                            </MenuItem>
                         </Select>
                     </FormControl>
                     <TextField
@@ -150,7 +174,7 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                     />
                     <TextField
                         id="points"
-                        label={"Wiis Points " + props.teamNameOne}
+                        label={'Wiis Points ' + props.teamNameOne}
                         placeholder="0"
                         value={wiisPoints1}
                         type={'number'}
@@ -160,7 +184,7 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                     />
                     <TextField
                         id="points"
-                        label={"Wiis Points " + props.teamNameTwo}
+                        label={'Wiis Points ' + props.teamNameTwo}
                         placeholder="0"
                         value={wiisPoints2}
                         type={'number'}
@@ -169,30 +193,41 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                         }
                     />
                     <FormControl>
-                        <InputLabel team-select="trumpf-select" id="trumpf-select-label">Trumpf</InputLabel>
+                        <InputLabel
+                            team-select="trumpf-select"
+                            id="trumpf-select-label"
+                        >
+                            Trumpf
+                        </InputLabel>
                         <Select
                             labelId="trumpf-select-label"
                             id="trumpf-select"
                             defaultValue={trumpf.id}
                             onChange={(e) => {
                                 const value = e.target.value as number;
-                                setTrumpf(trump[value - 1])
+                                setTrumpf(trump[value - 1]);
                             }}
                         >
                             {trump.map((trumpf: Trumpf) => {
-                                return <MenuItem key={trumpf.id} value={trumpf.id}>{trumpf.name}</MenuItem>;
+                                return (
+                                    <MenuItem key={trumpf.id} value={trumpf.id}>
+                                        {trumpf.name}
+                                    </MenuItem>
+                                );
                             })}
                         </Select>
                     </FormControl>
-                    <Button onClick={() => {
-                        props.addRound(
-                            trumpf.id,
-                            points,
-                            team,
-                            wiisPoints1,
-                            wiisPoints2
-                        );
-                    }}>
+                    <Button
+                        onClick={() => {
+                            props.addRound(
+                                trumpf.id,
+                                points,
+                                team,
+                                wiisPoints1,
+                                wiisPoints2
+                            );
+                        }}
+                    >
                         Add Round
                     </Button>
                 </FormControl>
