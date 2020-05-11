@@ -7,20 +7,11 @@ import ViewWrapper from './ViewWrapper';
 import { del, get, post } from '../classes/RestHelper';
 import CircularProgress from '@material-ui/core/CircularProgress/CircularProgress';
 import GameMocks from '../classes/GameMocks';
-import {FormControl, TableBody, TableCell} from '@material-ui/core';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
+import {FormControl, TableBody, TableCell, Table, TableContainer, TableHead, TableRow, IconButton, Button, Paper, TextField, MenuItem, Select, InputLabel} from '@material-ui/core';
 import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+
+
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import IconButton from '@material-ui/core/IconButton';
 
 const trump: Trumpf[] = [
     { id: 1, name: 'Eichel', multiplier: 1 },

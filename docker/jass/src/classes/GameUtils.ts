@@ -1,6 +1,4 @@
-import {FullGame, Trumpf} from './Game';
-import { Team } from './Game';
-import { Round } from './Game';
+import {FullGame, Trumpf, Team, Round} from './Game';
 
 const trump: Trumpf[] = [
     { id: 1, name: 'Eichel', multiplier: 1 },
