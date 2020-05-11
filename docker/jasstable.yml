@@ -106,7 +106,9 @@ services:
     networks:
       jassnet: null
     volumes:
-      - "./jass/build:/usr/share/nginx/html"
+      - type: bind
+        source: ./jass/build
+        target: /usr/share/nginx/html
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.jasstatic1.rule=PathPrefix(`/`)"
@@ -131,7 +133,9 @@ services:
     networks:
       jassnet: null
     volumes:
-      - "./jass/build:/usr/share/nginx/html"
+      - type: bind
+        source: ./jass/build
+        target: /usr/share/nginx/html
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.jasstatic2.rule=PathPrefix(`/`)"

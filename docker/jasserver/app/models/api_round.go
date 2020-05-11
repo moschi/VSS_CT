@@ -54,7 +54,7 @@ func DeleteRound(w http.ResponseWriter, r *http.Request) {
 	_, databaseErr = tx.Exec("DELETE FROM pointsPerTeamPerRound where round = $1;", roundID)
 	HandleTxDbError(w, tx, databaseErr)
 
-	_, databaseErr = database.Exec("DELETE FROM round WHERE id = $1 AND game = $2;", roundID, gameID)
+	_, databaseErr = tx.Exec("DELETE FROM round WHERE id = $1 AND game = $2;", roundID, gameID)
 	HandleTxDbError(w, tx, databaseErr)
 
 	HandleTxDbError(w, tx, tx.Commit())
