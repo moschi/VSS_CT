@@ -15,7 +15,7 @@ docker-compose --file .\jasstable.yml --project-name CT --project-directory . up
 
 ```
 
-The app is now available on [localhost:9443](localhost:9443), login with the credentials: "moe:test".
+The app is now available on [localhost:9443](http://localhost:9443), login with the credentials: "moe:test".
 
 ### Frontend
 
@@ -32,7 +32,7 @@ start:
 npm start
 ```
 
-App opens on: [localhost:3000](localhost:3000). Note: all requests are mocked. 
+App opens on: [localhost:3000](http://localhost:3000). Note: all requests are mocked. 
 
 production build: 
 

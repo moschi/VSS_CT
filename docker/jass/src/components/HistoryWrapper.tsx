@@ -21,6 +21,8 @@ interface HistoryWrapperProps {
     round: number;
     addRound: Function;
     children: React.ReactChild;
+    team1Total: number;
+    team2Total: number;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,6 +33,17 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         container: {
             height: 300,
+        },
+        scrollDown: {
+            "overflowY": "scroll",
+            "overscrollBehaviorY": "contain",
+            "scrollSnapType": "y mandatory",
+        },
+        total: {
+            width: "10%",
+        },
+        totalValues: {
+            width: "24%",
         },
     })
 );
@@ -49,7 +62,7 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
             <div>
                 <Paper>
                     <TableContainer className={classes.container}>
-                        <Table stickyHeader aria-label="sticky table">
+                        <Table stickyHeader className={classes.scrollDown} aria-label="sticky table">
                             <TableHead>
                                 <TableRow>
                                     <TableCell key="Runde">
@@ -72,6 +85,15 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                             {props.children}
                         </Table>
                     </TableContainer>
+                    <Table>
+                        <TableRow>
+                            <TableCell className={classes.total} size="small" align="left">Total:</TableCell>
+                            <TableCell className={classes.totalValues} size="medium" align="left">{props.team1Total}</TableCell>
+                            <TableCell className={classes.totalValues} size="medium" align="left">{props.team2Total}</TableCell>
+                            <TableCell size="medium"/>
+                            <TableCell size="medium"/>
+                        </TableRow>
+                    </Table>
                 </Paper>
             </div>
             <br/>

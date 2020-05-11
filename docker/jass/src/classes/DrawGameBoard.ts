@@ -205,7 +205,7 @@ class DrawGameBoard {
         this.renderDefaultBoard().then(async (context) => {
             const rounds = this.game.rounds;
 
-            let points = calculatePointsPerTeam(this.game);
+            calculatePointsPerTeam(this.game);
 
             const team1 = this.game.teams[0];
             const team2 = this.game.teams[1];

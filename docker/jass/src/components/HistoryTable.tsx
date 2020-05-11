@@ -2,8 +2,7 @@ import {FullGame, Round} from '../classes/Game';
 import {default as React, useCallback, useEffect, useState} from 'react';
 import {HistoryTableRow} from './HistoryTableRow';
 import {HistoryWrapper} from './HistoryWrapper';
-import {TableBody, TableCell} from '@material-ui/core';
-import TableRow from '@material-ui/core/TableRow';
+import {TableBody} from '@material-ui/core';
 import {trump} from './GameBoard';
 
 interface HistoryTableProps {
@@ -22,7 +21,7 @@ export const HistoryTable = (props: HistoryTableProps) => {
 
     const pointsPerRound = useCallback((round: Round, callbackTeam1: (points: number) => void, callbackTeam2: (points: number) => void) => {
         let trumpf = trump[round.trumpfId - 1];
-        round.pointsPerTeamPerRound.map((pointsPerRound) => {
+        round.pointsPerTeamPerRound.forEach((pointsPerRound) => {
             let teamId = pointsPerRound.teamId;
             let pointsTeam =
                 pointsPerRound.points * trumpf.multiplier;
@@ -40,7 +39,7 @@ export const HistoryTable = (props: HistoryTableProps) => {
     useEffect(() => {
         setTeam1Total(0);
         setTeam2Total(0);
-        rounds.map((round: Round) => {
+        rounds.forEach((round: Round) => {
             pointsPerRound(round,
                 (points: number) => {
                     setTeam1Total(total => total + points);
@@ -83,17 +82,14 @@ export const HistoryTable = (props: HistoryTableProps) => {
             teamNameTwo={team2.name}
             round={props.getNextRoundId(rounds)}
             addRound={props.addRound}
+            team1Total={team1Total}
+            team2Total={team2Total}
         >
+            <React.Fragment>
             <TableBody>
                 {renderRounds()}
-                {rounds.length > 0 &&
-                <TableRow>
-                    <TableCell rowSpan={2}>Total: </TableCell>
-                    <TableCell colSpan={1}>{team1Total}</TableCell>
-                    <TableCell>{team2Total}</TableCell>
-                </TableRow>
-                }
             </TableBody>
+            </React.Fragment>
         </HistoryWrapper>
     );
 };
