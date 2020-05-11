@@ -1,23 +1,29 @@
 @startuml
 
-title Packages - Component Diagram
-
 rectangle "Web client" {
     component [User Interface] as GUI
 }
 
 cloud Internet {
 }
- 
+
 node "traefik" {
     interface "websecure:9443" as access
     interface "basic-auth" as auth
-} 
+}
 
-component "jasserver1:8080" <<golang:latest>> as jasserver1
-component "jasserver2:8080" <<golang:latest>> as jasserver2
-component "jasstatic1:80" <<nginx:alpine>> as jasstatic1
-component "jasstatic2:80" <<nginx:alpine>> as jasstatic2
+node "golang:latest" as golang1 {
+    component "jasserver1:8080"  as jasserver1
+}
+node "golang:latest" as golang2 {
+    component "jasserver2:8080" as jasserver2
+}
+node "nginx:alpine" as nginx1 {
+    component "jasstatic1:80"  as jasstatic1
+}
+node "nginx:alpine" as nginx2 {
+    component "jasstatic2:80" as jasstatic2
+}
 
 database "Database" <<postgres:latest>> {
     [jassdb:5432] as jassdb
