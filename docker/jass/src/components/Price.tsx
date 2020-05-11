@@ -88,7 +88,7 @@ export const Prices = (props: PricesProps) => {
     return (
         <React.Fragment>
             <SimpleDialog
-                show={showWinner && winnerShown}
+                show={showWinner && !winnerShown}
                 title={'Win!'}
                 action={showWinnerClose}
             >
