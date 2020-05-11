@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { CardHeader, Grid } from '@material-ui/core';
 import { FullGame } from '../classes/Game';
 import calculatePointsPerTeam from '../classes/GameUtils';
 import { withRouter } from 'react-router';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import {CircularProgress, CardContent, IconButton, Card , Button, CardHeader, Grid, Snackbar} from '@material-ui/core';
 import ViewWrapper from './ViewWrapper';
-import Card from '@material-ui/core/Card';
 import DashboardCard from './DashboardCard';
 import { del, get } from '../classes/RestHelper';
-import IconButton from '@material-ui/core/IconButton';
 import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
-import CardContent from '@material-ui/core/CardContent';
-import Snackbar from '@material-ui/core/Snackbar';
 import { Alert, Color } from '@material-ui/lab';
 
 interface SnackbarMessage extends Message {
