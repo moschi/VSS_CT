@@ -105,6 +105,8 @@ services:
       - 3000:80
     networks:
       jassnet: null
+    volumes:
+      - "./jass/build:/usr/share/nginx/html"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.jasstatic1.rule=PathPrefix(`/`)"
@@ -128,6 +130,8 @@ services:
       - 3001:80
     networks:
       jassnet: null
+    volumes:
+      - "./jass/build:/usr/share/nginx/html"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.jasstatic2.rule=PathPrefix(`/`)"
