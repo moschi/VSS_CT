@@ -7,6 +7,20 @@ import ViewWrapper from './ViewWrapper';
 import { del, get, post } from '../classes/RestHelper';
 import CircularProgress from '@material-ui/core/CircularProgress/CircularProgress';
 import GameMocks from '../classes/GameMocks';
+import {FormControl, TableBody, TableCell} from '@material-ui/core';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@material-ui/core/TextField';
+import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import TableContainer from '@material-ui/core/TableContainer';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import DeleteOutlineIcon from '@material-ui/icons/DeleteOutline';
+import IconButton from '@material-ui/core/IconButton';
 
 const trump: Trumpf[] = [
     { id: 1, name: 'Eichel', multiplier: 1 },
@@ -17,141 +31,175 @@ const trump: Trumpf[] = [
     { id: 6, name: 'UntenUfen', multiplier: 3 },
 ];
 
-const HistoryWrapper = (props: any) => {
+interface HistoryWrapperProps {
+    teamNameOne: string;
+    teamNameTwo: string;
+    children: React.ReactChildren;
+    round: number;
+    addRound: Function;
+}
+
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        formControl: {
+            margin: theme.spacing(1),
+            width: '25ch',
+        },
+        container: {
+            height: 300,
+        },
+    })
+);
+
+const HistoryWrapper = (props: HistoryWrapperProps) => {
     const [team, setTeam] = useState(props.teamNameOne);
     const [points, setPoints] = useState(0);
     const [trumpf, setTrumpf] = useState(trump[0].name);
     const [wiisPoints1, setWiisPoints1] = useState(0);
     const [wiisPoints2, setWiisPoints2] = useState(0);
 
+    const classes = useStyles();
+
     return (
-        <table>
-            <tbody>
-                <tr>
-                    <th>Runde</th>
-                    <th>{props.teamNameOne}</th>
-                    <th>{props.teamNameTwo}</th>
-                    <th>Trumpf</th>
-                </tr>
-                {props.children}
-                <tr>
-                    <td>{props.round}</td>
-                </tr>
-                <tr>
-                    <td>Team</td>
-                    <td>
-                        <select
-                            onChange={(value) => {
+        <React.Fragment>
+            <div>
+                <Paper>
+                    <TableContainer className={classes.container}>
+                        <Table stickyHeader aria-label="sticky table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell key="Runde">
+                                        Runde
+                                    </TableCell>
+                                    <TableCell key={props.teamNameOne}>
+                                        {props.teamNameOne}
+                                    </TableCell>
+                                    <TableCell key={props.teamNameTwo}>
+                                        {props.teamNameTwo}
+                                    </TableCell>
+                                    <TableCell key="Trumpf">
+                                        Trumpf
+                                    </TableCell>
+                                    <TableCell key="Actions">
+                                        Actions
+                                    </TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {props.children}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Paper>
+            </div>
+            <br/>
+            <form>
+                <FormControl className={classes.formControl}>
+                    <FormControl>
+                        <InputLabel htmlFor="team-select" id="team-select-label">Team</InputLabel>
+                        <Select
+                            labelId="team-select-label"
+                            id="team-select"
+                            value={team}
+                            onChange={(e: React.ChangeEvent<{ value: unknown }>) => {
+                                const value: string = e.target.value as string;
                                 setTeam(value);
                             }}
                         >
-                            <optgroup>
-                                <option>{props.teamNameOne}</option>
-                                <option>{props.teamNameTwo}</option>
-                            </optgroup>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Points</td>
-                    <td>
-                        <input
-                            value={points}
-                            type={'number'}
-                            onChange={(e) =>
-                                setPoints(Number(e.currentTarget.value))
-                            }
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td>WiisPoints</td>
-                    <td>
-                        <input
-                            value={wiisPoints1}
-                            type={'number'}
-                            onChange={(e) =>
-                                setWiisPoints1(Number(e.currentTarget.value))
-                            }
-                        />
-                    </td>
-                    <td>
-                        <input
-                            value={wiisPoints2}
-                            type={'number'}
-                            onChange={(e) =>
-                                setWiisPoints2(Number(e.currentTarget.value))
-                            }
-                        />
-                    </td>
-                </tr>
-                <tr>
-                    <td>Trumpf</td>
-                    <td>
-                        <select
+                            <MenuItem value={props.teamNameOne}>{props.teamNameOne}</MenuItem>
+                            <MenuItem value={props.teamNameTwo}>{props.teamNameTwo}</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <TextField
+                        id="points"
+                        label="Points"
+                        placeholder="0"
+                        value={points}
+                        type={'number'}
+                        onChange={(e) =>
+                            setPoints(Number(e.currentTarget.value))
+                        }
+                    />
+                    <TextField
+                        id="points"
+                        label={"Wiis Points "+props.teamNameOne}
+                        placeholder="0"
+                        value={wiisPoints1}
+                        type={'number'}
+                        onChange={(e) =>
+                            setWiisPoints1(Number(e.currentTarget.value))
+                        }
+                    />
+                    <TextField
+                        id="points"
+                        label={"Wiis Points "+props.teamNameTwo}
+                        placeholder="0"
+                        value={wiisPoints2}
+                        type={'number'}
+                        onChange={(e) =>
+                            setWiisPoints2(Number(e.currentTarget.value))
+                        }
+                    />
+                    <FormControl>
+                        <InputLabel team-select="trumpf-select" id="trumpf-select-label">Trumpf</InputLabel>
+                        <Select
+                            labelId="trumpf-select-label"
+                            id="trumpf-select"
                             defaultValue={trumpf}
-                            onChange={(e) => setTrumpf(e.currentTarget.value)}
+                            onChange={(e) => setTrumpf(e.currentTarget.value as string)}
                         >
-                            <optgroup>
-                                {trump.map((trumpf: Trumpf) => {
-                                    return <option>{trumpf.name}</option>;
-                                })}
-                            </optgroup>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td />
-                    <td>
-                        <input
-                            value={'Submit round'}
-                            type={'button'}
-                            onClick={() => {
-                                {
-                                    trump.forEach((trump) => {
-                                        if (trump.name === trumpf) {
-                                            props.addRound(
-                                                trump.id,
-                                                points,
-                                                team,
-                                                wiisPoints1,
-                                                wiisPoints2
-                                            );
-                                        }
-                                    });
+                            {trump.map((trumpf: Trumpf) => {
+                                return <MenuItem value={trumpf.name}>{trumpf.name}</MenuItem>;
+                            })}
+                        </Select>
+                    </FormControl>
+                    <Button onClick={() => {
+                        {
+                            trump.forEach((trump) => {
+                                if (trump.name === trumpf) {
+                                    props.addRound(
+                                        trump.id,
+                                        points,
+                                        team,
+                                        wiisPoints1,
+                                        wiisPoints2
+                                    );
                                 }
-                            }}
-                        />
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                            });
+                        }
+                    }}>
+                        Add Round
+                    </Button>
+                </FormControl>
+            </form>
+        </React.Fragment>
     );
 };
 
 const HistoryTableRow = (props: any) => {
     return (
-        <tr>
-            <td>
+        <TableRow>
+            <TableCell>
                 <p>{props.runde}</p>
-            </td>
-            <td>
+            </TableCell>
+            <TableCell>
                 <p>{props.teamOnePoints}</p>
-            </td>
-            <td>
+            </TableCell>
+            <TableCell>
                 <p>{props.teamTwoPoints}</p>
-            </td>
-            <td>
+            </TableCell>
+            <TableCell>
                 <p>{props.trump}</p>
-            </td>
-            <td>
-                <input
-                    type={'button'}
-                    value={'X'}
+            </TableCell>
+            <TableCell>
+                <IconButton
+                    aria-label="delete"
                     onClick={() => props.removeRound(props.roundId)}
-                />
-            </td>
-        </tr>
+                >
+                    <DeleteOutlineIcon />
+                </IconButton>
+            </TableCell>
+        </TableRow>
     );
 };
 
@@ -279,7 +327,7 @@ function GameBoard(props: any) {
                 addRound={addRound}
             >
                 {rounds.map((round: Round, numOfRounds: number) => {
-                    //Fuck you databases!
+                    // Fuck you databases!
                     let trumpf = trump[round.trumpfId - 1];
                     let pointsPerTeamPerRound = round.pointsPerTeamPerRound;
                     let teamOnePoints = 0;
