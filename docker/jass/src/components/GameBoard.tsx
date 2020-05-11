@@ -52,9 +52,9 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const HistoryWrapper = (props: HistoryWrapperProps) => {
-    const [team, setTeam] = useState(props.teamNameOne);
-    const [points, setPoints] = useState(0);
-    const [trumpf, setTrumpf] = useState(trump[0].name);
+    const [team, setTeam] = useState<string>(props.teamNameOne);
+    const [points, setPoints] = useState<number>(0);
+    const [trumpf, setTrumpf] = useState<Trumpf>(trump[0]);
     const [wiisPoints1, setWiisPoints1] = useState(0);
     const [wiisPoints2, setWiisPoints2] = useState(0);
 
@@ -145,28 +145,25 @@ const HistoryWrapper = (props: HistoryWrapperProps) => {
                         <Select
                             labelId="trumpf-select-label"
                             id="trumpf-select"
-                            defaultValue={trumpf}
-                            onChange={(e) => setTrumpf(e.currentTarget.value as string)}
+                            defaultValue={trumpf.id}
+                            onChange={(e) => {
+                                const value = e.target.value as number;
+                                setTrumpf(trump[value - 1])
+                            }}
                         >
                             {trump.map((trumpf: Trumpf) => {
-                                return <MenuItem value={trumpf.name}>{trumpf.name}</MenuItem>;
+                                return <MenuItem value={trumpf.id}>{trumpf.name}</MenuItem>;
                             })}
                         </Select>
                     </FormControl>
                     <Button onClick={() => {
-                        {
-                            trump.forEach((trump) => {
-                                if (trump.name === trumpf) {
-                                    props.addRound(
-                                        trump.id,
-                                        points,
-                                        team,
-                                        wiisPoints1,
-                                        wiisPoints2
-                                    );
-                                }
-                            });
-                        }
+                            props.addRound(
+                                trumpf.id,
+                                points,
+                                team,
+                                wiisPoints1,
+                                wiisPoints2
+                            );
                     }}>
                         Add Round
                     </Button>
