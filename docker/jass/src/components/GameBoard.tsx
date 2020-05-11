@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import DrawGameBoard from '../classes/DrawGameBoard';
-import { PointsPerTeamPerRound, Round, Trumpf } from '../classes/Game';
+import {FullGame, Game, PointsPerTeamPerRound, Round, Trumpf} from '../classes/Game';
 import jasstafel from '../images/jasstafel.jpg';
 import ViewWrapper from './ViewWrapper';
 import { del, get, post } from '../classes/RestHelper';
@@ -55,8 +55,8 @@ const HistoryWrapper = (props: HistoryWrapperProps) => {
     const [team, setTeam] = useState<string>(props.teamNameOne);
     const [points, setPoints] = useState<number>(0);
     const [trumpf, setTrumpf] = useState<Trumpf>(trump[0]);
-    const [wiisPoints1, setWiisPoints1] = useState(0);
-    const [wiisPoints2, setWiisPoints2] = useState(0);
+    const [wiisPoints1, setWiisPoints1] = useState<number>(0);
+    const [wiisPoints2, setWiisPoints2] = useState<number>(0);
 
     const classes = useStyles();
 
@@ -202,10 +202,11 @@ const HistoryTableRow = (props: any) => {
 
 function GameBoard(props: any) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [game, setGame] = useState(GameMocks[0]);
-    const [rerender, setRerender] = useState(false);
-    const [rererenderer, setRerererenderer] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    // TODO remove mock usage
+    const [game, setGame] = useState<FullGame>(GameMocks[0]);
+    const [rerender, setRerender] = useState<boolean>(false);
+    const [rererenderer, setRerererenderer] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState();
 
     useEffect(() => {
