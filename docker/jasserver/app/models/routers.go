@@ -183,6 +183,13 @@ var routes = Routes{
 	},
 
 	Route{
+		"UpdateGame",
+		strings.ToUpper("Put"),
+		"/v1/game/{gameId}",
+		UpdateGame,
+	},
+
+	Route{
 		"DeleteGame",
 		strings.ToUpper("Delete"),
 		"/v1/game/{gameId}",

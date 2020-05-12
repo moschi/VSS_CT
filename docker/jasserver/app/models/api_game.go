@@ -26,6 +26,31 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// UpdateGame ...
+func UpdateGame(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	vars := mux.Vars(r)
+	gameID, convErr := strconv.Atoi(vars["gameId"])
+	HandleBadRequest(w, convErr)
+
+	var game Game
+	HandleBadRequest(w, json.NewDecoder(r.Body).Decode(&game))
+
+	if gameID != int(game.ID) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	userID, databaseErr := getUserIDFromRequest(r)
+	HandleDbError(w, databaseErr)
+
+	_, databaseErr = database.Exec("UPDATE game SET isFinished = $1 WHERE id = $2 and createdby = $3", game.IsFinished, gameID, userID)
+	HandleDbError(w, databaseErr)
+
+	w.WriteHeader(http.StatusOK)
+}
+
 // DeleteGame ...
 func DeleteGame(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
