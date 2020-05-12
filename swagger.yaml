@@ -84,7 +84,7 @@ paths:
         200:
           description: "Team updated"
   /team/{teamId}:
-    delete: 
+    delete:
       tags:
         - "team"
       summary: "delete team"
@@ -191,6 +191,34 @@ paths:
       responses:
         200:
           description: "deletion was successfull"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Game not found"
+    put:
+      tags:
+        - "game"
+      summary: "Update game"
+      description: ""
+      operationId: "updateGame"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "gameId"
+          in: "path"
+          description: "Game to update"
+          required: true
+          type: "integer"
+          format: "int64"
+        - in: "body"
+          name: "body"
+          description: "updated game"
+          required: true
+          schema:
+            $ref: "#/definitions/Game"
+      responses:
+        200:
+          description: "update was successfull"
         400:
           description: "Invalid ID supplied"
         404:
