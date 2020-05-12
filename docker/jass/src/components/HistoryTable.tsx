@@ -95,8 +95,8 @@ export const HistoryTable = (props: HistoryTableProps) => {
     return (
         <React.Fragment>
             <HistoryWrapper
-                teamNameOne={team1.name}
-                teamNameTwo={team2.name}
+                teamOne={team1}
+                teamTwo={team2}
                 round={props.getNextRoundId(rounds)}
                 addRound={props.addRound}
                 team1Total={team1Total}

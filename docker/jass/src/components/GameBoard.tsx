@@ -24,6 +24,11 @@ export const trump: Trumpf[] = [
     { id: 6, name: 'UntenUfen', multiplier: 3 },
 ];
 
+interface WiisPoints {
+    team: number,
+    points: number
+}
+
 function GameBoard(props: any) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     // TODO remove mock usage
@@ -66,18 +71,16 @@ function GameBoard(props: any) {
     const addRound = (
         trumpfId: number,
         points: number,
-        teamName: string,
-        wiisPoints1: number,
-        wiisPoints2: number
+        teamId: number,
+        wiisPoints1: WiisPoints,
+        wiisPoints2: WiisPoints
     ) => {
-        let teamId =
-            game.teams[0].name === teamName
-                ? game.teams[0].id
-                : game.teams[1].id;
-        const getTeamIdOtherTeam = () => {
-            return game.teams[0].id === teamId
+        const otherTeamId = game.teams[0].id === teamId
                 ? game.teams[1].id
                 : game.teams[0].id;
+
+        const writeWiisPoints = (id: number) => {
+            return wiisPoints1.team === id ? wiisPoints1.points : wiisPoints2.points
         };
 
         let pointsOtherTeam = 0;
@@ -90,13 +93,20 @@ function GameBoard(props: any) {
         } else {
             pointsOtherTeam = 157 - points;
         }
+
+        const PointsPerTeamPerRoundTeam = {
+            points: points,
+            wiisPoints: writeWiisPoints(teamId),
+            teamId: teamId,
+        };
+        const PointsPerTeamPerRoundOtherTeam = {
+            points: pointsOtherTeam,
+            wiisPoints: writeWiisPoints(otherTeamId),
+            teamId: otherTeamId
+        };
         const pointsPerTeamPerRound: PointsPerTeamPerRound[] = [
-            { points: points, wiisPoints: wiisPoints1, teamId: teamId },
-            {
-                points: pointsOtherTeam,
-                wiisPoints: wiisPoints2,
-                teamId: getTeamIdOtherTeam(),
-            },
+            PointsPerTeamPerRoundTeam,
+            PointsPerTeamPerRoundOtherTeam,
         ];
 
         const postRound: Round = {

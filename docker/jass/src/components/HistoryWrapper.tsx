@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import {FullGame, Trumpf} from '../classes/Game';
+import {FullGame, Team, Trumpf} from '../classes/Game';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -16,18 +16,6 @@ import { trump } from './GameBoard';
 import { Prices } from './Prices';
 import TableCell from '@material-ui/core/TableCell';
 import FormControl from '@material-ui/core/FormControl';
-
-interface HistoryWrapperProps {
-    teamNameOne: string;
-    teamNameTwo: string;
-    round: number;
-    addRound: Function;
-    children: React.ReactChild;
-    team1Total: number;
-    team2Total: number;
-    game: FullGame
-    updateGame: Function;
-}
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -53,8 +41,20 @@ const useStyles = makeStyles((theme: Theme) =>
     })
 );
 
+interface HistoryWrapperProps {
+    teamOne: Team;
+    teamTwo: Team;
+    round: number;
+    addRound: Function;
+    children: React.ReactChild;
+    team1Total: number;
+    team2Total: number;
+    game: FullGame
+    updateGame: Function;
+}
+
 export const HistoryWrapper = (props: HistoryWrapperProps) => {
-    const [team, setTeam] = useState<string>(props.teamNameOne);
+    const [team, setTeam] = useState<number>(props.teamOne.id);
     const [points, setPoints] = useState<number>(0);
     const [trumpf, setTrumpf] = useState<Trumpf>(trump[0]);
     const [wiisPoints1, setWiisPoints1] = useState<number>(0);
@@ -77,8 +77,8 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                 <Prices
                     team1Total={props.team1Total}
                     team2Total={props.team2Total}
-                    teamNameOne={props.teamNameOne}
-                    teamNameTwo={props.teamNameTwo}
+                    teamNameOne={props.teamOne.name}
+                    teamNameTwo={props.teamTwo.name}
                     gameId={props.game.id}
                     updateGame={props.updateGame}
                 />
@@ -88,11 +88,11 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                             <TableHead>
                                 <TableRow>
                                     <TableCell key="Runde">Runde</TableCell>
-                                    <TableCell key={props.teamNameOne}>
-                                        {props.teamNameOne}
+                                    <TableCell key={props.teamOne.name}>
+                                        {props.teamOne.name}
                                     </TableCell>
-                                    <TableCell key={props.teamNameTwo}>
-                                        {props.teamNameTwo}
+                                    <TableCell key={props.teamTwo.name}>
+                                        {props.teamTwo.name}
                                     </TableCell>
                                     <TableCell key="Trumpf">Trumpf</TableCell>
                                     <TableCell key="Actions">Actions</TableCell>
@@ -152,16 +152,16 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                             onChange={(
                                 e: React.ChangeEvent<{ value: unknown }>
                             ) => {
-                                const value: string = e.target.value as string;
+                                const value: number = e.target.value as number;
                                 setTeam(value);
                             }}
                             disabled={props.game.isFinished}
                         >
-                            <MenuItem value={props.teamNameOne}>
-                                {props.teamNameOne}
+                            <MenuItem value={props.teamOne.id}>
+                                {props.teamOne.name}
                             </MenuItem>
-                            <MenuItem value={props.teamNameTwo}>
-                                {props.teamNameTwo}
+                            <MenuItem value={props.teamTwo.id}>
+                                {props.teamTwo.name}
                             </MenuItem>
                         </Select>
                     </FormControl>
@@ -178,7 +178,7 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                     />
                     <TextField
                         id="points"
-                        label={'Wiis Points ' + props.teamNameOne}
+                        label={'Wiis Points ' + props.teamOne.name}
                         placeholder="0"
                         value={wiisPoints1}
                         type={'number'}
@@ -189,7 +189,7 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                     />
                     <TextField
                         id="points"
-                        label={'Wiis Points ' + props.teamNameTwo}
+                        label={'Wiis Points ' + props.teamTwo.name}
                         placeholder="0"
                         value={wiisPoints2}
                         type={'number'}
@@ -229,9 +229,13 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                             props.addRound(
                                 trumpf.id,
                                 points,
-                                team,
-                                wiisPoints1,
-                                wiisPoints2
+                                team, {
+                                    team: props.teamOne.id,
+                                    points: wiisPoints1,
+                                }, {
+                                    team: props.teamTwo.id,
+                                    points: wiisPoints2,
+                                },
                             );
                         }}
                         disabled={props.game.isFinished}
