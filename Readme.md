@@ -9,7 +9,7 @@ Run the following commands line by line.
 ```bash
 git clone https://github.com/moschi/VSS_CT.git
 
-cd docker/jass && npm run build && cd .. 
+cd VSS_CT/docker/jass && npm run build && cd .. 
 
 docker-compose --file .\jasstable.yml --project-name CT --project-directory . up -d --build --remove-orphans
 
