@@ -15,6 +15,7 @@ interface HistoryTableProps {
     removeRound: Function;
     getNextRoundId: Function;
     addRound: Function;
+    updateGame: Function;
 }
 
 export const HistoryTable = (props: HistoryTableProps) => {
@@ -85,6 +86,7 @@ export const HistoryTable = (props: HistoryTableProps) => {
                     removeRound={props.removeRound}
                     roundId={round.id}
                     key={round.id}
+                    gameIsFinished={props.game.isFinished}
                 />
             );
         });
@@ -99,7 +101,8 @@ export const HistoryTable = (props: HistoryTableProps) => {
                 addRound={props.addRound}
                 team1Total={team1Total}
                 team2Total={team2Total}
-                gameId={props.game.id}
+                game={props.game}
+                updateGame={props.updateGame}
             >
                 <TableBody>{renderRounds()}</TableBody>
             </HistoryWrapper>

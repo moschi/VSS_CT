@@ -9,10 +9,11 @@ import {
 } from '../classes/Game';
 import jasstafel from '../images/jasstafel.jpg';
 import ViewWrapper from './ViewWrapper';
-import { del, get, post } from '../classes/RestHelper';
+import {del, get, post, update} from '../classes/RestHelper';
 import CircularProgress from '@material-ui/core/CircularProgress/CircularProgress';
 import GameMocks from '../classes/GameMocks';
 import { HistoryTable } from './HistoryTable';
+import {Alert} from '@material-ui/lab';
 
 export const trump: Trumpf[] = [
     { id: 1, name: 'Eichel', multiplier: 1 },
@@ -31,7 +32,6 @@ function GameBoard(props: any) {
     const [rererenderer, setRerererenderer] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState();
-    const divRef = React.useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setIsLoading(true);
@@ -128,8 +128,21 @@ function GameBoard(props: any) {
                 setRerererenderer(!rererenderer);
             },
             () => {
-                console.log('fuck');
+                console.log('Please try again.');
             }
+        );
+    };
+
+    const updateGame = (updatedGame: FullGame) => {
+        update(
+            'game/' + updatedGame.id,
+            () => {
+                setGame({...game, ...updatedGame});
+            },
+            () => {
+                console.log('Please try again.');
+            },
+            updatedGame
         );
     };
 
@@ -141,7 +154,7 @@ function GameBoard(props: any) {
             ) : error ? (
                 <p>error: {error.message}</p>
             ) : (
-                <div className={'gameBoardWrapper'} ref={divRef}>
+                <div className={'gameBoardWrapper'}>
                     <div>
                         <canvas ref={canvasRef} width={515} height={720} />
                     </div>
@@ -149,11 +162,13 @@ function GameBoard(props: any) {
                         <div className={'gameBoardInnerWrapper'}>
                             <div>
                                 <h2>History</h2>
+                                {game.isFinished && <Alert severity={'info'}>Is finished!</Alert>}
                                 <HistoryTable
                                     game={game}
                                     removeRound={removeRound}
                                     getNextRoundId={getNextRoundId}
                                     addRound={addRound}
+                                    updateGame={updateGame}
                                 />
                             </div>
                         </div>

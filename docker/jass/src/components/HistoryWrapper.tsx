@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Trumpf } from '../classes/Game';
+import {FullGame, Trumpf} from '../classes/Game';
 import Paper from '@material-ui/core/Paper';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
@@ -25,7 +25,8 @@ interface HistoryWrapperProps {
     children: React.ReactChild;
     team1Total: number;
     team2Total: number;
-    gameId: number
+    game: FullGame
+    updateGame: Function;
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -78,7 +79,8 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                     team2Total={props.team2Total}
                     teamNameOne={props.teamNameOne}
                     teamNameTwo={props.teamNameTwo}
-                    gameId={props.gameId}
+                    gameId={props.game.id}
+                    updateGame={props.updateGame}
                 />
                 <Paper>
                     <TableContainer className={classes.container}>
@@ -153,6 +155,7 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                                 const value: string = e.target.value as string;
                                 setTeam(value);
                             }}
+                            disabled={props.game.isFinished}
                         >
                             <MenuItem value={props.teamNameOne}>
                                 {props.teamNameOne}
@@ -171,6 +174,7 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                         onChange={(e) =>
                             setPoints(Number(e.currentTarget.value))
                         }
+                        disabled={props.game.isFinished}
                     />
                     <TextField
                         id="points"
@@ -181,6 +185,7 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                         onChange={(e) =>
                             setWiisPoints1(Number(e.currentTarget.value))
                         }
+                        disabled={props.game.isFinished}
                     />
                     <TextField
                         id="points"
@@ -191,6 +196,7 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                         onChange={(e) =>
                             setWiisPoints2(Number(e.currentTarget.value))
                         }
+                        disabled={props.game.isFinished}
                     />
                     <FormControl>
                         <InputLabel
@@ -207,6 +213,7 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                                 const value = e.target.value as number;
                                 setTrumpf(trump[value - 1]);
                             }}
+                            disabled={props.game.isFinished}
                         >
                             {trump.map((trumpf: Trumpf) => {
                                 return (
@@ -227,6 +234,7 @@ export const HistoryWrapper = (props: HistoryWrapperProps) => {
                                 wiisPoints2
                             );
                         }}
+                        disabled={props.game.isFinished}
                     >
                         Add Round
                     </Button>

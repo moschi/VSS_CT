@@ -7,7 +7,11 @@ import GameMocks from './classes/GameMocks';
 
 if (process.env.NODE_ENV !== 'production') {
     const timeout = 20;
-
+    interface Reg {
+        params: {
+            id: number
+        }
+    }
     new Server({
         routes() {
             this.namespace = '/v1';
@@ -62,8 +66,8 @@ if (process.env.NODE_ENV !== 'production') {
             );
 
             this.delete(
-                '/game/0',
-                (schema: any, request: Request) => {
+                '/game/:id',
+                (schema: any, request: Reg) => {
                     return new Response(204, {});
                 },
                 { timing: timeout }
@@ -78,6 +82,16 @@ if (process.env.NODE_ENV !== 'production') {
                         {
                             id: 0,
                         }
+                    );
+                },
+                { timing: timeout }
+            );
+            this.put(
+                '/game/:id',
+                (schema: any, request: Reg) => {
+                    return new Response(
+                        200,
+                        {},
                     );
                 },
                 { timing: timeout }

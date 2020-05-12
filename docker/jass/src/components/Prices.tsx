@@ -40,6 +40,7 @@ interface PricesProps {
     team2Total: number;
     teamNameOne: string;
     teamNameTwo: string;
+    updateGame: Function;
 }
 export const Prices = (props: PricesProps) => {
     // TODO local storage is may not the best place for all prices.
@@ -79,6 +80,10 @@ export const Prices = (props: PricesProps) => {
     const showWinnerClose = () => {
         setShowWinner(false);
         setWinnerShown(true);
+        props.updateGame({
+            id: props.gameId,
+            isFinished: true,
+        });
     };
 
     const showBergPriisClose = () => {

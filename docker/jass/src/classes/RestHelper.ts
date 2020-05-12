@@ -64,3 +64,12 @@ export const del = (
 ) => {
     request('DELETE', route, false, callback, errorHandling);
 };
+
+export const update = (
+    route: string,
+    callback?: (data?: object) => void,
+    errorHandling?: (error: Error) => void,
+    body?: {}
+) => {
+    request('PUT', route, false, callback, errorHandling, body);
+};

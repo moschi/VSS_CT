@@ -11,6 +11,7 @@ interface HistoryTableRowProps {
     trump: string;
     roundId: number;
     removeRound: Function;
+    gameIsFinished: boolean;
 }
 
 export const HistoryTableRow = (props: HistoryTableRowProps) => {
@@ -24,6 +25,7 @@ export const HistoryTableRow = (props: HistoryTableRowProps) => {
                 <IconButton
                     aria-label="delete"
                     onClick={() => props.removeRound(props.roundId)}
+                    disabled={props.gameIsFinished}
                 >
                     <DeleteOutlineIcon />
                 </IconButton>

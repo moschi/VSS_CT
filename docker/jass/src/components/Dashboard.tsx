@@ -114,6 +114,7 @@ function Dashboard(props: any) {
                                 teamTwo={results.team2.team.name}
                                 pointsTeamTwo={results.team2.points}
                             />
+                            {game.isFinished && <Alert severity={'info'}>Is Finished</Alert>}
                         </CardContent>
                     </Card>
                 </Grid>
