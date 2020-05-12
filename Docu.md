@@ -6,12 +6,12 @@
 
 This is a WebApp to record points for a "Schieber-Jass". The app has the following features: 
 
-* Create/Delete a game
-* Create/Delete Teams
-* Insert rounds for a game 
+* CRUD game
+* CRUD teams
+* Insert rounds (points and wiis points) for a game 
   * for each team 
   * with the appropriate multiplier
-  * show points on a "Jass"-table
+ * Show points on a "Jass"-table
 
 ## Architecture
 
